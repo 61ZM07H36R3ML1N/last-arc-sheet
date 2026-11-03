@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Search, ShieldAlert, Award, Star } from 'lucide-react';
 import { SKILLS, ARMORS } from '../../data';
 import { useCharacterStore } from '../../store/useCharacterStore';
@@ -16,14 +16,12 @@ export default function SkillTable({ onRoll }: SkillTableProps) {
 
   const totalLevel = useMemo(() => getTotalLevel(sheet), [sheet]);
 
-  // Determine active armor penalty
   const armorPenalty = useMemo(() => {
     if (!sheet.equipped.armor?.id) return 0;
     const foundArmor = ARMORS.find((a) => a.id === sheet.equipped.armor?.id);
     return foundArmor?.checkPenalty || 0;
   }, [sheet.equipped.armor]);
 
-  // Filter skills
   const filteredSkills = useMemo(() => {
     return SKILLS.filter((s) => {
       const matchesSearch = s.name.toLowerCase().includes(search.toLowerCase());
@@ -34,7 +32,6 @@ export default function SkillTable({ onRoll }: SkillTableProps) {
 
   return (
     <div className="space-y-3 text-xs">
-      {/* Search & Attribute Filters */}
       <div className="flex flex-wrap items-center justify-between gap-2 bg-arc-card p-2.5 rounded-lg border border-arc-border">
         <div className="relative flex-1 min-w-[140px]">
           <Search size={14} className="absolute left-2.5 top-2 text-slate-400" />
@@ -64,7 +61,6 @@ export default function SkillTable({ onRoll }: SkillTableProps) {
         </div>
       </div>
 
-      {/* Skills Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
         {filteredSkills.map((skill) => {
           const isTrained = sheet.trainedSkills.some(
@@ -74,7 +70,6 @@ export default function SkillTable({ onRoll }: SkillTableProps) {
           const attrMod = getModifier(sheet.baseAttributes[skill.attribute as AttributeKey]);
           const baseLvlBonus = Math.floor(totalLevel / 2);
 
-          // Apply training (+5), focus (+5), and armor check penalty if applicable
           let penalty = 0;
           if (skill.armorPenalty && armorPenalty < 0) {
             penalty = armorPenalty;
@@ -125,7 +120,6 @@ export default function SkillTable({ onRoll }: SkillTableProps) {
                 </div>
               </div>
 
-              {/* Click to Roll d20 Check */}
               <button
                 onClick={() =>
                   onRoll(
