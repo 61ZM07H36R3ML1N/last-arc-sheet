@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useState } from 'react';
-import { Zap, Plus, Trash2, Award, Shield, BookOpen, AlertCircle } from 'lucide-react';
+import { useState } from 'react';
+import { Zap, Plus, Trash2 } from 'lucide-react';
 import { useCharacterStore } from '../../store/useCharacterStore';
 
-// Common Technicks catalog from Chapter 6
 const ALL_TECHNICKS = [
   { name: 'Power Attack', prereq: 'Strength 13', description: 'Spend 2 minor actions in the same turn to deal +1 damage die on all melee attacks.' },
   { name: 'Mighty Strikes', prereq: 'Strength 13', description: 'Take -1 on melee attacks to gain +1 damage (+2 for 2-handed weapons). Scales every 4 levels.' },
@@ -28,7 +27,6 @@ export default function TalentsTab() {
   const { sheet, importSheet } = useCharacterStore();
   const [isPickerOpen, setIsPickerOpen] = useState(false);
 
-  // Add a technick to the sheet
   const addTechnick = (techName: string) => {
     if (!sheet.technicks.includes(techName)) {
       importSheet({
@@ -39,7 +37,6 @@ export default function TalentsTab() {
     setIsPickerOpen(false);
   };
 
-  // Remove a technick from the sheet
   const removeTechnick = (techName: string) => {
     importSheet({
       ...sheet,
@@ -47,7 +44,6 @@ export default function TalentsTab() {
     });
   };
 
-  // Remove a talent
   const removeTalent = (talentName: string) => {
     importSheet({
       ...sheet,
@@ -57,7 +53,6 @@ export default function TalentsTab() {
 
   return (
     <div className="space-y-4 text-xs">
-      {/* Header & Add Button */}
       <div className="flex items-center justify-between bg-arc-card p-3 rounded-lg border border-arc-border">
         <div>
           <span className="font-bold text-slate-100 flex items-center gap-1.5 uppercase tracking-wide">
@@ -73,7 +68,6 @@ export default function TalentsTab() {
         </button>
       </div>
 
-      {/* Class Talents */}
       <div className="space-y-2">
         <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
           Class Talents
@@ -108,7 +102,6 @@ export default function TalentsTab() {
         )}
       </div>
 
-      {/* Acquired Technicks */}
       <div className="space-y-2">
         <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
           Technicks ({sheet.technicks.length})
@@ -148,7 +141,6 @@ export default function TalentsTab() {
         </div>
       </div>
 
-      {/* Technick Picker Modal */}
       {isPickerOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-3 bg-black/80 backdrop-blur-sm">
           <div className="bg-arc-card border border-arc-border w-full max-w-lg rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">

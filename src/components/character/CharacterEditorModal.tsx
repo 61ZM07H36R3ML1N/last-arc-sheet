@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { X, Check, RefreshCw, User } from 'lucide-react';
 import { RACES, CLASSES, ETHOS_LIST, SKILLS } from '../../data';
 import { useCharacterStore } from '../../store/useCharacterStore';

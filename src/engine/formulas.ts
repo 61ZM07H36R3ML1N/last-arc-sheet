@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import type { CharacterSheet, AttributeKey,  CharacterAttributes} from '../types';
+import type { CharacterSheet } from '../types';
 
 // Attribute Modifier: Math.floor((score - 10) / 2)
 export function getModifier(score: number): number {

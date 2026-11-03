@@ -3,7 +3,7 @@ import racesData from './races.json';
 import classesData from './baseClasses.json';
 import skillsData from './skills.json';
 import equipmentData from './equipment.json';
-import type { AttributeKey, DamageType } from '../types';
+import type { DamageType } from '../types';
 
 export interface WeaponItem {
   id: string;
