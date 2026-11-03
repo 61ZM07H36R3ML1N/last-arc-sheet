@@ -1,0 +1,152 @@
+[
+  {
+    "id": "warrior",
+    "name": "Warrior",
+    "initiativeDie": "d10",
+    "startingHp": 30,
+    "hpPerLevel": 6,
+    "startingMp": 6,
+    "mpPerLevel": 2,
+    "startingGold": 1000,
+    "baseTrainedSkillsCount": 6,
+    "defenseBonuses": { "fortitude": 2, "will": 1, "reflex": 0 },
+    "startingTechnicks": [
+      "Armour Proficiency (light)",
+      "Armour Proficiency (heavy)",
+      "Shield Proficiency",
+      "Weapon Proficiency (axes)",
+      "Weapon Proficiency (bludgeons)",
+      "Weapon Proficiency (knives)",
+      "Weapon Proficiency (polearms)",
+      "Weapon Proficiency (swords)"
+    ],
+    "classSkills": [
+      "1-Handed", "2-Handed", "Acrobatics", "Alchemy", "Athletics",
+      "Light Weapon", "Lore", "Perception", "Persuasion", "Pilot",
+      "Ranged", "Ride", "Smithing", "Survival", "Unarmed"
+    ]
+  },
+  {
+    "id": "rogue",
+    "name": "Rogue",
+    "initiativeDie": "d4",
+    "startingHp": 24,
+    "hpPerLevel": 5,
+    "startingMp": 6,
+    "mpPerLevel": 2,
+    "startingGold": 750,
+    "baseTrainedSkillsCount": 8,
+    "defenseBonuses": { "fortitude": 1, "reflex": 2, "will": 0 },
+    "startingTechnicks": [
+      "Armour Proficiency (light)",
+      "Weapon Finesse",
+      "Weapon Proficiency (bludgeons)",
+      "Weapon Proficiency (crossbows)",
+      "Weapon Proficiency (knives)",
+      "Weapon Proficiency (swords)"
+    ],
+    "classSkills": [
+      "1-Handed", "2-Handed", "Acrobatics", "Alchemy", "Athletics",
+      "Deception", "Disable", "Light Weapon", "Lore", "Perception",
+      "Persuasion", "Pilot", "Ranged", "Ride", "Smithing", "Stealth", "Unarmed"
+    ]
+  },
+  {
+    "id": "ranger",
+    "name": "Ranger",
+    "initiativeDie": "d8",
+    "startingHp": 30,
+    "hpPerLevel": 6,
+    "startingMp": 6,
+    "mpPerLevel": 2,
+    "startingGold": 750,
+    "baseTrainedSkillsCount": 6,
+    "defenseBonuses": { "fortitude": 2, "reflex": 1, "will": 0 },
+    "startingTechnicks": [
+      "Armour Proficiency (light)",
+      "Precise Shot",
+      "Weapon Proficiency (axes)",
+      "Weapon Proficiency (bows)",
+      "Weapon Proficiency (crossbows)",
+      "Weapon Proficiency (knives)",
+      "Weapon Proficiency (swords)"
+    ],
+    "classSkills": [
+      "1-Handed", "2-Handed", "Acrobatics", "Alchemy", "Athletics",
+      "Disable", "Light Weapon", "Lore", "Medicine", "Perception",
+      "Persuasion", "Pilot", "Ranged", "Ride", "Smithing", "Stealth", "Survival", "Unarmed"
+    ]
+  },
+  {
+    "id": "mage",
+    "name": "Mage",
+    "initiativeDie": "d12",
+    "startingHp": 18,
+    "hpPerLevel": 4,
+    "startingMp": 12,
+    "mpPerLevel": 3,
+    "startingGold": 500,
+    "baseTrainedSkillsCount": 4,
+    "defenseBonuses": { "reflex": 1, "will": 2, "fortitude": 0 },
+    "startingTechnicks": [
+      "Arcane Study",
+      "Armour Proficiency (mystic)",
+      "Weapon Proficiency (knives)",
+      "Weapon Proficiency (staves)",
+      "Weapon Proficiency (swords)"
+    ],
+    "classSkills": [
+      "1-Handed", "2-Handed", "Alchemy", "Light Weapon", "Lore",
+      "Perception", "Persuasion", "Ranged", "Ride", "Smithing",
+      "Spellcraft", "Unarmed"
+    ]
+  },
+  {
+    "id": "initiate",
+    "name": "Initiate",
+    "initiativeDie": "d12",
+    "startingHp": 18,
+    "hpPerLevel": 4,
+    "startingMp": 12,
+    "mpPerLevel": 3,
+    "startingGold": 500,
+    "baseTrainedSkillsCount": 4,
+    "defenseBonuses": { "fortitude": 1, "will": 2, "reflex": 0 },
+    "startingTechnicks": [
+      "Arcane Study",
+      "Armour Proficiency (mystic)",
+      "Shield Proficiency",
+      "Weapon Proficiency (knives)",
+      "Weapon Proficiency (staves)"
+    ],
+    "classSkills": [
+      "1-Handed", "2-Handed", "Alchemy", "Athletics", "Deception",
+      "Light Weapon", "Lore", "Medicine", "Perception", "Persuasion",
+      "Ranged", "Ride", "Smithing", "Spellcraft", "Survival", "Unarmed"
+    ]
+  },
+  {
+    "id": "bard",
+    "name": "Bard",
+    "initiativeDie": "d6",
+    "startingHp": 24,
+    "hpPerLevel": 5,
+    "startingMp": 6,
+    "mpPerLevel": 2,
+    "startingGold": 750,
+    "baseTrainedSkillsCount": 6,
+    "defenseBonuses": { "reflex": 2, "will": 1, "fortitude": 0 },
+    "startingTechnicks": [
+      "Armour Proficiency (light)",
+      "Bardic Study",
+      "Weapon Proficiency (bows)",
+      "Weapon Proficiency (knives)",
+      "Weapon Proficiency (swords)"
+    ],
+    "classSkills": [
+      "1-Handed", "2-Handed", "Acrobatics", "Alchemy", "Athletics",
+      "Deception", "Light Weapon", "Lore", "Perception", "Perform",
+      "Persuasion", "Pilot", "Ranged", "Ride", "Smithing", "Stealth", "Survival", "Unarmed"
+    ]
+  }
+]

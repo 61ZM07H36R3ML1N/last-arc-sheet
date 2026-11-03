@@ -1,0 +1,59 @@
+{
+  "weapons": [
+    { "id": "stone_hatchet", "name": "Stone Hatchet", "category": "axes", "size": "Small", "damage": "2d6-1", "damageType": "slashing", "cost": 50, "bulk": 0.1, "atkBonus": 0, "availability": "Common" },
+    { "id": "handaxe", "name": "Handaxe", "category": "axes", "size": "Small", "damage": "2d6", "damageType": "slashing", "cost": 100, "bulk": 0.1, "atkBonus": 0, "availability": "Common" },
+    { "id": "battleaxe", "name": "Battleaxe", "category": "axes", "size": "Medium", "damage": "2d8", "damageType": "slashing", "cost": 400, "bulk": 1.0, "atkBonus": 0, "availability": "Common" },
+    { "id": "broadaxe", "name": "Broadaxe", "category": "axes", "size": "Large", "damage": "2d10", "damageType": "slashing", "cost": 1000, "bulk": 2.0, "atkBonus": 0, "availability": "Common" },
+    { "id": "greataxe", "name": "Greataxe", "category": "axes", "size": "Large", "damage": "2d12", "damageType": "slashing", "cost": 6400, "bulk": 2.0, "atkBonus": 2, "availability": "Uncommon" },
+
+    { "id": "bronze_mace", "name": "Bronze Mace", "category": "bludgeons", "size": "Small", "damage": "2d6", "damageType": "blunt", "cost": 100, "bulk": 0.1, "atkBonus": 0, "availability": "Common" },
+    { "id": "iron_hammer", "name": "Iron Hammer", "category": "bludgeons", "size": "Medium", "damage": "2d8", "damageType": "blunt", "cost": 400, "bulk": 1.0, "atkBonus": 0, "availability": "Common" },
+    { "id": "warhammer", "name": "Warhammer", "category": "bludgeons", "size": "Medium", "damage": "2d8+1", "damageType": "blunt", "cost": 3100, "bulk": 1.0, "atkBonus": 1, "availability": "Common" },
+    { "id": "great_hammer", "name": "Great Hammer", "category": "bludgeons", "size": "Large", "damage": "2d12", "damageType": "blunt", "cost": 6400, "bulk": 2.0, "atkBonus": 2, "availability": "Uncommon" },
+
+    { "id": "dagger", "name": "Dagger", "category": "knives", "size": "Tiny", "damage": "2d4", "damageType": "piercing", "cost": 100, "bulk": 0.1, "atkBonus": 0, "availability": "Common" },
+    { "id": "field_khukuri", "name": "Field Khukuri", "category": "knives", "size": "Tiny", "damage": "2d4+1", "damageType": "slashing", "cost": 400, "bulk": 0.1, "atkBonus": 0, "availability": "Common" },
+    { "id": "main_gauche", "name": "Main-Gauche", "category": "knives", "size": "Tiny", "damage": "2d4+3", "damageType": "piercing", "cost": 6400, "bulk": 0.1, "atkBonus": 2, "availability": "Uncommon" },
+
+    { "id": "javelin", "name": "Javelin", "category": "polearms", "size": "Medium", "damage": "2d6", "damageType": "piercing", "cost": 100, "bulk": 1.0, "atkBonus": 0, "availability": "Common" },
+    { "id": "spear", "name": "Spear", "category": "polearms", "size": "Large", "damage": "2d8", "damageType": "piercing", "cost": 400, "bulk": 2.0, "atkBonus": 0, "availability": "Common" },
+    { "id": "halberd", "name": "Halberd", "category": "polearms", "size": "Large", "damage": "2d10+4", "damageType": "slashing", "cost": 23500, "bulk": 2.0, "atkBonus": 4, "availability": "Rare" },
+
+    { "id": "steel_broadsword", "name": "Steel Broadsword", "category": "swords", "size": "Small", "damage": "2d6", "damageType": "slashing", "cost": 100, "bulk": 0.1, "atkBonus": 0, "availability": "Common" },
+    { "id": "longsword", "name": "Longsword", "category": "swords", "size": "Medium", "damage": "2d8", "damageType": "slashing", "cost": 400, "bulk": 1.0, "atkBonus": 0, "availability": "Common" },
+    { "id": "rapier", "name": "Rapier", "category": "swords", "size": "Small", "damage": "2d6", "damageType": "piercing", "cost": 400, "bulk": 0.1, "atkBonus": 0, "availability": "Common" },
+    { "id": "claymore", "name": "Claymore", "category": "swords", "size": "Large", "damage": "2d10", "damageType": "slashing", "cost": 1000, "bulk": 2.0, "atkBonus": 0, "availability": "Common" },
+    { "id": "zweihander", "name": "Zweihander", "category": "swords", "size": "Large", "damage": "2d12", "damageType": "slashing", "cost": 6400, "bulk": 2.0, "atkBonus": 1, "availability": "Uncommon" },
+
+    { "id": "short_bow", "name": "Short Bow", "category": "bows", "size": "Small", "damage": "2d6", "damageType": "piercing", "cost": 100, "bulk": 2.0, "atkBonus": 0, "availability": "Common" },
+    { "id": "longbow", "name": "Longbow", "category": "bows", "size": "Medium", "damage": "2d8", "damageType": "piercing", "cost": 400, "bulk": 2.0, "atkBonus": 0, "availability": "Common" },
+    { "id": "great_bow", "name": "Great Bow", "category": "bows", "size": "Large", "damage": "2d10", "damageType": "piercing", "cost": 1000, "bulk": 2.0, "atkBonus": 0, "availability": "Common" },
+
+    { "id": "hand_crossbow", "name": "Hand Crossbow", "category": "crossbows", "size": "Small", "damage": "2d6", "damageType": "piercing", "cost": 100, "bulk": 1.0, "atkBonus": 0, "capacity": 5, "availability": "Common" },
+    { "id": "crossbow", "name": "Crossbow", "category": "crossbows", "size": "Medium", "damage": "2d8", "damageType": "piercing", "cost": 400, "bulk": 1.0, "atkBonus": 0, "capacity": 15, "availability": "Common" },
+
+    { "id": "wizards_wand", "name": "Wizard's Wand", "category": "staves", "size": "Small", "damage": "3d4", "damageType": "fire", "cost": 100, "bulk": 0.1, "atkBonus": 0, "availability": "Common" },
+    { "id": "sages_staff", "name": "Sage's Staff", "category": "staves", "size": "Large", "damage": "3d8", "damageType": "blunt", "cost": 4600, "bulk": 2.0, "atkBonus": 2, "availability": "Uncommon" }
+  ],
+  "armors": [
+    { "id": "quilted_doublet", "name": "Quilted Doublet", "type": "light", "cost": 100, "bulk": 2.0, "reflexBonus": 1, "dr": 2, "maxAgiBonus": 5, "checkPenalty": -5, "availability": "Common" },
+    { "id": "chromed_leather", "name": "Chromed Leather", "type": "light", "cost": 300, "bulk": 2.0, "reflexBonus": 2, "dr": 2, "maxAgiBonus": 4, "checkPenalty": -5, "availability": "Common" },
+    { "id": "leather_breastplate", "name": "Leather Breastplate", "type": "light", "cost": 500, "bulk": 2.0, "reflexBonus": 2, "dr": 3, "maxAgiBonus": 3, "checkPenalty": -5, "availability": "Common" },
+    { "id": "ringmail", "name": "Ringmail", "type": "light", "cost": 1300, "bulk": 2.0, "reflexBonus": 2, "dr": 5, "maxAgiBonus": 3, "checkPenalty": -5, "availability": "Common" },
+    { "id": "brigandine", "name": "Brigandine", "type": "light", "cost": 3700, "bulk": 2.0, "reflexBonus": 3, "dr": 6, "maxAgiBonus": 3, "checkPenalty": -5, "availability": "Common" },
+
+    { "id": "hide_armour", "name": "Hide Armour", "type": "heavy", "cost": 500, "bulk": 3.0, "reflexBonus": 3, "dr": 3, "maxAgiBonus": 3, "checkPenalty": -10, "availability": "Common" },
+    { "id": "iron_cuirass", "name": "Iron Cuirass", "type": "heavy", "cost": 1700, "bulk": 3.0, "reflexBonus": 3, "dr": 4, "maxAgiBonus": 2, "checkPenalty": -10, "availability": "Common" },
+    { "id": "chainmail", "name": "Chainmail", "type": "heavy", "cost": 4500, "bulk": 3.0, "reflexBonus": 4, "dr": 6, "maxAgiBonus": 1, "checkPenalty": -10, "availability": "Common" },
+    { "id": "plate_armour", "name": "Plate Armour", "type": "heavy", "cost": 6500, "bulk": 3.0, "reflexBonus": 5, "dr": 7, "maxAgiBonus": 1, "checkPenalty": -10, "availability": "Common" },
+
+    { "id": "wizards_robes", "name": "Wizard's Robes", "type": "mystic", "cost": 100, "bulk": 1.0, "reflexBonus": 0, "dr": 2, "maxAgiBonus": 99, "checkPenalty": -2, "availability": "Common" },
+    { "id": "mages_habit", "name": "Mage's Habit", "type": "mystic", "cost": 300, "bulk": 1.0, "reflexBonus": 0, "dr": 3, "maxAgiBonus": 99, "checkPenalty": -2, "availability": "Common" }
+  ],
+  "shields": [
+    { "id": "bronze_pelta", "name": "Bronze Pelta", "size": "Tiny", "cost": 100, "bulk": 0.1, "atkBonus": 0, "availability": "Common" },
+    { "id": "targe", "name": "Targe", "size": "Small", "cost": 300, "bulk": 0.1, "atkBonus": 0, "availability": "Common" },
+    { "id": "heater_shield", "name": "Heater Shield", "size": "Medium", "cost": 700, "bulk": 1.0, "atkBonus": 0, "availability": "Uncommon" },
+    { "id": "war_door", "name": "War-Door", "size": "Large", "cost": 7300, "bulk": 2.0, "atkBonus": 2, "availability": "Uncommon" }
+  ]
+}
