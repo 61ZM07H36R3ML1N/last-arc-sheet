@@ -1,5 +1,4 @@
-import React from 'react';
-import { X, GitCommit, CheckCircle2, Flame, Wrench } from 'lucide-react';
+import { X, GitCommit, CheckCircle2 } from 'lucide-react';
 
 interface VersionModalProps {
   isOpen: boolean;

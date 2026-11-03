@@ -1,5 +1,4 @@
-import React from 'react';
-import { BookMarked, Save } from 'lucide-react';
+import { BookMarked } from 'lucide-react';
 import { useCharacterStore } from '../../store/useCharacterStore';
 
 export default function NotesTab() {
