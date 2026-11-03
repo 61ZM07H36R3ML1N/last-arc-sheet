@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { X, Copy, Check, Upload, AlertCircle, Box } from 'lucide-react';
 import { useCharacterStore } from '../../store/useCharacterStore';
 import { exportToFoundryActor, importFromFoundryActor } from '../../engine/foundryAdapter';
@@ -40,7 +40,6 @@ export default function JsonSyncModal({ isOpen, onClose }: JsonSyncModalProps) {
         }
         importSheet(parsed as CharacterSheet);
       } else {
-        // Foundry Actor JSON format
         if (!parsed.name || !parsed.system) {
           throw new Error('Invalid Foundry VTT Actor JSON. Missing top-level "name" or "system" block.');
         }
@@ -65,7 +64,6 @@ export default function JsonSyncModal({ isOpen, onClose }: JsonSyncModalProps) {
           </button>
         </div>
 
-        {/* Sync Mode Switcher */}
         <div className="px-4 pt-3 flex gap-2">
           <button
             onClick={() => setSyncMode('native')}
