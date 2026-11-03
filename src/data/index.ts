@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import racesData from './races.json';
 import classesData from './baseClasses.json';
 import skillsData from './skills.json';

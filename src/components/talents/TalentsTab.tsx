@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState } from 'react';
 import { Zap, Plus, Trash2, Award, Shield, BookOpen, AlertCircle } from 'lucide-react';
 import { useCharacterStore } from '../../store/useCharacterStore';

@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { 
   Heart, 
   Sparkles, 
@@ -7,11 +7,11 @@ import {
   RefreshCw, 
   Swords, 
   BookOpen, 
-  AlertOctagon,
-  UserCheck,
-  Share2,
-  BookMarked,
-  Info
+  AlertOctagon, 
+  UserCheck, 
+  Share2, 
+  BookMarked, 
+  Info 
 } from 'lucide-react';
 import { useCharacterStore } from './store/useCharacterStore';
 import { getModifier, getTotalLevel, calculateDefenses, rollExplodingDie } from './engine/formulas';
@@ -40,7 +40,6 @@ export default function App() {
   const [isVersionOpen, setIsVersionOpen] = useState<boolean>(false);
   const [diceLog, setDiceLog] = useState<{ label: string; rolls: number[]; total: number; exploded: boolean }[]>([]);
 
-  // Memoized calculations
   const totalLevel = useMemo(() => getTotalLevel(sheet), [sheet]);
   const defenses = useMemo(() => calculateDefenses(sheet), [sheet]);
   const primaryClass = sheet.classes[0]?.name || 'Warrior';
@@ -69,10 +68,9 @@ export default function App() {
     return { maxHp: Math.max(1, hp), maxMp: Math.max(0, mp) };
   }, [sheet.classes, vitMod, mndMod]);
 
-  // Stable roll handler
   const handleRoll = useCallback((sides: number, label: string, explodes = false) => {
-    let rolls: number[] = [];
-    let total = 0;
+    let rolls: number[];
+    let total: number;
     let wasExploded = false;
 
     if (explodes) {
@@ -117,7 +115,6 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-arc-bg text-slate-100 flex flex-col max-w-4xl mx-auto pb-24 border-x border-arc-border shadow-2xl">
-      {/* Top Banner / Header */}
       <header className="p-4 bg-arc-card border-b border-arc-border flex flex-wrap items-center justify-between gap-4 sticky top-0 z-30 shadow-md">
         <div>
           <div className="flex items-center gap-2">
@@ -152,7 +149,6 @@ export default function App() {
           </p>
         </div>
 
-        {/* Quick Vitals Badges */}
         <div className="flex items-center gap-3">
           <div className="flex flex-col items-center bg-arc-bg px-2.5 py-1 rounded border border-arc-border">
             <span className="text-[10px] text-slate-400 uppercase tracking-wider">Init Die</span>
@@ -183,11 +179,8 @@ export default function App() {
         </div>
       </header>
 
-      {/* Main Content Area */}
       <main className="p-4 space-y-5">
-        {/* RESOURCE BARS (HP / MP / BREAK GAUGE) */}
         <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Hit Points Bar */}
           <div className="bg-arc-card p-3.5 rounded-lg border border-arc-border shadow-sm">
             <div className="flex justify-between items-center mb-1.5">
               <span className="text-xs font-semibold text-rose-400 flex items-center gap-1.5">
@@ -211,7 +204,6 @@ export default function App() {
             </div>
           </div>
 
-          {/* Mana Points Bar */}
           <div className="bg-arc-card p-3.5 rounded-lg border border-arc-border shadow-sm">
             <div className="flex justify-between items-center mb-1.5">
               <span className="text-xs font-semibold text-cyan-400 flex items-center gap-1.5">
@@ -236,7 +228,6 @@ export default function App() {
           </div>
         </section>
 
-        {/* BREAK GAUGE TRACKER */}
         <section className="bg-arc-card p-3.5 rounded-lg border border-arc-border">
           <div className="flex justify-between items-center mb-2">
             <span className="text-xs font-bold text-slate-300 flex items-center gap-1.5 uppercase tracking-wide">
@@ -268,7 +259,6 @@ export default function App() {
           </div>
         </section>
 
-        {/* DEFENSES & ATTRIBUTES */}
         <section className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
           <div className="bg-arc-card p-2.5 rounded-lg border border-arc-border text-center">
             <span className="text-[10px] text-slate-400 uppercase font-semibold">Reflex</span>
@@ -295,7 +285,6 @@ export default function App() {
           </div>
         </section>
 
-        {/* ATTRIBUTES ROW */}
         <section className="grid grid-cols-3 sm:grid-cols-6 gap-2">
           {(Object.keys(sheet.baseAttributes) as AttributeKey[]).map((attr) => {
             const val = sheet.baseAttributes[attr];
@@ -315,7 +304,6 @@ export default function App() {
           })}
         </section>
 
-        {/* INTERACTIVE DICE TRAY */}
         <section className="bg-arc-card p-3 rounded-lg border border-arc-border">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-bold text-slate-300 flex items-center gap-1.5 uppercase">
@@ -351,7 +339,6 @@ export default function App() {
           )}
         </section>
 
-        {/* DETAILS TABS */}
         <section className="space-y-3">
           <div className="flex border-b border-arc-border gap-4 text-xs font-semibold">
             <button
@@ -396,41 +383,23 @@ export default function App() {
             </button>
           </div>
 
-          {/* TAB 1: COMBAT & GEAR */}
-          {activeTab === 'combat' && (
-            <GearManager onRoll={handleRoll} />
-          )}
-
-          {/* TAB 2: SKILLS TABLE */}
-          {activeTab === 'skills' && (
-            <SkillTable onRoll={handleRoll} />
-          )}
-
-          {/* TAB 3: TALENTS & TECHNICKS */}
-          {activeTab === 'talents' && (
-            <TalentsTab />
-          )}
-
-          {/* TAB 4: JOURNAL & NOTES */}
-          {activeTab === 'notes' && (
-            <NotesTab />
-          )}
+          {activeTab === 'combat' && <GearManager onRoll={handleRoll} />}
+          {activeTab === 'skills' && <SkillTable onRoll={handleRoll} />}
+          {activeTab === 'talents' && <TalentsTab />}
+          {activeTab === 'notes' && <NotesTab />}
         </section>
       </main>
 
-      {/* Character Creator Modal */}
       <CharacterEditorModal
         isOpen={isEditorOpen}
         onClose={() => setIsEditorOpen(false)}
       />
 
-      {/* JSON Backup & Foundry Sync Modal */}
       <JsonSyncModal
         isOpen={isSyncOpen}
         onClose={() => setIsSyncOpen(false)}
       />
 
-      {/* Version Notes Modal */}
       <VersionModal
         isOpen={isVersionOpen}
         onClose={() => setIsVersionOpen(false)}

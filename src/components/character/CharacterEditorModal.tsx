@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { X, Check, RefreshCw, Sparkles, Shield, User, ChevronRight } from 'lucide-react';
+import { X, Check, RefreshCw, User } from 'lucide-react';
 import { RACES, CLASSES, ETHOS_LIST, SKILLS } from '../../data';
 import { useCharacterStore } from '../../store/useCharacterStore';
 import { getModifier } from '../../engine/formulas';

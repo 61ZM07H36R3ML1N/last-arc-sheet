@@ -48,8 +48,8 @@ export default function JsonSyncModal({ isOpen, onClose }: JsonSyncModalProps) {
         importSheet(converted);
       }
       onClose();
-    } catch (err: any) {
-      setError(err.message || 'Failed to parse JSON string.');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to parse JSON string.');
     }
   };
 

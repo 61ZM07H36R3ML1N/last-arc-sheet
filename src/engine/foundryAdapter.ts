@@ -26,9 +26,9 @@ export interface FoundryActorJSON {
   items: Array<{
     name: string;
     type: string;
-    system: Record<string, any>;
+    system: Record<string, unknown>;
   }>;
-  flags?: Record<string, any>;
+  flags?: Record<string, unknown>;
 }
 
 /**
@@ -97,22 +97,27 @@ export function exportToFoundryActor(sheet: CharacterSheet): FoundryActorJSON {
  * Parses and maps a Foundry VTT Actor export back into a Last Arc character sheet.
  */
 export function importFromFoundryActor(
-  foundryJson: any,
+  foundryJson: unknown,
   fallbackSheet: CharacterSheet
 ): CharacterSheet {
-  const sys = foundryJson.system || {};
-  const attrs = sys.attributes || {};
-  const details = sys.details || {};
+  const actor =
+    foundryJson && typeof foundryJson === 'object' && 'system' in foundryJson
+      ? (foundryJson as Partial<FoundryActorJSON>)
+      : undefined;
+
+  const sys = actor?.system ?? {};
+  const attrs = sys.attributes ?? {};
+  const details = sys.details as FoundryActorJSON['system']['details'] | undefined;
 
   return {
     ...fallbackSheet,
-    name: foundryJson.name || fallbackSheet.name,
-    race: details.race || fallbackSheet.race,
-    ethos: details.ethos || fallbackSheet.ethos,
+    name: actor?.name || fallbackSheet.name,
+    race: details?.race || fallbackSheet.race,
+    ethos: details?.ethos || fallbackSheet.ethos,
     currentHp: sys.health?.value ?? fallbackSheet.currentHp,
     currentMp: sys.mana?.value ?? fallbackSheet.currentMp,
     breakStep: sys.breakGauge?.value ?? 0,
-    notes: details.notes || fallbackSheet.notes || '',
+    notes: details?.notes || fallbackSheet.notes || '',
     baseAttributes: {
       str: attrs.str?.value ?? fallbackSheet.baseAttributes.str,
       vit: attrs.vit?.value ?? fallbackSheet.baseAttributes.vit,

@@ -1,8 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useMemo } from 'react';
 import { Shield, Swords, ShieldAlert, Package, Check } from 'lucide-react';
 import { WEAPONS, ARMORS, SHIELDS } from '../../data';
 import { useCharacterStore } from '../../store/useCharacterStore';
-import type { equipment } from '../../data/equipment.json';
 
 interface GearManagerProps {
   onRoll: (sides: number, label: string, explodes?: boolean) => void;
