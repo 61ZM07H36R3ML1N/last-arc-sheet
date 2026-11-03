@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useMemo } from 'react';
-import { Shield, Swords, ShieldAlert, Package, Check } from 'lucide-react';
+import { useMemo } from 'react';
+import { Shield, Swords, ShieldAlert, Package } from 'lucide-react';
 import { WEAPONS, ARMORS, SHIELDS } from '../../data';
 import { useCharacterStore } from '../../store/useCharacterStore';
 
@@ -15,7 +15,6 @@ export default function GearManager({ onRoll }: GearManagerProps) {
   const offHand = sheet.equipped.offHand;
   const armor = sheet.equipped.armor;
 
-  // Bulk audit
   const totalBulk = useMemo(() => {
     let bulk = 0;
     if (mainHand) bulk += mainHand.bulk;
@@ -25,11 +24,9 @@ export default function GearManager({ onRoll }: GearManagerProps) {
     return parseFloat(bulk.toFixed(1));
   }, [mainHand, offHand, armor, sheet.inventory]);
 
-  // Bulk limit based on Str
   const bulkLimit = sheet.baseAttributes.str;
   const isEncumbered = totalBulk > bulkLimit;
 
-  // Equip selectors
   const setMainHand = (wId: string) => {
     const weapon = WEAPONS.find((w) => w.id === wId);
     importSheet({
@@ -93,7 +90,6 @@ export default function GearManager({ onRoll }: GearManagerProps) {
 
   return (
     <div className="space-y-4 text-xs">
-      {/* Bulk Status Banner */}
       <div className="p-2.5 bg-arc-card rounded-lg border border-arc-border flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Package size={15} className="text-arc-accent" />
@@ -108,9 +104,7 @@ export default function GearManager({ onRoll }: GearManagerProps) {
         )}
       </div>
 
-      {/* Equipment Slots Selection */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-        {/* Main Hand */}
         <div className="p-2.5 bg-arc-card rounded border border-arc-border space-y-1">
           <label className="text-[10px] uppercase font-bold text-slate-400 flex items-center gap-1">
             <Swords size={12} /> Main Hand Weapon
@@ -129,7 +123,6 @@ export default function GearManager({ onRoll }: GearManagerProps) {
           </select>
         </div>
 
-        {/* Off Hand */}
         <div className="p-2.5 bg-arc-card rounded border border-arc-border space-y-1">
           <label className="text-[10px] uppercase font-bold text-slate-400 flex items-center gap-1">
             <Shield size={12} /> Off-Hand / Shield
@@ -148,7 +141,6 @@ export default function GearManager({ onRoll }: GearManagerProps) {
           </select>
         </div>
 
-        {/* Armor */}
         <div className="p-2.5 bg-arc-card rounded border border-arc-border space-y-1">
           <label className="text-[10px] uppercase font-bold text-slate-400">Body Armor</label>
           <select
@@ -166,7 +158,6 @@ export default function GearManager({ onRoll }: GearManagerProps) {
         </div>
       </div>
 
-      {/* Quick Attack & Block Actions */}
       <div className="space-y-2 pt-1">
         <span className="text-[10px] uppercase font-bold text-slate-400">Ready Actions</span>
 
