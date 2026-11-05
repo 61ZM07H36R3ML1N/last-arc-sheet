@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+ 
 import { useMemo } from 'react';
 import { Shield, Swords, ShieldAlert, Package, Book, Eye, Music, Sparkles } from 'lucide-react';
 import { WEAPONS, ARMORS, SHIELDS, MASKS, TOMES, INSTRUMENTS } from '../../data';
