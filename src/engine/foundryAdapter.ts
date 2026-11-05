@@ -1,4 +1,5 @@
 import type { CharacterSheet } from '../types';
+import type { ZodiacSign } from '../data/zodiac';
 import { calculateDefenses, getTotalLevel } from './formulas';
 
 export interface FoundryActorJSON {
@@ -18,6 +19,7 @@ export interface FoundryActorJSON {
     details?: {
       race: string;
       ethos: string;
+      zodiacSign?: string;
       level: number;
       classes: string;
       notes: string;
@@ -62,6 +64,7 @@ export function exportToFoundryActor(sheet: CharacterSheet): FoundryActorJSON {
       details: {
         race: sheet.race,
         ethos: sheet.ethos,
+        zodiacSign: sheet.zodiacSign || 'Aries',
         level: totalLevel,
         classes: sheet.classes.map((c) => `${c.name} ${c.level}`).join(' / '),
         notes: sheet.notes || ''
@@ -114,6 +117,7 @@ export function importFromFoundryActor(
     name: actor?.name || fallbackSheet.name,
     race: details?.race || fallbackSheet.race,
     ethos: details?.ethos || fallbackSheet.ethos,
+    zodiacSign: (details?.zodiacSign as ZodiacSign) || fallbackSheet.zodiacSign || 'Aries',
     currentHp: sys.health?.value ?? fallbackSheet.currentHp,
     currentMp: sys.mana?.value ?? fallbackSheet.currentMp,
     breakStep: sys.breakGauge?.value ?? 0,
