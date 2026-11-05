@@ -1,5 +1,7 @@
 import { X, GitCommit, CheckCircle2 } from 'lucide-react';
 
+declare const __APP_VERSION__: string;
+
 interface VersionModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -7,7 +9,7 @@ interface VersionModalProps {
 
 const CHANGELOG = [
 {
-    version: '${__APP_VERSION__} (Current)',
+    version: `${__APP_VERSION__} (Current)`,
     date: 'November 2026',
     changes: [
       'Added 6 new Advanced Classes from the Atlas (Aeronaut, Astrologian, Condottiere, Magnate, Mstovari, Scholar).',
