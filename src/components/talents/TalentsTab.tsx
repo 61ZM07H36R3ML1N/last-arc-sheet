@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState } from 'react';
 import { Zap, Plus, Trash2 } from 'lucide-react';
 import { useCharacterStore } from '../../store/useCharacterStore';
@@ -20,8 +19,32 @@ const ALL_TECHNICKS = [
   { name: 'Threshold Up', prereq: 'None', description: 'Gain +5 bonus to your Break Threshold.' },
   { name: 'Channel', prereq: 'Trained in Spellcraft', description: 'Once per day when <= 1/2 MP, spend a minor action to restore MP equal to Mind score or 1/4 max MP.' },
   { name: 'Arcane Study', prereq: 'Trained in Spellcraft', description: 'Learn a number of spells equal to 1 + Int modifier from scrolls.' },
-  { name: 'Bardic Study', prereq: 'Trained in Perform', description: 'Learn a number of performances equal to 1 + Int modifier from scores.' }
+  { name: 'Bardic Study', prereq: 'Trained in Perform', description: 'Learn a number of performances equal to 1 + Int modifier from scores.' },
+
+  // Atlas Technicks
+  { name: 'Burnout', prereq: 'Trained in Athletics', description: 'Move twice your base speed in a single secondary action, then move -1 step on the Break Gauge.' },
+  { name: 'Cannoneer', prereq: 'None', description: 'Reroll ranged attacks made with an airship artillery piece, keeping the second result.' },
+  { name: 'Cooperative', prereq: 'Mind 13', description: 'When aiding another, the bonus provided increases to +5 rather than +2.' },
+  { name: 'Coordinated Attack', prereq: 'None', description: 'Aided ally deals +1 damage die per 5 points their attack beats target Reflex (max 5 dice).' },
+  { name: 'Crippling Attack', prereq: 'None', description: 'Reduce target speed by 1 square per exploding melee damage die (minimum 2 squares).' },
+  { name: 'Dynamism', prereq: 'Charisma 13', description: 'Substitute Charisma modifier in place of Mind modifier when calculating Will Defence.' },
+  { name: 'Fight or Flight', prereq: 'None', description: 'Substitute a reactionary attack to move up to half speed without provoking.' },
+  { name: 'First Strike', prereq: 'None', description: 'Add your full level instead of half level to attack rolls against targets that have not acted.' },
+  { name: 'Hit and Run', prereq: 'Running Attack', description: 'Gain +2 squares of movement when using Running Attack.' },
+  { name: 'Hold Together', prereq: 'Trained in Pilot', description: 'Minor action when piloted vehicle is below half HP: grant temporary HP equal to 1/4 max HP.' },
+  { name: 'Mad Charge', prereq: 'None', description: 'Free Persuasion check during a charge to intimidate targets and adjacent enemies, causing flat-footed.' },
+  { name: 'Mantra', prereq: 'Channel', description: 'Once per day, use the Channel technick as a free action.' },
+  { name: 'No Honour', prereq: 'Trained in Stealth', description: 'Gain +2 Stealth per status effect on target when stealing (max +10).' },
+  { name: 'No-nonsense', prereq: 'Trained in Perception', description: '+5 bonus to Will Defence against Deception, Persuasion, and Performance checks.' },
+  { name: 'Reposition', prereq: 'Rapid Counter', description: 'Move 1 square without provoking after hitting with a reactionary attack.' },
+  { name: 'Salvage', prereq: 'Trained in Disable', description: '25% to 100% chance to recover a Trap Kit when successfully disarming traps.' },
+  { name: 'Stagger', prereq: 'None', description: 'Move target 1 square per exploding melee damage die (max 2 squares).' },
+  { name: 'Stubborn', prereq: 'None', description: 'Once per encounter, gain resistance (or turn resistance to immunity) against incoming damage, then move -1 step on Break Gauge.' },
+  { name: 'Sucker Punch', prereq: 'None', description: 'Knock target prone if surprise melee attack beats both Ref and Fort defence.' },
+  { name: 'Unflinching', prereq: 'None', description: 'Gain a temporary Hero Point whenever a fear or mind effect fails to affect you.' },
+  { name: 'Visceral Strike', prereq: 'None', description: 'Reroll the lowest damage die on melee attacks that roll 2 or more dice.' }
 ];
+
 
 export default function TalentsTab() {
   const { sheet, importSheet } = useCharacterStore();
