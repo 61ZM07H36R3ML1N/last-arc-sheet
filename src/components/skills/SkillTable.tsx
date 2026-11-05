@@ -24,7 +24,7 @@ export default function SkillTable({ onRoll }: SkillTableProps) {
 
   const filteredSkills = useMemo(() => {
     return SKILLS.filter((s) => {
-      const matchesSearch = s.name.toLowerCase().includes(search.toLowerCase());
+      const matchesSearch = (s.name ?? '').toLowerCase().includes(search.toLowerCase());
       const matchesAttr = filterAttr === 'all' || s.attribute === filterAttr;
       return matchesSearch && matchesAttr;
     });
@@ -64,9 +64,9 @@ export default function SkillTable({ onRoll }: SkillTableProps) {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
         {filteredSkills.map((skill) => {
           const isTrained = sheet.trainedSkills.some(
-            (ts) => ts.toLowerCase() === skill.name.toLowerCase()
+            (ts) => skill.name != null && ts.toLowerCase() === skill.name.toLowerCase()
           );
-          const isFocused = sheet.focusedSkills?.includes(skill.name) ?? false;
+          const isFocused = skill.name != null && (sheet.focusedSkills?.includes(skill.name) ?? false);
           const attrMod = getModifier(sheet.baseAttributes[skill.attribute as AttributeKey]);
           const baseLvlBonus = Math.floor(totalLevel / 2);
 
