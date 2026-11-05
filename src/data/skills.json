@@ -25,5 +25,88 @@
   { "name": "Spellcraft", "attribute": "mnd", "armorPenalty": true, "trainedOnly": true },
   { "name": "Stealth", "attribute": "agi", "armorPenalty": true, "trainedOnly": false },
   { "name": "Survival", "attribute": "mnd", "armorPenalty": false, "trainedOnly": false },
-  { "name": "Unarmed", "attribute": "str", "armorPenalty": true, "trainedOnly": false }
+  { "name": "Unarmed", "attribute": "str", "armorPenalty": true, "trainedOnly": false },
+  {
+    "tree": "Stargazer",
+    "class": "Mage",
+    "talents": [
+      { "name": "Antapex", "prereq": "None", "description": "Higher-level targets only receive +2 bonus to Fort Defence (rather than +5) against blue magick spells you cast." },
+      { "name": "Synastry", "prereq": "None", "description": "Choose an additional star sign to treat as compatible (cannot pick an incompatible sign)." },
+      { "name": "Synchronicity", "prereq": "Synastry", "description": "Primary action. Designate target within 12 squares. Share magick buffs if compatible; share status effects and penalties if incompatible until end of encounter." }
+    ]
+  },
+  {
+    "tree": "Mariner",
+    "class": "Ranger",
+    "talents": [
+      { "name": "Lookout", "prereq": "Trained in Perception", "description": "Distance penalties for Perception reduced to -2 per 10 squares. Cover penalties reduced to -2 (total cover -5)." },
+      { "name": "Windrigger", "prereq": "Trained in Pilot", "description": "Minor action once/encounter. Move occupied vessel up to half speed without provoking counterattacks." },
+      { "name": "Helmsman", "prereq": "Trained in Pilot", "description": "Reroll Pilot checks, keeping the second result." }
+    ]
+  },
+  {
+    "tree": "Spy",
+    "class": "Rogue",
+    "talents": [
+      { "name": "Facade", "prereq": "None", "description": "Deceptive appearance penalty for race/gender/size reduced from -5 to -2." },
+      { "name": "Incognito", "prereq": "Facade", "description": "Minor action when adjacent to 2+ creatures. Gain total concealment from non-adjacent creatures." },
+      { "name": "Subterfuge", "prereq": "None", "description": "Swap initiative rolls with a willing ally at the start of encounter." }
+    ]
+  },
+  {
+    "tree": "Aviator",
+    "class": "Aeronaut",
+    "talents": [
+      { "name": "Derecho Blitz", "prereq": "Savage Squall", "description": "Act before all enemies while piloting to execute an immediate free attack run before any other action." },
+      { "name": "Iron Wing", "prereq": "None", "description": "Once per encounter when damage exceeds threshold, prevent your airship from moving down the Break Gauge." },
+      { "name": "Jet Stream", "prereq": "Windrigger, Prevailing Winds", "description": "Once per encounter, ignore rough terrain imposed by storms until start of next turn." },
+      { "name": "Prevailing Winds", "prereq": "Windrigger", "description": "Gain 1 extra movement square for every 2 points beating Pilot DC on full speed ahead." },
+      { "name": "Savage Squall", "prereq": "None", "description": "Need not move in a straight line when making an airship attack run." },
+      { "name": "Sirocco Break", "prereq": "Winding Gale", "description": "Piloted airship takes half damage from area attacks (none on a miss)." },
+      { "name": "Winding Gale", "prereq": "None", "description": "Immediately regain use of Naval Combat upon successfully avoiding an attack." },
+      { "name": "Zephyr Strike", "prereq": "Iron Wing", "description": "Airship gains resistance to damage when executing a ram action." }
+    ]
+  },
+  {
+    "tree": "Astromancer",
+    "class": "Astrologian",
+    "talents": [
+      { "name": "Ad Astra", "prereq": "Synchronicity", "description": "Synchronicity designates targets up to Mind modifier (any combination of compatible/incompatible)." },
+      { "name": "Aevum", "prereq": "None", "description": "May cast White Magick spells as Blue Magick spells." },
+      { "name": "Eclipse", "prereq": "Ad Astra, Synchronicity", "description": "DC 20 Spellcraft check. Selected star sign becomes neutral to all others until end of encounter." },
+      { "name": "Grand Trine", "prereq": "Trine", "description": "Use Trine within 12 squares and heal an ally for the HP you lost." },
+      { "name": "Prescience", "prereq": "None", "description": "Roll 1d20 at initiative. Replace any ally's d20 roll once/encounter, or force an enemy to take it with a Spellcraft check." },
+      { "name": "Retrograde", "prereq": "Temporal Shift", "description": "Once per day, raise Temporal Shift DC to 35 to affect all targets within 6 squares." },
+      { "name": "Temporal Shift", "prereq": "None", "description": "DC 25 Spellcraft check. Target reverts to exact status, HP, MP, and Break Step from your previous turn." },
+      { "name": "Trine", "prereq": "None", "description": "Reaction: Reduce ally's incoming damage by half; take the other half as direct damage." }
+    ]
+  },
+  {
+    "tree": "Profiteer",
+    "class": "Magnate",
+    "talents": [
+      { "name": "Big Pharma", "prereq": "None", "description": "Primary action: Roll item availability for a potion; immediately apply effect to ally within 6 squares for 2x GP cost." },
+      { "name": "Black Market", "prereq": "None", "description": "Reroll d100 search checks for rare items; item cost increases by 1.5x." },
+      { "name": "Full Leverage", "prereq": "Low Leverage", "description": "Persuasion vs Will (6-sq cone). Enemies using primary/all-out action award you 200gp x class level." },
+      { "name": "Hedge Risk", "prereq": "None", "description": "Reaction: Halve incoming damage by spending 10x the negated damage in gold." },
+      { "name": "Low Leverage", "prereq": "None", "description": "Persuasion vs Will (6-sq cone). Enemies using minor/all-out action award you 100gp x class level." },
+      { "name": "Payoff", "prereq": "None", "description": "Spend 100gp x target level on Persuasion vs Will. Target ceases treating party as enemies (can turn into ally at +10 over Will)." },
+      { "name": "Pay to Win", "prereq": "Payoff", "description": "Spend up to 1,000gp to deal 1d6 unaspected damage per 100gp spent." },
+      { "name": "Takeover", "prereq": "Full Leverage, Low Leverage", "description": "Higher-level enemies only receive +2 Will defense against Leverage abilities." }
+    ]
+  },
+  {
+    "tree": "Erudite",
+    "class": "Scholar",
+    "talents": [
+      { "name": "Addendum", "prereq": "None", "description": "Spend 1/4 max MP: Allies within 4 squares convert weapon damage to chosen elemental type." },
+      { "name": "Enlightenment", "prereq": "None", "description": "Increases Educated bonus to +10 for untrained Lore (+5 if trained)." },
+      { "name": "Eureka", "prereq": "None", "description": "Rolling <= 20 on Tabula Rasa d% restores MP equal to Int modifier." },
+      { "name": "Excogitation", "prereq": "Eureka", "description": "Once per encounter, reroll Tabula Rasa d% check." },
+      { "name": "Paradigm Shift", "prereq": "Addendum, Scrutiny", "description": "Scrutiny affects all non-humanoid creatures sharing the target's name." },
+      { "name": "Scrutiny", "prereq": "Addendum", "description": "Lore check against target: downgrades damage immunity to resistance, or removes resistance." },
+      { "name": "Sublimation", "prereq": "Addendum", "description": "Increase primary action cast to all-out action to convert elemental damage type." },
+      { "name": "Wandwork", "prereq": "Weapon Proficiency (staves)", "description": "Add Int modifier to damage when attacking with staves." }
+    ]
+  }
 ]
