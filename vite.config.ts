@@ -2,6 +2,21 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import { VitePWA } from 'vite-plugin-pwa';
+import { execSync } from 'child_process';
+import packageJson from './package.json' with { type: 'json' };
+
+// Resolve version: CI / GitHub Actions Tag -> Local Git Tag -> package.json fallback
+const getAppVersion = (): string => {
+  if (process.env.GITHUB_REF_NAME) {
+    return process.env.GITHUB_REF_NAME;
+  }
+
+  try {
+    return execSync('git describe --tags --abbrev=0').toString().trim();
+  } catch {
+    return `v${packageJson.version}`;
+  }
+};
 
 export default defineConfig({
   plugins: [
@@ -35,5 +50,8 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,ico,png,svg}']
       }
     })
-  ]
+  ],
+  define: {
+    __APP_VERSION__: JSON.stringify(getAppVersion())
+  }
 });

@@ -7,7 +7,7 @@ interface VersionModalProps {
 
 const CHANGELOG = [
 {
-    version: 'v0.3.3 (Current)',
+    version: '${__APP_VERSION__} (Current)',
     date: 'November 2026',
     changes: [
       'Added 6 new Advanced Classes from the Atlas (Aeronaut, Astrologian, Condottiere, Magnate, Mstovari, Scholar).',
