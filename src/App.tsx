@@ -138,7 +138,7 @@ export default function App() {
               className="text-[10px] px-1.5 py-0.5 rounded bg-arc-border hover:bg-arc-cardHover text-slate-300 font-mono flex items-center gap-1"
               title="Version & Release Notes"
             >
-              <Info size={11} /> v0.3.2
+              <Info size={11} /> v0.3.3
             </button>
             <span className="text-xs px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
               {sheet.ethos}
