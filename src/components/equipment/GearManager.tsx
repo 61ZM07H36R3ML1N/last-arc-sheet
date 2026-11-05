@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useMemo } from 'react';
-import { Shield, Swords, ShieldAlert, Package, Book, Eye, Music } from 'lucide-react';
+import { Shield, Swords, ShieldAlert, Package, Book, Eye, Music, Sparkles } from 'lucide-react';
 import { WEAPONS, ARMORS, SHIELDS, MASKS, TOMES, INSTRUMENTS } from '../../data';
 import { useCharacterStore } from '../../store/useCharacterStore';
+import ClassCombatHelpers from '../combat/ClassCombatHelper';
 import type { Equipment } from '../../types';
 
 interface GearManagerProps {
@@ -21,13 +22,15 @@ export default function GearManager({ onRoll }: GearManagerProps) {
 
   const totalBulk = useMemo(() => {
     let bulk = 0;
-    if (mainHand) bulk += mainHand.bulk;
-    if (offHand) bulk += offHand.bulk;
-    if (armor) bulk += armor.bulk;
-    if (mask) bulk += mask.bulk;
-    if (tome) bulk += tome.bulk;
-    if (instrument) bulk += instrument.bulk;
-    sheet.inventory?.forEach((i) => { bulk += i.bulk; });
+    if (mainHand) bulk += mainHand.bulk || 0;
+    if (offHand) bulk += offHand.bulk || 0;
+    if (armor) bulk += armor.bulk || 0;
+    if (mask) bulk += mask.bulk || 0;
+    if (tome) bulk += tome.bulk || 0;
+    if (instrument) bulk += instrument.bulk || 0;
+    sheet.inventory?.forEach((i) => {
+      bulk += i.bulk || 0;
+    });
     return parseFloat(bulk.toFixed(1));
   }, [mainHand, offHand, armor, mask, tome, instrument, sheet.inventory]);
 
@@ -71,21 +74,29 @@ export default function GearManager({ onRoll }: GearManagerProps) {
             value={mainHand?.id || ''}
             onChange={(e) => {
               const item = WEAPONS.find((w) => w.id === e.target.value);
-              updateEquippedSlot('mainHand', item ? {
-                id: item.id,
-                name: item.name,
-                slot: 'mainHand',
-                bulk: item.bulk,
-                damageDice: item.damage,
-                damageType: item.damageType,
-                atkBonus: item.atkBonus
-              } : undefined);
+              updateEquippedSlot(
+                'mainHand',
+                item
+                  ? {
+                      id: item.id,
+                      name: item.name,
+                      slot: 'mainHand',
+                      bulk: item.bulk,
+                      damageDice: item.damage,
+                      damageType: item.damageType,
+                      atkBonus: item.atkBonus,
+                      specialText: item.special
+                    }
+                  : undefined
+              );
             }}
             className="w-full bg-arc-bg border border-arc-border rounded p-1.5 text-slate-200 focus:outline-none focus:border-arc-accent"
           >
             <option value="">None / Unarmed</option>
             {WEAPONS.map((w) => (
-              <option key={w.id} value={w.id}>{w.name} ({w.damage} {w.damageType})</option>
+              <option key={w.id} value={w.id}>
+                {w.name} ({w.damage} {w.damageType})
+              </option>
             ))}
           </select>
         </div>
@@ -98,19 +109,27 @@ export default function GearManager({ onRoll }: GearManagerProps) {
             value={offHand?.id || ''}
             onChange={(e) => {
               const item = SHIELDS.find((s) => s.id === e.target.value);
-              updateEquippedSlot('offHand', item ? {
-                id: item.id,
-                name: item.name,
-                slot: 'offHand',
-                bulk: item.bulk,
-                atkBonus: item.atkBonus
-              } : undefined);
+              updateEquippedSlot(
+                'offHand',
+                item
+                  ? {
+                      id: item.id,
+                      name: item.name,
+                      slot: 'offHand',
+                      bulk: item.bulk,
+                      atkBonus: item.atkBonus,
+                      specialText: item.special
+                    }
+                  : undefined
+              );
             }}
             className="w-full bg-arc-bg border border-arc-border rounded p-1.5 text-slate-200 focus:outline-none focus:border-arc-accent"
           >
             <option value="">None</option>
             {SHIELDS.map((s) => (
-              <option key={s.id} value={s.id}>{s.name} ({s.size})</option>
+              <option key={s.id} value={s.id}>
+                {s.name} ({s.size})
+              </option>
             ))}
           </select>
         </div>
@@ -121,22 +140,30 @@ export default function GearManager({ onRoll }: GearManagerProps) {
             value={armor?.id || ''}
             onChange={(e) => {
               const item = ARMORS.find((a) => a.id === e.target.value);
-              updateEquippedSlot('armor', item ? {
-                id: item.id,
-                name: item.name,
-                slot: 'armor',
-                bulk: item.bulk,
-                reflexBonus: item.reflexBonus,
-                dr: item.dr,
-                maxAgiBonus: item.maxAgiBonus,
-                checkPenalty: item.checkPenalty
-              } : undefined);
+              updateEquippedSlot(
+                'armor',
+                item
+                  ? {
+                      id: item.id,
+                      name: item.name,
+                      slot: 'armor',
+                      bulk: item.bulk,
+                      reflexBonus: item.reflexBonus,
+                      dr: item.dr,
+                      maxAgiBonus: item.maxAgiBonus,
+                      checkPenalty: item.checkPenalty,
+                      specialText: item.special
+                    }
+                  : undefined
+              );
             }}
             className="w-full bg-arc-bg border border-arc-border rounded p-1.5 text-slate-200 focus:outline-none focus:border-arc-accent"
           >
             <option value="">No Armor</option>
             {ARMORS.map((a) => (
-              <option key={a.id} value={a.id}>{a.name} (+{a.reflexBonus} Ref, DR {a.dr})</option>
+              <option key={a.id} value={a.id}>
+                {a.name} (+{a.reflexBonus} Ref, DR {a.dr})
+              </option>
             ))}
           </select>
         </div>
@@ -152,19 +179,26 @@ export default function GearManager({ onRoll }: GearManagerProps) {
             value={mask?.id || ''}
             onChange={(e) => {
               const item = MASKS.find((m) => m.id === e.target.value);
-              updateEquippedSlot('mask', item ? {
-                id: item.id,
-                name: item.name,
-                slot: 'mask',
-                bulk: item.bulk,
-                specialText: item.special
-              } : undefined);
+              updateEquippedSlot(
+                'mask',
+                item
+                  ? {
+                      id: item.id,
+                      name: item.name,
+                      slot: 'mask',
+                      bulk: item.bulk,
+                      specialText: item.special
+                    }
+                  : undefined
+              );
             }}
             className="w-full bg-arc-bg border border-arc-border rounded p-1.5 text-slate-200 focus:outline-none focus:border-arc-accent"
           >
             <option value="">No Mask</option>
             {MASKS.map((m) => (
-              <option key={m.id} value={m.id}>{m.name}</option>
+              <option key={m.id} value={m.id}>
+                {m.name}
+              </option>
             ))}
           </select>
         </div>
@@ -177,19 +211,26 @@ export default function GearManager({ onRoll }: GearManagerProps) {
             value={tome?.id || ''}
             onChange={(e) => {
               const item = TOMES.find((t) => t.id === e.target.value);
-              updateEquippedSlot('tome', item ? {
-                id: item.id,
-                name: item.name,
-                slot: 'tome',
-                bulk: item.bulk,
-                specialText: item.special
-              } : undefined);
+              updateEquippedSlot(
+                'tome',
+                item
+                  ? {
+                      id: item.id,
+                      name: item.name,
+                      slot: 'tome',
+                      bulk: item.bulk,
+                      specialText: item.special
+                    }
+                  : undefined
+              );
             }}
             className="w-full bg-arc-bg border border-arc-border rounded p-1.5 text-slate-200 focus:outline-none focus:border-arc-accent"
           >
             <option value="">No Tome</option>
             {TOMES.map((t) => (
-              <option key={t.id} value={t.id}>{t.name} ({t.field})</option>
+              <option key={t.id} value={t.id}>
+                {t.name} ({t.field})
+              </option>
             ))}
           </select>
         </div>
@@ -202,20 +243,27 @@ export default function GearManager({ onRoll }: GearManagerProps) {
             value={instrument?.id || ''}
             onChange={(e) => {
               const item = INSTRUMENTS.find((inst) => inst.id === e.target.value);
-              updateEquippedSlot('instrument', item ? {
-                id: item.id,
-                name: item.name,
-                slot: 'instrument',
-                bulk: item.bulk,
-                performanceBonus: item.performanceBonus,
-                specialText: item.special
-              } : undefined);
+              updateEquippedSlot(
+                'instrument',
+                item
+                  ? {
+                      id: item.id,
+                      name: item.name,
+                      slot: 'instrument',
+                      bulk: item.bulk,
+                      performanceBonus: item.performanceBonus,
+                      specialText: item.special
+                    }
+                  : undefined
+              );
             }}
             className="w-full bg-arc-bg border border-arc-border rounded p-1.5 text-slate-200 focus:outline-none focus:border-arc-accent"
           >
             <option value="">No Instrument</option>
             {INSTRUMENTS.map((inst) => (
-              <option key={inst.id} value={inst.id}>{inst.name} (+{inst.performanceBonus})</option>
+              <option key={inst.id} value={inst.id}>
+                {inst.name} (+{inst.performanceBonus})
+              </option>
             ))}
           </select>
         </div>
@@ -227,23 +275,33 @@ export default function GearManager({ onRoll }: GearManagerProps) {
 
         {mainHand ? (
           <div className="p-3 bg-arc-card rounded border border-arc-border flex justify-between items-center">
-            <div>
+            <div className="space-y-1">
               <div className="font-bold text-slate-100 flex items-center gap-1.5">
                 {mainHand.name}
-                <span className="text-[10px] px-1.5 py-0.2 rounded bg-arc-bg border border-arc-border text-slate-400">
+                <span className="text-[10px] px-1.5 py-0.2 rounded bg-arc-bg border border-arc-border text-slate-400 capitalize">
                   {mainHand.damageType}
                 </span>
+                {mainHand.specialText && (
+                  <span
+                    className="cursor-help text-[10px] text-amber-400 flex items-center gap-0.5"
+                    title={mainHand.specialText}
+                  >
+                    <Sparkles size={11} /> Special
+                  </span>
+                )}
               </div>
-              <div className="text-slate-400 text-[11px] mt-0.5">
-                Formula: {mainHand.damageDice} • Bulk: {mainHand.bulk}
+              <div className="text-slate-400 text-[11px]">
+                Formula: <span className="text-slate-200 font-mono">{mainHand.damageDice}</span> • Bulk:{' '}
+                <span className="text-slate-200 font-mono">{mainHand.bulk}</span>
               </div>
             </div>
             <button
+              type="button"
               onClick={() => {
-                const sides = parseInt(mainHand.damageDice?.split('d')[1]?.split(/[+-]/)[0] || '8');
+                const sides = parseInt(mainHand.damageDice?.split('d')[1]?.split(/[+-]/)[0] || '8', 10);
                 onRoll(sides, `${mainHand.name} Damage`, true);
               }}
-              className="px-3 py-1 bg-arc-bg hover:bg-arc-cardHover border border-arc-border rounded text-arc-accent font-semibold"
+              className="px-3 py-1 bg-arc-bg hover:bg-arc-cardHover border border-arc-border rounded text-arc-accent font-semibold transition-all shadow-sm"
             >
               Roll Damage
             </button>
@@ -256,19 +314,35 @@ export default function GearManager({ onRoll }: GearManagerProps) {
 
         {offHand && (
           <div className="p-3 bg-arc-card rounded border border-arc-border flex justify-between items-center">
-            <div>
-              <div className="font-bold text-slate-100">{offHand.name}</div>
-              <div className="text-slate-400 text-[11px] mt-0.5">Opposed Block Reaction (+{offHand.atkBonus || 0} to check)</div>
+            <div className="space-y-1">
+              <div className="font-bold text-slate-100 flex items-center gap-1.5">
+                {offHand.name}
+                {offHand.specialText && (
+                  <span
+                    className="cursor-help text-[10px] text-amber-400 flex items-center gap-0.5"
+                    title={offHand.specialText}
+                  >
+                    <Sparkles size={11} /> Special
+                  </span>
+                )}
+              </div>
+              <div className="text-slate-400 text-[11px]">
+                Opposed Block Reaction (+{offHand.atkBonus || 0} to check)
+              </div>
             </div>
             <button
+              type="button"
               onClick={() => onRoll(20, `${offHand.name} Block Check (+${offHand.atkBonus || 0})`, false)}
-              className="px-3 py-1 bg-arc-bg hover:bg-arc-cardHover border border-arc-border rounded text-emerald-400 font-semibold"
+              className="px-3 py-1 bg-arc-bg hover:bg-arc-cardHover border border-arc-border rounded text-emerald-400 font-semibold transition-all shadow-sm"
             >
               Block (d20)
             </button>
           </div>
         )}
       </div>
+
+      {/* Interactive Class Arcana & Resonance Helpers */}
+      <ClassCombatHelpers onRoll={onRoll} />
     </div>
   );
 }
