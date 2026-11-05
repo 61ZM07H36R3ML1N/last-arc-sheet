@@ -148,5 +148,136 @@
       "Deception", "Light Weapon", "Lore", "Perception", "Perform",
       "Persuasion", "Pilot", "Ranged", "Ride", "Smithing", "Stealth", "Survival", "Unarmed"
     ]
+  },
+  [
+    {
+    "id": "aeronaut",
+    "name": "Aeronaut",
+    "type": "advanced",
+    "initiativeDie": "d8",
+    "startingHp": 30,
+    "hpPerLevel": 5,
+    "startingMp": 8,
+    "mpPerLevel": 2,
+    "startingGold": 0,
+    "defenseBonuses": { "reflex": 4, "fortitude": 2, "will": 0 },
+    "requirements": {
+      "level": 7,
+      "skills": ["Pilot"],
+      "technicks": ["Naval Combat"],
+      "talents": ["Helmsman"],
+      "special": "Must own or command an airship."
+    },
+    "baseTrainedSkillsCount": 2,
+    "classSkills": ["Pilot", "Athletics", "Perception", "Repair"],
+    "startingTechnicks": ["Naval Combat"]
+  },
+  {
+    "id": "astrologian",
+    "name": "Astrologian",
+    "type": "advanced",
+    "initiativeDie": "d10",
+    "startingHp": 25,
+    "hpPerLevel": 5,
+    "startingMp": 14,
+    "mpPerLevel": 3,
+    "startingGold": 0,
+    "defenseBonuses": { "reflex": 2, "fortitude": 0, "will": 4 },
+    "requirements": {
+      "level": 7,
+      "skills": ["Lore (social)", "Ride"],
+      "technicks": ["Arcane Study"],
+      "talents": ["Synastry"],
+      "special": "Requires Zodiac System."
+    },
+    "baseTrainedSkillsCount": 2,
+    "classSkills": ["Spellcraft", "Lore (arcane)", "Lore (social)", "Perception"],
+    "startingTechnicks": ["Arcane Study"]
+  },
+  {
+    "id": "condottiere",
+    "name": "Condottiere",
+    "type": "advanced",
+    "initiativeDie": "d10",
+    "startingHp": 32,
+    "hpPerLevel": 6,
+    "startingMp": 8,
+    "mpPerLevel": 2,
+    "startingGold": 0,
+    "defenseBonuses": { "reflex": 0, "fortitude": 4, "will": 2 },
+    "requirements": {
+      "level": 7,
+      "skills": ["Lore (social)", "Ride"],
+      "technicks": ["Mounted Combat"],
+      "talents": ["Mounted Charge"],
+      "special": "Member of Theatre Ventura."
+    },
+    "baseTrainedSkillsCount": 2,
+    "classSkills": ["Ride", "Persuasion", "1-Handed", "2-Handed", "Athletics"],
+    "startingTechnicks": ["Mounted Combat"]
+  },
+  {
+    "id": "magnate",
+    "name": "Magnate",
+    "type": "advanced",
+    "initiativeDie": "d6",
+    "startingHp": 25,
+    "hpPerLevel": 5,
+    "startingMp": 8,
+    "mpPerLevel": 2,
+    "startingGold": 2000,
+    "defenseBonuses": { "reflex": 4, "fortitude": 0, "will": 2 },
+    "requirements": {
+      "level": 7,
+      "skills": ["Persuasion"],
+      "technicks": ["Skill Focus (persuasion)"],
+      "talents": ["Skilled Negotiator"]
+    },
+    "baseTrainedSkillsCount": 3,
+    "classSkills": ["Persuasion", "Deception", "Lore (social)", "Perception"],
+    "startingTechnicks": ["Skill Focus (persuasion)"]
+  },
+  {
+    "id": "mstovari",
+    "name": "Mstovari",
+    "type": "advanced",
+    "initiativeDie": "d4",
+    "startingHp": 25,
+    "hpPerLevel": 5,
+    "startingMp": 12,
+    "mpPerLevel": 3,
+    "startingGold": 0,
+    "defenseBonuses": { "reflex": 0, "fortitude": 4, "will": 2 },
+    "requirements": {
+      "level": 7,
+      "skills": ["Deception", "Stealth"],
+      "technicks": ["Skill Focus (deception)", "Skill Focus (stealth)"],
+      "talents": ["Facade"]
+    },
+    "baseTrainedSkillsCount": 3,
+    "classSkills": ["Deception", "Stealth", "Disable", "Perception", "Spellcraft"],
+    "startingTechnicks": ["Skill Focus (deception)", "Skill Focus (stealth)"]
+  },
+  {
+    "id": "scholar",
+    "name": "Scholar",
+    "type": "advanced",
+    "initiativeDie": "d8",
+    "startingHp": 25,
+    "hpPerLevel": 5,
+    "startingMp": 14,
+    "mpPerLevel": 3,
+    "startingGold": 0,
+    "defenseBonuses": { "reflex": 3, "fortitude": 0, "will": 3 },
+    "requirements": {
+      "level": 7,
+      "skills": ["Lore (arcane)", "Spellcraft"],
+      "technicks": ["Arcane Study", "Linguist"],
+      "talents": ["Educated", "Loremaster"]
+    },
+    "baseTrainedSkillsCount": 4,
+    "classSkills": ["Spellcraft", "Lore (arcane)", "Lore (social)", "Lore (terrestrial)", "Medicine"],
+    "startingTechnicks": ["Arcane Study", "Linguist"]
   }
+  ]
 ]
