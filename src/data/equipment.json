@@ -5,25 +5,38 @@
     { "id": "battleaxe", "name": "Battleaxe", "category": "axes", "size": "Medium", "damage": "2d8", "damageType": "slashing", "cost": 400, "bulk": 1.0, "atkBonus": 0, "availability": "Common" },
     { "id": "broadaxe", "name": "Broadaxe", "category": "axes", "size": "Large", "damage": "2d10", "damageType": "slashing", "cost": 1000, "bulk": 2.0, "atkBonus": 0, "availability": "Common" },
     { "id": "greataxe", "name": "Greataxe", "category": "axes", "size": "Large", "damage": "2d12", "damageType": "slashing", "cost": 6400, "bulk": 2.0, "atkBonus": 2, "availability": "Uncommon" },
+    { "id": "boomerang_axe", "name": "Boomerang Axe", "category": "axes", "size": "Small", "damage": "2d6+2", "damageType": "slashing", "cost": 10900, "bulk": 1.0, "atkBonus": 3, "availability": "Rare", "special": "Returns to hand at end of turn when thrown." },
+    { "id": "bone_sickle", "name": "Bone Sickle", "category": "axes", "size": "Small", "damage": "2d6+2", "damageType": "slashing", "cost": 13600, "bulk": 1.0, "atkBonus": 3, "availability": "Epic", "special": "Deals +1d4 damage per status effect on target (max 1d12). Cursed: take +1d4 damage per status you suffer." },
+    { "id": "zaghnal", "name": "Zaghnal", "category": "axes", "size": "Medium", "damage": "2d8+3", "damageType": "slashing", "cost": 23500, "bulk": 1.5, "atkBonus": 4, "availability": "Exotic", "special": "+2 Survival checks. Ignores DR of Hunter's Mark targets." },
+    { "id": "death_scythe", "name": "Death Scythe", "category": "axes", "size": "Large", "damage": "2d10+3", "damageType": "slashing", "cost": 27400, "bulk": 2.0, "atkBonus": 4, "availability": "Epic", "special": "15% chance to inflict Doom if attack beats Ref and Fort. Cursed: roll 1 on attack inflicts Doom on self." },
 
     { "id": "bronze_mace", "name": "Bronze Mace", "category": "bludgeons", "size": "Small", "damage": "2d6", "damageType": "blunt", "cost": 100, "bulk": 0.1, "atkBonus": 0, "availability": "Common" },
+    { "id": "dwarven_throwing_hammer", "name": "Dwarven Throwing Hammer", "category": "bludgeons", "size": "Small", "damage": "2d6", "damageType": "blunt", "cost": 1000, "bulk": 1.0, "atkBonus": 0, "availability": "Uncommon", "special": "Damage die increases to d8s when used with Mighty Throw." },
     { "id": "iron_hammer", "name": "Iron Hammer", "category": "bludgeons", "size": "Medium", "damage": "2d8", "damageType": "blunt", "cost": 400, "bulk": 1.0, "atkBonus": 0, "availability": "Common" },
     { "id": "warhammer", "name": "Warhammer", "category": "bludgeons", "size": "Medium", "damage": "2d8+1", "damageType": "blunt", "cost": 3100, "bulk": 1.0, "atkBonus": 1, "availability": "Common" },
+    { "id": "blessed_hammer", "name": "Blessed Hammer", "category": "bludgeons", "size": "Small", "damage": "2d6+2", "damageType": "blunt", "cost": 13600, "bulk": 1.0, "atkBonus": 3, "availability": "Exotic", "special": "Undead are treated as weak against this weapon's damage." },
     { "id": "great_hammer", "name": "Great Hammer", "category": "bludgeons", "size": "Large", "damage": "2d12", "damageType": "blunt", "cost": 6400, "bulk": 2.0, "atkBonus": 2, "availability": "Uncommon" },
 
     { "id": "dagger", "name": "Dagger", "category": "knives", "size": "Tiny", "damage": "2d4", "damageType": "piercing", "cost": 100, "bulk": 0.1, "atkBonus": 0, "availability": "Common" },
     { "id": "field_khukuri", "name": "Field Khukuri", "category": "knives", "size": "Tiny", "damage": "2d4+1", "damageType": "slashing", "cost": 400, "bulk": 0.1, "atkBonus": 0, "availability": "Common" },
+    { "id": "scramasax", "name": "Scramasax", "category": "knives", "size": "Tiny", "damage": "2d4+2", "damageType": "slashing", "cost": 4600, "bulk": 0.5, "atkBonus": 2, "availability": "Rare", "special": "Beating Ref and Will inflicts slowed status." },
     { "id": "main_gauche", "name": "Main-Gauche", "category": "knives", "size": "Tiny", "damage": "2d4+3", "damageType": "piercing", "cost": 6400, "bulk": 0.1, "atkBonus": 2, "availability": "Uncommon" },
+    { "id": "ancient_knife", "name": "Ancient Knife", "category": "knives", "size": "Tiny", "damage": "2d4+4", "damageType": "slashing", "cost": 13600, "bulk": 0.5, "atkBonus": 3, "availability": "Exotic", "special": "Beating Ref and Fort inflicts diseased status." },
 
     { "id": "javelin", "name": "Javelin", "category": "polearms", "size": "Medium", "damage": "2d6", "damageType": "piercing", "cost": 100, "bulk": 1.0, "atkBonus": 0, "availability": "Common" },
     { "id": "spear", "name": "Spear", "category": "polearms", "size": "Large", "damage": "2d8", "damageType": "piercing", "cost": 400, "bulk": 2.0, "atkBonus": 0, "availability": "Common" },
+    { "id": "heavy_lance", "name": "Heavy Lance", "category": "polearms", "size": "Large", "damage": "2d10+1", "damageType": "piercing", "cost": 4600, "bulk": 2.5, "atkBonus": 2, "availability": "Uncommon", "special": "Reach 2. Double Mighty Strikes damage bonus when wielded in 1 hand (Requires Str 17)." },
+    { "id": "dancing_glaive", "name": "Dancing Glaive", "category": "polearms", "size": "Large", "damage": "2d10+4", "damageType": "slashing", "cost": 23500, "bulk": 2.0, "atkBonus": 4, "availability": "Rare", "special": "Perform Dance checks increase combo range by +1 (19-20) until next turn." },
     { "id": "halberd", "name": "Halberd", "category": "polearms", "size": "Large", "damage": "2d10+4", "damageType": "slashing", "cost": 23500, "bulk": 2.0, "atkBonus": 4, "availability": "Rare" },
 
     { "id": "steel_broadsword", "name": "Steel Broadsword", "category": "swords", "size": "Small", "damage": "2d6", "damageType": "slashing", "cost": 100, "bulk": 0.1, "atkBonus": 0, "availability": "Common" },
     { "id": "longsword", "name": "Longsword", "category": "swords", "size": "Medium", "damage": "2d8", "damageType": "slashing", "cost": 400, "bulk": 1.0, "atkBonus": 0, "availability": "Common" },
     { "id": "rapier", "name": "Rapier", "category": "swords", "size": "Small", "damage": "2d6", "damageType": "piercing", "cost": 400, "bulk": 0.1, "atkBonus": 0, "availability": "Common" },
+    { "id": "secret_sword", "name": "Secret Sword", "category": "swords", "size": "Small", "damage": "2d6+3", "damageType": "slashing", "cost": 23500, "bulk": 1.0, "atkBonus": 4, "availability": "Epic", "special": "Reroll 1s on damage during surprise turns. Treated as Tiny for Stealth conceal checks." },
+    { "id": "curtana", "name": "Curtana", "category": "swords", "size": "Small", "damage": "2d6+6", "damageType": "slashing", "cost": 46000, "bulk": 1.0, "atkBonus": 5, "availability": "Legendary", "special": "Holy damage. Deals full damage to incorporeal; evil creatures are weak to it. Cannot kill non-evil targets." },
     { "id": "claymore", "name": "Claymore", "category": "swords", "size": "Large", "damage": "2d10", "damageType": "slashing", "cost": 1000, "bulk": 2.0, "atkBonus": 0, "availability": "Common" },
     { "id": "zweihander", "name": "Zweihander", "category": "swords", "size": "Large", "damage": "2d12", "damageType": "slashing", "cost": 6400, "bulk": 2.0, "atkBonus": 1, "availability": "Uncommon" },
+    { "id": "caladbolg", "name": "Caladbolg", "category": "swords", "size": "Large", "damage": "2d12+5", "damageType": "slashing", "cost": 46000, "bulk": 3.0, "atkBonus": 5, "availability": "Legendary", "special": "Dark damage. 10% chance to instantly kill target on hit. Requires 17 Str." },
 
     { "id": "short_bow", "name": "Short Bow", "category": "bows", "size": "Small", "damage": "2d6", "damageType": "piercing", "cost": 100, "bulk": 2.0, "atkBonus": 0, "availability": "Common" },
     { "id": "longbow", "name": "Longbow", "category": "bows", "size": "Medium", "damage": "2d8", "damageType": "piercing", "cost": 400, "bulk": 2.0, "atkBonus": 0, "availability": "Common" },
@@ -33,7 +46,12 @@
     { "id": "crossbow", "name": "Crossbow", "category": "crossbows", "size": "Medium", "damage": "2d8", "damageType": "piercing", "cost": 400, "bulk": 1.0, "atkBonus": 0, "capacity": 15, "availability": "Common" },
 
     { "id": "wizards_wand", "name": "Wizard's Wand", "category": "staves", "size": "Small", "damage": "3d4", "damageType": "fire", "cost": 100, "bulk": 0.1, "atkBonus": 0, "availability": "Common" },
-    { "id": "sages_staff", "name": "Sage's Staff", "category": "staves", "size": "Large", "damage": "3d8", "damageType": "blunt", "cost": 4600, "bulk": 2.0, "atkBonus": 2, "availability": "Uncommon" }
+    { "id": "erudite_wand", "name": "Erudite's Wand", "category": "staves", "size": "Small", "damage": "3d4+4", "damageType": "unaspected", "cost": 27400, "bulk": 0.5, "atkBonus": 4, "availability": "Exotic", "special": "Roll Mathmagician variate die twice and pick result. Ranged attacks can deal any element." },
+    { "id": "sages_staff", "name": "Sage's Staff", "category": "staves", "size": "Large", "damage": "3d8", "damageType": "blunt", "cost": 4600, "bulk": 2.0, "atkBonus": 2, "availability": "Uncommon" },
+    { "id": "astral_staff", "name": "Astral Staff", "category": "staves", "size": "Large", "damage": "3d8+3", "damageType": "cold", "cost": 16600, "bulk": 1.5, "atkBonus": 3, "availability": "Rare", "special": "Reroll Spellcraft when casting Blue Magick on neutral star sign targets." },
+
+    { "id": "blitz_whip", "name": "Blitz Whip", "category": "whips", "size": "Small", "damage": "1d4+3", "damageType": "slashing", "cost": 6400, "bulk": 1.0, "atkBonus": 2, "availability": "Exotic", "special": "Reach 2. When pet gains full turn: speed +2 and deals +1d6 electric damage." },
+    { "id": "cool_whip", "name": "Cool Whip", "category": "whips", "size": "Small", "damage": "1d4+3", "damageType": "slashing", "cost": 8500, "bulk": 1.0, "atkBonus": 3, "availability": "Exotic", "special": "Reach 2. When pet gains full turn: DR +5 and deals +1d6 cold damage." }
   ],
   "armors": [
     { "id": "quilted_doublet", "name": "Quilted Doublet", "type": "light", "cost": 100, "bulk": 2.0, "reflexBonus": 1, "dr": 2, "maxAgiBonus": 5, "checkPenalty": -5, "availability": "Common" },
@@ -41,19 +59,150 @@
     { "id": "leather_breastplate", "name": "Leather Breastplate", "type": "light", "cost": 500, "bulk": 2.0, "reflexBonus": 2, "dr": 3, "maxAgiBonus": 3, "checkPenalty": -5, "availability": "Common" },
     { "id": "ringmail", "name": "Ringmail", "type": "light", "cost": 1300, "bulk": 2.0, "reflexBonus": 2, "dr": 5, "maxAgiBonus": 3, "checkPenalty": -5, "availability": "Common" },
     { "id": "brigandine", "name": "Brigandine", "type": "light", "cost": 3700, "bulk": 2.0, "reflexBonus": 3, "dr": 6, "maxAgiBonus": 3, "checkPenalty": -5, "availability": "Common" },
+    { "id": "captain_coat", "name": "Captain's Coat", "type": "light", "cost": 11700, "bulk": 1.0, "reflexBonus": 2, "dr": 8, "maxAgiBonus": 4, "checkPenalty": 0, "availability": "Exotic", "special": "Aboard an airship: treat ship as 2 steps higher on Break Gauge. Captain's Orders action reduced by 1 step once/encounter." },
+    { "id": "faitour_finery", "name": "Faitour's Finery", "type": "light", "cost": 11700, "bulk": 1.0, "reflexBonus": 1, "dr": 9, "maxAgiBonus": 5, "checkPenalty": 0, "availability": "Exotic", "special": "Mind-immune targets only gain +2 Will vs Masquerade. Reroll Charade skill checks." },
+    { "id": "arriviste_dress_coat", "name": "Arriviste's Dress Coat", "type": "light", "cost": 13900, "bulk": 1.0, "reflexBonus": 1, "dr": 9, "maxAgiBonus": 5, "checkPenalty": 0, "availability": "Rare", "special": "Halves the GP cost of all Profiteer talents without reducing their effects." },
 
     { "id": "hide_armour", "name": "Hide Armour", "type": "heavy", "cost": 500, "bulk": 3.0, "reflexBonus": 3, "dr": 3, "maxAgiBonus": 3, "checkPenalty": -10, "availability": "Common" },
     { "id": "iron_cuirass", "name": "Iron Cuirass", "type": "heavy", "cost": 1700, "bulk": 3.0, "reflexBonus": 3, "dr": 4, "maxAgiBonus": 2, "checkPenalty": -10, "availability": "Common" },
     { "id": "chainmail", "name": "Chainmail", "type": "heavy", "cost": 4500, "bulk": 3.0, "reflexBonus": 4, "dr": 6, "maxAgiBonus": 1, "checkPenalty": -10, "availability": "Common" },
     { "id": "plate_armour", "name": "Plate Armour", "type": "heavy", "cost": 6500, "bulk": 3.0, "reflexBonus": 5, "dr": 7, "maxAgiBonus": 1, "checkPenalty": -10, "availability": "Common" },
+    { "id": "banneret_regalia", "name": "Banneret's Regalia", "type": "heavy", "cost": 31700, "bulk": 3.0, "reflexBonus": 4, "dr": 13, "maxAgiBonus": 2, "checkPenalty": -5, "availability": "Exotic", "special": "Employed mercenaries within 12 squares gain 5 temp HP at the start of your turn." },
 
     { "id": "wizards_robes", "name": "Wizard's Robes", "type": "mystic", "cost": 100, "bulk": 1.0, "reflexBonus": 0, "dr": 2, "maxAgiBonus": 99, "checkPenalty": -2, "availability": "Common" },
-    { "id": "mages_habit", "name": "Mage's Habit", "type": "mystic", "cost": 300, "bulk": 1.0, "reflexBonus": 0, "dr": 3, "maxAgiBonus": 99, "checkPenalty": -2, "availability": "Common" }
+    { "id": "mages_habit", "name": "Mage's Habit", "type": "mystic", "cost": 300, "bulk": 1.0, "reflexBonus": 0, "dr": 3, "maxAgiBonus": 99, "checkPenalty": -2, "availability": "Common" },
+    { "id": "savant_gown", "name": "Savant's Gown", "type": "mystic", "cost": 7900, "bulk": 1.0, "reflexBonus": 0, "dr": 8, "maxAgiBonus": 99, "checkPenalty": 0, "availability": "Rare", "special": "Immunity to confusion and silence. Increases Eureka talent trigger chance to 25%." }
   ],
   "shields": [
     { "id": "bronze_pelta", "name": "Bronze Pelta", "size": "Tiny", "cost": 100, "bulk": 0.1, "atkBonus": 0, "availability": "Common" },
     { "id": "targe", "name": "Targe", "size": "Small", "cost": 300, "bulk": 0.1, "atkBonus": 0, "availability": "Common" },
     { "id": "heater_shield", "name": "Heater Shield", "size": "Medium", "cost": 700, "bulk": 1.0, "atkBonus": 0, "availability": "Uncommon" },
-    { "id": "war_door", "name": "War-Door", "size": "Large", "cost": 7300, "bulk": 2.0, "atkBonus": 2, "availability": "Uncommon" }
+    { "id": "war_door", "name": "War-Door", "size": "Large", "cost": 7300, "bulk": 2.0, "atkBonus": 2, "availability": "Uncommon" },
+    { "id": "bladed_shield", "name": "Bladed Shield", "size": "Medium", "cost": 2100, "bulk": 1.5, "atkBonus": 1, "availability": "Uncommon", "special": "Shield Bash deals +1 die of slashing damage instead of blunt." },
+    { "id": "caged_buckler", "name": "Caged Buckler", "size": "Tiny", "cost": 11100, "bulk": 0.5, "atkBonus": 3, "availability": "Rare", "special": "Successful blocks negate attacker's further attacks/combos with that weapon until next turn." },
+    { "id": "duban", "name": "Duban", "size": "Tiny", "cost": 27300, "bulk": 0.5, "atkBonus": 5, "availability": "Legendary", "special": "Reroll blocks vs holy, dark, or no-damage spells. Can block attacks targeting any defense." }
+  ],
+  "masks": [
+    {
+      "id": "gilded_volto",
+      "name": "Gilded Volto",
+      "slot": "mask",
+      "cost": 1000,
+      "bulk": 0.1,
+      "availability": "Rare",
+      "special": "Deception checks to appear as Human or Half-Elf reduced in difficulty by 1 step. Simple disguise as primary action."
+    },
+    {
+      "id": "enchanting_moretta",
+      "name": "Enchanting Moretta",
+      "slot": "mask",
+      "cost": 1000,
+      "bulk": 0.1,
+      "availability": "Rare",
+      "special": "Deception checks to appear as Dark Elf, High Elf, or Wood Elf reduced by 1 step."
+    },
+    {
+      "id": "impish_zanni",
+      "name": "Impish Zanni",
+      "slot": "mask",
+      "cost": 2000,
+      "bulk": 0.1,
+      "availability": "Exotic",
+      "special": "Deception checks to appear as Goblin, Black Goblin, or Hobgoblin reduced by 1 step."
+    },
+    {
+      "id": "shoddy_pantalone",
+      "name": "Shoddy Pantalone",
+      "slot": "mask",
+      "cost": 2000,
+      "bulk": 0.1,
+      "availability": "Exotic",
+      "special": "Deception checks to appear as Orc, Black Orc, or Blood Orc reduced by 1 step."
+    },
+    {
+      "id": "velvet_gatto",
+      "name": "Velvet Gatto",
+      "slot": "mask",
+      "cost": 2000,
+      "bulk": 0.1,
+      "availability": "Exotic",
+      "special": "Deception checks to appear as Nasha or Pogeyan reduced by 1 step."
+    }
+  ],
+  "tomes": [
+    {
+      "id": "book_of_elements",
+      "name": "Book of Elements",
+      "field": "Arcane",
+      "cost": 1900,
+      "bulk": 0.2,
+      "availability": "Rare",
+      "special": "Tabula Rasa Red Magick success rate increased to 65%. Requires Common."
+    },
+    {
+      "id": "book_of_secrets",
+      "name": "Book of Secrets",
+      "field": "Social",
+      "cost": 1900,
+      "bulk": 0.2,
+      "availability": "Rare",
+      "special": "Tabula Rasa Blue Magick success rate increased to 65%. Requires Common."
+    },
+    {
+      "id": "draconomicon",
+      "name": "Draconomicon",
+      "field": "Arcane/Terrestrial",
+      "cost": 4600,
+      "bulk": 0.2,
+      "availability": "Exotic",
+      "special": "Dragons treated as common for Lore. Tabula Rasa Red Magick success rate increased to 70%. Requires Draconic."
+    },
+    {
+      "id": "ars_notoria",
+      "name": "Ars Notoria",
+      "field": "Arcane/Mystic",
+      "cost": 6400,
+      "bulk": 0.2,
+      "availability": "Exotic",
+      "special": "Celestials treated as common for Lore. Tabula Rasa White Magick success rate increased to 70%. Requires Common."
+    },
+    {
+      "id": "archidoxis",
+      "name": "Archidoxis",
+      "field": "Arcane/Social",
+      "cost": 8500,
+      "bulk": 0.2,
+      "availability": "Epic",
+      "special": "Constructs treated as common for Lore. Tabula Rasa Blue Magick success rate increased to 80%. Requires Gnomish."
+    }
+  ],
+  "instruments": [
+    {
+      "id": "elderwood_cornamuse",
+      "name": "Elderwood Cornamuse",
+      "cost": 3100,
+      "performanceBonus": 1,
+      "bulk": 0.5,
+      "availability": "Uncommon",
+      "special": "Fae whose Will is beaten by your performance cannot target you while within 4 squares of a conscious ally."
+    },
+    {
+      "id": "war_horn",
+      "name": "War Horn",
+      "cost": 10900,
+      "performanceBonus": 3,
+      "bulk": 0.5,
+      "availability": "Uncommon",
+      "special": "Reroll 1s on Savage Scherzo damage. Reduces defensive performing penalty from -5 to -2."
+    },
+    {
+      "id": "sacred_sitar",
+      "name": "Sacred Sitar",
+      "cost": 10900,
+      "performanceBonus": 3,
+      "bulk": 0.8,
+      "availability": "Exotic",
+      "special": "Can perform while Silenced. Elementals whose Will is beaten cannot target you while near allies."
+    }
   ]
 }

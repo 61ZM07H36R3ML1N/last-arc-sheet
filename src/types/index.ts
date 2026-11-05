@@ -7,26 +7,19 @@ export type DamageType =
   | 'cold' | 'dark' | 'electric' | 'fire' | 'holy' 
   | 'unaspected';
 
-export type InitiativeDie = 'd4' | 'd6' | 'd8' | 'd10' | 'd12';
-
-export interface ClassLevel {
-  name: string;
-  level: number;
-}
-
-export interface CharacterAttributes {
-  str: number;
-  vit: number;
-  agi: number;
-  int: number;
-  mnd: number;
-  chr: number;
-}
+export type EquipmentSlot = 
+  | 'mainHand' 
+  | 'offHand' 
+  | 'armor' 
+  | 'accessory'
+  | 'mask'
+  | 'tome'
+  | 'instrument';
 
 export interface Equipment {
   id: string;
   name: string;
-  slot: 'mainHand' | 'offHand' | 'armor' | 'accessory';
+  slot: EquipmentSlot;
   bulk: number;
   damageDice?: string;
   damageType?: DamageType;
@@ -34,7 +27,10 @@ export interface Equipment {
   reflexBonus?: number;
   dr?: number;
   maxAgiBonus?: number;
+  checkPenalty?: number;
+  performanceBonus?: number;
   specialText?: string;
+  availability?: string;
 }
 
 export interface CharacterSheet {
@@ -43,8 +39,15 @@ export interface CharacterSheet {
   race: string;
   ethos: string;
   zodiacSign: ZodiacSign;
-  classes: ClassLevel[];
-  baseAttributes: CharacterAttributes;
+  classes: Array<{ name: string; level: number }>;
+  baseAttributes: {
+    str: number;
+    vit: number;
+    agi: number;
+    int: number;
+    mnd: number;
+    chr: number;
+  };
   currentHp: number;
   tempHp: number;
   currentMp: number;
@@ -52,7 +55,7 @@ export interface CharacterSheet {
   breakStep: number;
   heroPoints: number;
   gold: number;
-  notes: string; // <-- New notes field
+  notes: string;
   trainedSkills: string[];
   focusedSkills: string[];
   technicks: string[];
@@ -61,6 +64,9 @@ export interface CharacterSheet {
     mainHand?: Equipment;
     offHand?: Equipment;
     armor?: Equipment;
+    mask?: Equipment;
+    tome?: Equipment;
+    instrument?: Equipment;
     accessory1?: Equipment;
     accessory2?: Equipment;
   };
