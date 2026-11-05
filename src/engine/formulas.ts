@@ -35,9 +35,17 @@ export function rollExplodingDie(sides: number): { rolls: number[]; total: numbe
 // Calculate Defenses
 export function calculateDefenses(sheet: CharacterSheet) {
   const totalLevel = getTotalLevel(sheet);
+  const halfLevel = Math.floor(totalLevel / 2);
+
   const agiMod = getModifier(sheet.baseAttributes.agi);
   const vitMod = getModifier(sheet.baseAttributes.vit);
   const mndMod = getModifier(sheet.baseAttributes.mnd);
+  const chrMod = getModifier(sheet.baseAttributes.chr);
+
+  // Atlas Technick: Dynamism lets Charisma replace Mind for Will Defence
+  const willAttrMod = sheet.technicks?.includes('Dynamism') 
+    ? Math.max(mndMod, chrMod) 
+    : mndMod;
 
   // Class defense bonuses (take highest across multiclasses)
   let classRef = 0;
@@ -45,13 +53,37 @@ export function calculateDefenses(sheet: CharacterSheet) {
   let classWill = 0;
 
   sheet.classes.forEach((c) => {
+    // Base Classes
     if (c.name === 'Bard') { classRef = Math.max(classRef, 2); classWill = Math.max(classWill, 1); }
     if (c.name === 'Initiate') { classFort = Math.max(classFort, 1); classWill = Math.max(classWill, 2); }
     if (c.name === 'Mage') { classRef = Math.max(classRef, 1); classWill = Math.max(classWill, 2); }
     if (c.name === 'Ranger') { classFort = Math.max(classFort, 2); classRef = Math.max(classRef, 1); }
     if (c.name === 'Rogue') { classFort = Math.max(classFort, 1); classRef = Math.max(classRef, 2); }
     if (c.name === 'Warrior') { classFort = Math.max(classFort, 2); classWill = Math.max(classWill, 1); }
+
+    // Atlas Advanced Classes
+    if (c.name === 'Aeronaut') { classRef = Math.max(classRef, 4); classFort = Math.max(classFort, 2); }
+    if (c.name === 'Astrologian') { classWill = Math.max(classWill, 4); classRef = Math.max(classRef, 2); }
+    if (c.name === 'Condottiere') { classFort = Math.max(classFort, 4); classWill = Math.max(classWill, 2); }
+    if (c.name === 'Magnate') { classRef = Math.max(classRef, 4); classWill = Math.max(classWill, 2); }
+    if (c.name === 'Mstovari') { classFort = Math.max(classFort, 4); classWill = Math.max(classWill, 2); }
+    if (c.name === 'Scholar') { classRef = Math.max(classRef, 3); classWill = Math.max(classWill, 3); }
   });
+
+  // Racial traits and size bonuses
+  let racialDef = 0;
+  let racialWill = 0;
+  let racialRef = 0;
+
+  if (sheet.race === 'Dark Dwarf') {
+    racialDef += 1; // Hardy: +1 to all defences
+  }
+  if (['Black Goblin', 'Blood Orc'].includes(sheet.race)) {
+    racialWill += 2; // Iron Will: +2 Will Defence
+  }
+  if (['Black Goblin', 'Hobgoblin'].includes(sheet.race)) {
+    racialRef += 1; // Small Size: +1 Ref Defence
+  }
 
   const armorRef = sheet.equipped.armor?.reflexBonus || 0;
 
@@ -60,10 +92,12 @@ export function calculateDefenses(sheet: CharacterSheet) {
     ? Math.min(agiMod, sheet.equipped.armor.maxAgiBonus)
     : agiMod;
 
-  const reflex = 10 + totalLevel + effectiveAgiMod + classRef + armorRef;
-  const fortitude = 10 + totalLevel + vitMod + classFort;
-  const will = 10 + totalLevel + mndMod + classWill;
-  const breakThreshold = fortitude; // For Medium/Small
+  const reflex = 10 + halfLevel + effectiveAgiMod + classRef + armorRef + racialDef + racialRef;
+  const fortitude = 10 + halfLevel + vitMod + classFort + racialDef;
+  const will = 10 + halfLevel + willAttrMod + classWill + racialDef + racialWill;
+
+  // Break Threshold: Base Fortitude + 5 if Threshold Up technick is taken
+  const breakThreshold = fortitude + (sheet.technicks?.includes('Threshold Up') ? 5 : 0);
 
   return { reflex, fortitude, will, breakThreshold };
 }
