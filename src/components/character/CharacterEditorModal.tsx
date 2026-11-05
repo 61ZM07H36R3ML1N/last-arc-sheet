@@ -12,6 +12,7 @@ interface CharacterEditorModalProps {
 
 const ATTRIBUTE_KEYS: AttributeKey[] = ['str', 'vit', 'agi', 'int', 'mnd', 'chr'];
 const STANDARD_ARRAY = [16, 14, 12, 10, 10, 8];
+const AVAILABLE_CLASSES = CLASSES.flat();
 
 export default function CharacterEditorModal({ isOpen, onClose }: CharacterEditorModalProps) {
   const { sheet, importSheet } = useCharacterStore();
@@ -25,8 +26,8 @@ export default function CharacterEditorModal({ isOpen, onClose }: CharacterEdito
   const [ethos, setEthos] = useState(sheet.ethos);
   const [classId, setClassId] = useState(() => {
     const firstClass = sheet.classes[0]?.name || 'Warrior';
-    const found = CLASSES.find((c) => c.name.toLowerCase() === firstClass.toLowerCase());
-    return found ? found.id : CLASSES[0].id;
+    const found = AVAILABLE_CLASSES.find((c) => c.name.toLowerCase() === firstClass.toLowerCase());
+    return found ? found.id : AVAILABLE_CLASSES[0].id;
   });
   const [level, setLevel] = useState(sheet.classes[0]?.level || 1);
 
@@ -42,7 +43,10 @@ export default function CharacterEditorModal({ isOpen, onClose }: CharacterEdito
 
   // Selected race and class objects
   const selectedRace = useMemo(() => RACES.find((r) => r.id === raceId) ?? RACES[0], [raceId]);
-  const selectedClass = useMemo(() => CLASSES.find((c) => c.id === classId) ?? CLASSES[0], [classId]);
+  const selectedClass = useMemo(
+    () => AVAILABLE_CLASSES.find((c) => c.id === classId) ?? AVAILABLE_CLASSES[0],
+    [classId]
+  );
 
   // Compute final attributes applying racial adjustments and checking caps
   const finalAttributes = useMemo(() => {
@@ -244,7 +248,7 @@ export default function CharacterEditorModal({ isOpen, onClose }: CharacterEdito
                 }}
                 className="w-full bg-arc-card border border-arc-border rounded px-2 py-1.5 focus:border-arc-accent focus:outline-none font-semibold text-slate-100"
               >
-                {CLASSES.map((c) => (
+                {AVAILABLE_CLASSES.map((c) => (
                   <option key={c.id} value={c.id}>
                     {c.name} (Init {c.initiativeDie}, HP {c.startingHp}, MP {c.startingMp})
                   </option>
@@ -323,16 +327,16 @@ export default function CharacterEditorModal({ isOpen, onClose }: CharacterEdito
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 max-h-48 overflow-y-auto p-1 bg-arc-bg rounded border border-arc-border">
               {SKILLS.map((skill) => {
                 const isClassSkill = selectedClass.classSkills.some(
-                  (cs) => skill.name.toLowerCase().startsWith(cs.toLowerCase())
+                  (cs) => !!skill.name && skill.name.toLowerCase().startsWith(cs.toLowerCase())
                 );
-                const isTrained = trainedSkills.includes(skill.name);
+                const isTrained = !!skill.name && trainedSkills.includes(skill.name);
 
                 return (
                   <button
                     key={skill.name}
                     type="button"
                     disabled={!isClassSkill && !isTrained}
-                    onClick={() => toggleSkill(skill.name)}
+                    onClick={() => skill.name && toggleSkill(skill.name)}
                     className={`p-1.5 rounded text-left flex items-center justify-between border transition-all ${
                       isTrained
                         ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300 font-semibold'

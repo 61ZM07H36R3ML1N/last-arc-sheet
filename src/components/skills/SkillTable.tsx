@@ -33,7 +33,7 @@ export default function SkillTable({ onRoll }: SkillTableProps) {
   return (
     <div className="space-y-3 text-xs">
       <div className="flex flex-wrap items-center justify-between gap-2 bg-arc-card p-2.5 rounded-lg border border-arc-border">
-        <div className="relative flex-1 min-w-[140px]">
+        <div className="relative flex-1 min-w-35">
           <Search size={14} className="absolute left-2.5 top-2 text-slate-400" />
           <input
             type="text"
