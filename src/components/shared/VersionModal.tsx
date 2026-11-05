@@ -17,7 +17,7 @@ const CHANGELOG = [
     ]
   },
   {
-    version: 'v0.3.2 (Current)',
+    version: 'v0.3.2',
     date: 'November 2026',
     changes: [
       'Added Foundry VTT Actor JSON interoperability engine (Two-way import/export).',
