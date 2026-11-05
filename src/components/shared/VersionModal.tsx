@@ -6,6 +6,16 @@ interface VersionModalProps {
 }
 
 const CHANGELOG = [
+{
+    version: 'v0.3.3 (Current)',
+    date: 'November 2026',
+    changes: [
+      'Added 6 new Advanced Classes from the Atlas (Aeronaut, Astrologian, Condottiere, Magnate, Mstovari, Scholar).',
+      'Added 5 regional sub-races (Dark Dwarf, Black Goblin, Hobgoblin, Black Orc, Blood Orc).',
+      'Added 21 new Atlas Technicks including Dynamism, Burnout, First Strike, and Mad Charge.',
+      'Wired Dynamism technick into defense math (allows Charisma modifier to drive Will Defence).'
+    ]
+  },
   {
     version: 'v0.3.2 (Current)',
     date: 'November 2026',
