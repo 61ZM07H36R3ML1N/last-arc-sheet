@@ -1,11 +1,13 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { CharacterSheet } from '../types';
+import type { ZodiacSign } from '../data/zodiac';
 
 const defaultCharacter: CharacterSheet = {
   id: 'char-1',
   name: 'Kress',
   race: 'Human',
+  zodiacSign: 'Aries',
   ethos: 'Pure Good',
   classes: [{ name: 'Warrior', level: 1 }],
   baseAttributes: {
@@ -40,6 +42,7 @@ interface CharacterStore {
   useHeroPoint: () => void;
   resetHeroPoints: () => void;
   updateNotes: (notes: string) => void;
+  setZodiacSign: (sign: ZodiacSign) => void;
   importSheet: (json: CharacterSheet) => void;
 }
 
@@ -82,6 +85,10 @@ export const useCharacterStore = create<CharacterStore>()(
       updateNotes: (notes) =>
         set((state) => ({
           sheet: { ...state.sheet, notes }
+        })),
+      setZodiacSign: (sign) =>
+        set((state) => ({
+          sheet: { ...state.sheet, zodiacSign: sign }
         })),
       importSheet: (newSheet) => set({ sheet: newSheet })
     }),

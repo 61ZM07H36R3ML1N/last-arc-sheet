@@ -4,6 +4,7 @@ import { RACES, CLASSES, ETHOS_LIST, SKILLS } from '../../data';
 import { useCharacterStore } from '../../store/useCharacterStore';
 import { getModifier } from '../../engine/formulas';
 import type { AttributeKey, CharacterSheet } from '../../types';
+import { ZODIAC_LIST, ZODIAC_SIGNS, type ZodiacSign } from '../../data/zodiac';
 
 interface CharacterEditorModalProps {
   isOpen: boolean;
@@ -24,6 +25,7 @@ export default function CharacterEditorModal({ isOpen, onClose }: CharacterEdito
     return found ? found.id : RACES[0].id;
   });
   const [ethos, setEthos] = useState(sheet.ethos);
+  const [zodiacSign, setZodiacSign] = useState<ZodiacSign>(sheet.zodiacSign || 'Aries');
   const [classId, setClassId] = useState(() => {
     const firstClass = sheet.classes[0]?.name || 'Warrior';
     const found = AVAILABLE_CLASSES.find((c) => c.name.toLowerCase() === firstClass.toLowerCase());
@@ -112,6 +114,7 @@ export default function CharacterEditorModal({ isOpen, onClose }: CharacterEdito
       name: name.trim() || 'Hero',
       race: selectedRace.name,
       ethos,
+      zodiacSign,
       classes: [{ name: selectedClass.name, level }],
       baseAttributes: finalAttributes,
       currentHp: Math.max(1, startingHp),
@@ -147,8 +150,8 @@ export default function CharacterEditorModal({ isOpen, onClose }: CharacterEdito
 
         {/* Modal Form Body */}
         <div className="p-4 overflow-y-auto space-y-5 text-xs text-slate-200">
-          {/* Identity Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {/* Identity Grid: Name, Zodiac, Ethos, Level */}
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
             <div>
               <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">Character Name</label>
               <input
@@ -158,6 +161,21 @@ export default function CharacterEditorModal({ isOpen, onClose }: CharacterEdito
                 placeholder="e.g. Kress"
                 className="w-full bg-arc-bg border border-arc-border rounded px-2.5 py-1.5 focus:border-arc-accent focus:outline-none"
               />
+            </div>
+
+            <div>
+              <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">Zodiac Sign</label>
+              <select
+                value={zodiacSign}
+                onChange={(e) => setZodiacSign(e.target.value as ZodiacSign)}
+                className="w-full bg-arc-bg border border-arc-border rounded px-2 py-1.5 focus:border-arc-accent focus:outline-none"
+              >
+                {ZODIAC_LIST.map((sign) => (
+                  <option key={sign} value={sign}>
+                    {ZODIAC_SIGNS[sign].symbol} {sign} ({ZODIAC_SIGNS[sign].element})
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div>
@@ -257,7 +275,7 @@ export default function CharacterEditorModal({ isOpen, onClose }: CharacterEdito
 
               <div className="text-[11px] text-slate-400 pt-1 flex justify-between">
                 <span>Init: <strong className="text-emerald-400">{selectedClass.initiativeDie}</strong></span>
-                <span>Gold: <strong className="text-arc-gold">{selectedClass.startingGold} gp</strong></span>
+                <span>Gold: <strong className="text-arc-gold">{selectedClass.startingGold ?? 0} gp</strong></span>
                 <span>
                   Def: Ref <strong className="text-arc-accent">+{selectedClass.defenseBonuses.reflex}</strong> | Fort <strong className="text-emerald-400">+{selectedClass.defenseBonuses.fortitude}</strong> | Will <strong className="text-purple-400">+{selectedClass.defenseBonuses.will}</strong>
                 </span>

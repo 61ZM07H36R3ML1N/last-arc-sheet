@@ -1,3 +1,5 @@
+import type { ZodiacSign } from '../data/zodiac';
+
 export type AttributeKey = 'str' | 'vit' | 'agi' | 'int' | 'mnd' | 'chr';
 
 export type DamageType = 
@@ -40,6 +42,7 @@ export interface CharacterSheet {
   name: string;
   race: string;
   ethos: string;
+  zodiacSign: ZodiacSign;
   classes: ClassLevel[];
   baseAttributes: CharacterAttributes;
   currentHp: number;

@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { useCharacterStore } from './store/useCharacterStore';
 import { getModifier, getTotalLevel, calculateDefenses, rollExplodingDie } from './engine/formulas';
+import { ZODIAC_SIGNS } from './data/zodiac';
 import CharacterEditorModal from './components/character/CharacterEditorModal';
 import JsonSyncModal from './components/character/JsonSyncModal';
 import VersionModal from './components/shared/VersionModal';
@@ -55,13 +56,14 @@ export default function App() {
 
     sheet.classes.forEach((c, idx) => {
       const isBase = idx === 0;
-      if (['Warrior', 'Ranger'].includes(c.name)) {
+      if (['Warrior', 'Ranger', 'Condottiere'].includes(c.name)) {
         hp += (isBase ? 30 : 6) + vitMod + (c.level - 1) * (6 + vitMod);
         mp += (isBase ? 6 : 2) + mndMod + (c.level - 1) * (2 + mndMod);
-      } else if (['Bard', 'Rogue'].includes(c.name)) {
+      } else if (['Bard', 'Rogue', 'Aeronaut', 'Magnate', 'Mstovari'].includes(c.name)) {
         hp += (isBase ? 24 : 5) + vitMod + (c.level - 1) * (5 + vitMod);
         mp += (isBase ? 6 : 2) + mndMod + (c.level - 1) * (2 + mndMod);
       } else {
+        // Mage, Initiate, Astrologian, Scholar
         hp += (isBase ? 18 : 4) + vitMod + (c.level - 1) * (4 + vitMod);
         mp += (isBase ? 12 : 3) + mndMod + (c.level - 1) * (3 + mndMod);
       }
@@ -98,11 +100,22 @@ export default function App() {
 
   const getInitDie = (className: string) => {
     switch (className) {
-      case 'Rogue': return 'd4';
-      case 'Bard': return 'd6';
-      case 'Ranger': return 'd8';
-      case 'Warrior': return 'd10';
-      default: return 'd12';
+      case 'Rogue':
+      case 'Mstovari':
+        return 'd4';
+      case 'Bard':
+      case 'Magnate':
+        return 'd6';
+      case 'Ranger':
+      case 'Aeronaut':
+      case 'Scholar':
+        return 'd8';
+      case 'Warrior':
+      case 'Astrologian':
+      case 'Condottiere':
+        return 'd10';
+      default:
+        return 'd12';
     }
   };
 
@@ -114,6 +127,8 @@ export default function App() {
     'bg-arc-break-step3',
     'bg-arc-break-broken'
   ];
+
+  const currentZodiac = sheet.zodiacSign ? ZODIAC_SIGNS[sheet.zodiacSign] : null;
 
   return (
     <div className="min-h-screen bg-arc-bg text-slate-100 flex flex-col max-w-4xl mx-auto pb-24 border-x border-arc-border shadow-2xl">
@@ -142,9 +157,22 @@ export default function App() {
             >
               <Info size={11} /> {__APP_VERSION__}
             </button>
+
+            {/* Ethos Badge */}
             <span className="text-xs px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
               {sheet.ethos}
             </span>
+
+            {/* Zodiac Badge */}
+            {currentZodiac && (
+              <span 
+                className="text-xs px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 flex items-center gap-1 font-medium cursor-help"
+                title={`Zodiac: ${currentZodiac.sign} (${currentZodiac.element})\n• Compatible (+Benefic): ${currentZodiac.compatible.join(', ')}\n• Incompatible (+Malefic): ${currentZodiac.incompatible.join(', ')}`}
+              >
+                <span>{currentZodiac.symbol}</span>
+                <span>{currentZodiac.sign}</span>
+              </span>
+            )}
           </div>
           <p className="text-xs text-slate-400 mt-0.5">
             {sheet.race} • {sheet.classes.map(c => `${c.name} ${c.level}`).join(' / ')}
@@ -182,6 +210,7 @@ export default function App() {
       </header>
 
       <main className="p-4 space-y-5">
+        {/* RESOURCE BARS (HP / MP) */}
         <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="bg-arc-card p-3.5 rounded-lg border border-arc-border shadow-sm">
             <div className="flex justify-between items-center mb-1.5">
@@ -230,6 +259,7 @@ export default function App() {
           </div>
         </section>
 
+        {/* BREAK GAUGE */}
         <section className="bg-arc-card p-3.5 rounded-lg border border-arc-border">
           <div className="flex justify-between items-center mb-2">
             <span className="text-xs font-bold text-slate-300 flex items-center gap-1.5 uppercase tracking-wide">
@@ -261,23 +291,24 @@ export default function App() {
           </div>
         </section>
 
+        {/* DEFENSES & ATTRIBUTES */}
         <section className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
           <div className="bg-arc-card p-2.5 rounded-lg border border-arc-border text-center">
             <span className="text-[10px] text-slate-400 uppercase font-semibold">Reflex</span>
             <div className="text-xl font-bold text-arc-accent mt-0.5">{defenses.reflex}</div>
-            <span className="text-[9px] text-slate-500">10 + Lv + Agi + Cls</span>
+            <span className="text-[9px] text-slate-500">10 + ½Lv + Agi + Cls</span>
           </div>
 
           <div className="bg-arc-card p-2.5 rounded-lg border border-arc-border text-center">
             <span className="text-[10px] text-slate-400 uppercase font-semibold">Fortitude</span>
             <div className="text-xl font-bold text-emerald-400 mt-0.5">{defenses.fortitude}</div>
-            <span className="text-[9px] text-slate-500">10 + Lv + Vit + Cls</span>
+            <span className="text-[9px] text-slate-500">10 + ½Lv + Vit + Cls</span>
           </div>
 
           <div className="bg-arc-card p-2.5 rounded-lg border border-arc-border text-center">
             <span className="text-[10px] text-slate-400 uppercase font-semibold">Will</span>
             <div className="text-xl font-bold text-purple-400 mt-0.5">{defenses.will}</div>
-            <span className="text-[9px] text-slate-500">10 + Lv + Mnd + Cls</span>
+            <span className="text-[9px] text-slate-500">10 + ½Lv + Mnd + Cls</span>
           </div>
 
           <div className="bg-arc-card p-2.5 rounded-lg border border-arc-border text-center">
@@ -287,6 +318,7 @@ export default function App() {
           </div>
         </section>
 
+        {/* ATTRIBUTES ROW */}
         <section className="grid grid-cols-3 sm:grid-cols-6 gap-2">
           {(Object.keys(sheet.baseAttributes) as AttributeKey[]).map((attr) => {
             const val = sheet.baseAttributes[attr];
@@ -306,6 +338,7 @@ export default function App() {
           })}
         </section>
 
+        {/* DICE TRAY */}
         <section className="bg-arc-card p-3 rounded-lg border border-arc-border">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-bold text-slate-300 flex items-center gap-1.5 uppercase">
@@ -341,6 +374,7 @@ export default function App() {
           )}
         </section>
 
+        {/* DETAILS TABS */}
         <section className="space-y-3">
           <div className="flex border-b border-arc-border gap-4 text-xs font-semibold">
             <button
