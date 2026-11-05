@@ -226,5 +226,71 @@
       { "name": "Heavyset", "description": "Treated as Large for grapple checks and size-specific mechanics." },
       { "name": "Resilient", "description": "Second Wind restores additional HP equal to 5 + (1/2 Level)." }
     ]
+  },
+  {
+    "id": "dark_dwarf",
+    "name": "Dark Dwarf",
+    "size": "Medium",
+    "speed": 4,
+    "attributeAdjustments": { "mnd": 2, "vit": 2, "agi": -2 },
+    "attributeCaps": { "str": 20, "agi": 18, "vit": 22, "int": 20, "mnd": 22, "chr": 20 },
+    "traits": [
+      { "name": "Darkvision", "description": "Can see in total darkness." },
+      { "name": "Hardy", "description": "+1 bonus to all defences." },
+      { "name": "Slow and Steady", "description": "Speed is never reduced by armour." },
+      { "name": "Deterge", "description": "Once per encounter, expend second wind to cleanse all status effects (except curses) without healing." }
+    ]
+  },
+  {
+    "id": "black_goblin",
+    "name": "Black Goblin",
+    "size": "Small",
+    "speed": 6,
+    "attributeAdjustments": { "agi": 2, "mnd": 2, "str": -2 },
+    "attributeCaps": { "str": 18, "agi": 22, "vit": 20, "int": 20, "mnd": 22, "chr": 20 },
+    "traits": [
+      { "name": "Small Stature", "description": "+1 Reflex Defence, +5 to Stealth checks." },
+      { "name": "Iron Will", "description": "+2 Will Defence." },
+      { "name": "Meticulous", "description": "May reroll Alchemy checks, keeping the second result." }
+    ]
+  },
+  {
+    "id": "hobgoblin",
+    "name": "Hobgoblin",
+    "size": "Small",
+    "speed": 6,
+    "attributeAdjustments": { "str": 2, "vit": 2, "int": -2 },
+    "attributeCaps": { "str": 22, "agi": 20, "vit": 22, "int": 18, "mnd": 20, "chr": 20 },
+    "traits": [
+      { "name": "Small Stature", "description": "+1 Reflex Defence, +5 to Stealth checks." },
+      { "name": "Athletic", "description": "May reroll Athletics checks, keeping the second result." },
+      { "name": "Resilient", "description": "Gain an extra (5 + 1/2 level) HP when using Second Wind." }
+    ]
+  },
+  {
+    "id": "black_orc",
+    "name": "Black Orc",
+    "size": "Medium",
+    "speed": 6,
+    "attributeAdjustments": { "agi": 2, "vit": 2, "mnd": -2 },
+    "attributeCaps": { "str": 20, "agi": 22, "vit": 22, "int": 20, "mnd": 18, "chr": 20 },
+    "traits": [
+      { "name": "Craftsman", "description": "May reroll Smithing checks, keeping the second result." },
+      { "name": "Resilient", "description": "Gain an extra (5 + 1/2 level) HP when using Second Wind." },
+      { "name": "Heavyset", "description": "Treated as Large for spells/abilities if beneficial, and gains Large bonuses for grapple checks." }
+    ]
+  },
+  {
+    "id": "blood_orc",
+    "name": "Blood Orc",
+    "size": "Medium",
+    "speed": 6,
+    "attributeAdjustments": { "mnd": 2, "vit": 2, "chr": -2 },
+    "attributeCaps": { "str": 20, "agi": 20, "vit": 22, "int": 20, "mnd": 22, "chr": 18 },
+    "traits": [
+      { "name": "Iron Will", "description": "+2 Will Defence." },
+      { "name": "Heavyset", "description": "Treated as Large for spells/abilities if beneficial, and gains Large bonuses for grapple checks." },
+      { "name": "Deterge", "description": "Once per encounter, expend second wind to cleanse all status effects (except curses)." }
+    ]
   }
 ]
