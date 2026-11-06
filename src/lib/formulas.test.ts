@@ -208,6 +208,30 @@ describe('Last Arc — Foundry Adapter', () => {
     });
   });
 
+  it('preserves equipped armor during a Foundry round trip', () => {
+  const original: CharacterSheet = {
+    ...testCharacter,
+    equipped: {
+      armor: {
+        id: 'heavy-armor',
+        name: 'Heavy Armor',
+        slot: 'armor',
+        bulk: 3,
+        maxAgiBonus: 1,
+      },
+    },
+  };
+
+  const actor = exportToFoundryActor(original);
+
+  const restored = importFromFoundryActor(
+    actor,
+    testCharacter
+  );
+
+  expect(restored.equipped).toEqual(original.equipped);
+});
+
   it('preserves zero HP during import', () => {
     const actor = exportToFoundryActor(testCharacter);
 
@@ -355,3 +379,43 @@ it('preserves character progression during a round trip', () => {
   expect(restored.gold)
     .toBe(original.gold);
 });
+
+it('prioritizes Foundry item edits over saved flags', () => {
+  const original: CharacterSheet = {
+    ...testCharacter,
+    trainedSkills: ['Athletics'],
+    technicks: ['Power Attack'],
+    talents: ['Provoke'],
+  };
+
+  const actor = exportToFoundryActor(original);
+
+  // Simulate edits made inside Foundry VTT.
+  actor.items = [
+    {
+      name: 'Arcana',
+      type: 'skill',
+      system: { trained: true },
+    },
+    {
+      name: 'Dynamism',
+      type: 'technick',
+      system: {},
+    },
+    {
+      name: 'New Talent',
+      type: 'talent',
+      system: {},
+    },
+  ];
+
+  const restored = importFromFoundryActor(
+    actor,
+    testCharacter
+  );
+
+  expect(restored.trainedSkills).toEqual(['Arcana']);
+  expect(restored.technicks).toEqual(['Dynamism']);
+  expect(restored.talents).toEqual(['New Talent']);
+});
+

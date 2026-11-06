@@ -96,7 +96,8 @@ export function exportToFoundryActor(sheet: CharacterSheet): FoundryActorJSON {
     technicks: [...sheet.technicks],
     talents: [...sheet.talents],
     heroPoints: sheet.heroPoints,
-    gold: sheet.gold
+    gold: sheet.gold,
+    equipped: structuredClone(sheet.equipped)
   }
 }
   };
@@ -128,6 +129,7 @@ export function importFromFoundryActor(
       | 'talents'
       | 'heroPoints'
       | 'gold'
+      | 'equipped'
     >>
   | undefined;
 
@@ -166,6 +168,7 @@ const talents = items
     talents: talents ?? flags?.talents ?? fallbackSheet.talents,
     heroPoints: flags?.heroPoints ?? fallbackSheet.heroPoints,
     gold: flags?.gold ?? fallbackSheet.gold,
+    equipped: flags?.equipped !== undefined ? structuredClone(flags.equipped) : structuredClone(fallbackSheet.equipped),
     baseAttributes: {
       str: attrs.str?.value ?? fallbackSheet.baseAttributes.str,
       vit: attrs.vit?.value ?? fallbackSheet.baseAttributes.vit,
