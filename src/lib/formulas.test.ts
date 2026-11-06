@@ -271,14 +271,22 @@ describe('Last Arc — Foundry Adapter', () => {
     expect(result.baseAttributes.vit).toBe(14);
   });
 
-  it('preserves hero points in exported flags', () => {
-    const actor = exportToFoundryActor(testCharacter);
+  it('preserves character progression in exported flags', () => {
+  const actor = exportToFoundryActor(testCharacter);
 
-    expect(actor.flags?.lastArc).toEqual({
+  expect(actor.flags?.lastArc).toEqual(
+    expect.objectContaining({
+      schemaVersion: 1,
+      classes: testCharacter.classes,
+      trainedSkills: testCharacter.trainedSkills,
+      focusedSkills: testCharacter.focusedSkills,
+      technicks: testCharacter.technicks,
+      talents: testCharacter.talents,
       heroPoints: 1,
       gold: 1000,
-    });
-  });
+    })
+  );
+});
 
   it('exports trained skills and abilities', () => {
     const actor = exportToFoundryActor({
@@ -308,4 +316,42 @@ describe('Last Arc — Foundry Adapter', () => {
       ])
     );
   });
+});
+
+it('preserves character progression during a round trip', () => {
+  const original: CharacterSheet = {
+    ...testCharacter,
+    classes: [
+      { name: 'Warrior', level: 3 },
+      { name: 'Mage', level: 2 },
+    ],
+    trainedSkills: ['Athletics', 'Arcana'],
+    focusedSkills: ['Athletics'],
+    technicks: ['Power Attack', 'Dynamism'],
+    talents: ['Provoke'],
+    heroPoints: 3,
+    gold: 2750,
+  };
+
+  const actor = exportToFoundryActor(original);
+
+  // Import into a different fallback to detect data loss.
+  const restored = importFromFoundryActor(
+    actor,
+    testCharacter
+  );
+
+  expect(restored.classes).toEqual(original.classes);
+  expect(restored.trainedSkills)
+    .toEqual(original.trainedSkills);
+  expect(restored.focusedSkills)
+    .toEqual(original.focusedSkills);
+  expect(restored.technicks)
+    .toEqual(original.technicks);
+  expect(restored.talents)
+    .toEqual(original.talents);
+  expect(restored.heroPoints)
+    .toBe(original.heroPoints);
+  expect(restored.gold)
+    .toBe(original.gold);
 });

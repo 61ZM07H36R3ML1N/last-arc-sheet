@@ -88,11 +88,17 @@ export function exportToFoundryActor(sheet: CharacterSheet): FoundryActorJSON {
       }))
     ],
     flags: {
-      lastArc: {
-        heroPoints: sheet.heroPoints,
-        gold: sheet.gold
-      }
-    }
+  lastArc: {
+    schemaVersion: 1,
+    classes: sheet.classes.map((c) => ({ ...c })),
+    trainedSkills: [...sheet.trainedSkills],
+    focusedSkills: [...sheet.focusedSkills],
+    technicks: [...sheet.technicks],
+    talents: [...sheet.talents],
+    heroPoints: sheet.heroPoints,
+    gold: sheet.gold
+  }
+}
   };
 }
 
@@ -112,6 +118,37 @@ export function importFromFoundryActor(
   const attrs = sys.attributes ?? {};
   const details = sys.details as FoundryActorJSON['system']['details'] | undefined;
 
+  const flags = actor?.flags?.lastArc as
+  | Partial<Pick<
+      CharacterSheet,
+      | 'classes'
+      | 'trainedSkills'
+      | 'focusedSkills'
+      | 'technicks'
+      | 'talents'
+      | 'heroPoints'
+      | 'gold'
+    >>
+  | undefined;
+
+const items = actor?.items;
+
+const trainedSkills = items
+  ?.filter(
+    (item) =>
+      item.type === 'skill' &&
+      item.system.trained === true
+  )
+  .map((item) => item.name);
+
+const technicks = items
+  ?.filter((item) => item.type === 'technick')
+  .map((item) => item.name);
+
+const talents = items
+  ?.filter((item) => item.type === 'talent')
+  .map((item) => item.name);
+
   return {
     ...fallbackSheet,
     name: actor?.name || fallbackSheet.name,
@@ -122,6 +159,13 @@ export function importFromFoundryActor(
     currentMp: sys.mana?.value ?? fallbackSheet.currentMp,
     breakStep: sys.breakGauge?.value ?? fallbackSheet.breakStep,
     notes: details?.notes ?? fallbackSheet.notes ?? '',
+    classes: flags?.classes ?? fallbackSheet.classes,
+    trainedSkills: trainedSkills ?? flags?.trainedSkills ?? fallbackSheet.trainedSkills,
+    focusedSkills: flags?.focusedSkills ?? fallbackSheet.focusedSkills,
+    technicks: technicks ?? flags?.technicks ?? fallbackSheet.technicks,
+    talents: talents ?? flags?.talents ?? fallbackSheet.talents,
+    heroPoints: flags?.heroPoints ?? fallbackSheet.heroPoints,
+    gold: flags?.gold ?? fallbackSheet.gold,
     baseAttributes: {
       str: attrs.str?.value ?? fallbackSheet.baseAttributes.str,
       vit: attrs.vit?.value ?? fallbackSheet.baseAttributes.vit,
