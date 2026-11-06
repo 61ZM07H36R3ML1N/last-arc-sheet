@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-    # Prevent infinite workflow loops when the bot pushes the version commit
     paths-ignore:
       - 'package.json'
       - 'package-lock.json'
@@ -12,55 +11,95 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: last-arc-version-bump
+  cancel-in-progress: false
+
 jobs:
   bump-version:
+    name: Validate and Release
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Full history is required to read existing git tags
-          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+          persist-credentials: true
 
-      - name: Setup Node.js
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: '24'
+          cache: npm
 
-      - name: Configure Git Committer
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+      - name: Install dependencies
+        run: npm ci
 
-      # Reads commit message. If it contains "#major" or "#minor", bumps accordingly.
-      # Default fallback bumps patch (0.3.3 -> 0.3.4).
-      - name: Bump Version in package.json
-        id: version_bump
+      - name: Run regression tests
+        run: npm run test:run
+
+      - name: Build application
+        run: npm run build
+
+      - name: Configure Git identity
         run: |
-          COMMIT_MSG="${{ github.event.head_commit.message }}"
-          if [[ "$COMMIT_MSG" =~ "#major" ]]; then
+          git config user.name "github-actions[bot]"
+          git config user.email \
+            "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Determine version bump
+        id: bump
+        env:
+          COMMIT_MSG: ${{ github.event.head_commit.message }}
+        shell: bash
+        run: |
+          if [[ "$COMMIT_MSG" == *"#major"* ]]; then
             BUMP_TYPE="major"
-          elif [[ "$COMMIT_MSG" =~ "#minor" ]]; then
+          elif [[ "$COMMIT_MSG" == *"#minor"* ]]; then
             BUMP_TYPE="minor"
           else
             BUMP_TYPE="patch"
           fi
 
-          # npm version automatically creates a git commit and tag
-          NEW_TAG=$(npm version $BUMP_TYPE -m "chore(release): bump version to %s [skip ci]")
-          echo "NEW_TAG=$NEW_TAG" >> $GITHUB_ENV
-          echo "Created new version tag: $NEW_TAG"
+          echo "type=$BUMP_TYPE" >> "$GITHUB_OUTPUT"
+          echo "Selected version bump: $BUMP_TYPE"
 
-      - name: Push Commit and Tag to GitHub
-        run: |
-          git push origin main
-          git push origin $NEW_TAG
-
-      # Optional: Run the build check to make sure TS passes with the new tag
-      - name: Install & Build Check
-        run: |
-          npm ci
-          npm run build
+      - name: Update package version
+        id: version
         env:
-          GITHUB_REF_NAME: ${{ env.NEW_TAG }}
+          BUMP_TYPE: ${{ steps.bump.outputs.type }}
+        run: |
+          npm version "$BUMP_TYPE" --no-git-tag-version
+
+          NEW_VERSION=$(node -p "require('./package.json').version")
+          NEW_TAG="v${NEW_VERSION}"
+
+          echo "tag=$NEW_TAG" >> "$GITHUB_OUTPUT"
+          echo "New version: $NEW_TAG"
+
+      - name: Commit and tag release
+        env:
+          NEW_TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          git add package.json package-lock.json
+
+          git commit -m \
+            "chore(release): bump version to ${NEW_TAG} [skip ci]"
+
+          git tag "$NEW_TAG"
+
+      - name: Publish release commit and tag
+        env:
+          NEW_TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          git fetch origin main
+
+          if [ "$(git rev-parse HEAD^)" != \
+               "$(git rev-parse origin/main)" ]; then
+            echo "Main changed during release preparation."
+            echo "Refusing to publish a stale release."
+            exit 1
+          fi
+
+          git push --atomic origin HEAD:main "refs/tags/${NEW_TAG}"

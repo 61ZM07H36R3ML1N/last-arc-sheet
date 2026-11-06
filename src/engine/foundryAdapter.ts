@@ -120,8 +120,8 @@ export function importFromFoundryActor(
     zodiacSign: (details?.zodiacSign as ZodiacSign) || fallbackSheet.zodiacSign || 'Aries',
     currentHp: sys.health?.value ?? fallbackSheet.currentHp,
     currentMp: sys.mana?.value ?? fallbackSheet.currentMp,
-    breakStep: sys.breakGauge?.value ?? 0,
-    notes: details?.notes || fallbackSheet.notes || '',
+    breakStep: sys.breakGauge?.value ?? fallbackSheet.breakStep,
+    notes: details?.notes ?? fallbackSheet.notes ?? '',
     baseAttributes: {
       str: attrs.str?.value ?? fallbackSheet.baseAttributes.str,
       vit: attrs.vit?.value ?? fallbackSheet.baseAttributes.vit,

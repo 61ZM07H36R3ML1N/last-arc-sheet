@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import type { CharacterSheet } from '../types';
 
+
 // Attribute Modifier: Math.floor((score - 10) / 2)
 export function getModifier(score: number): number {
   return Math.floor((score - 10) / 2);
@@ -19,16 +20,30 @@ export interface DiceRollResult {
   isCrit: boolean;
 }
 
-export function rollExplodingDie(sides: number): { rolls: number[]; total: number } {
+export function rollExplodingDie(
+  sides: number
+): { rolls: number[]; total: number } {
+
+  // Reject invalid dice configurations.
+  if (!Number.isSafeInteger(sides) || sides < 2) {
+    throw new RangeError(
+      'Dice must have an integer number of sides >= 2'
+    );
+  }
+
   const rolls: number[] = [];
   let currentRoll: number;
-  
+
   do {
     currentRoll = Math.floor(Math.random() * sides) + 1;
     rolls.push(currentRoll);
   } while (currentRoll === sides);
 
-  const total = rolls.reduce((acc, curr) => acc + curr, 0);
+  const total = rolls.reduce(
+    (acc, curr) => acc + curr,
+    0
+  );
+
   return { rolls, total };
 }
 
