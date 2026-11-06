@@ -1,0 +1,32 @@
+import type { CharacterSheet } from '../types';
+
+export const testCharacter: CharacterSheet = {
+  id: 'test-kress',
+  name: 'Kress',
+  race: 'Human',
+  ethos: 'Pure Good',
+  zodiacSign: 'Aries',
+  classes: [{ name: 'Warrior', level: 1 }],
+  baseAttributes: {
+    str: 16,
+    vit: 14,
+    agi: 12,
+    int: 10,
+    mnd: 10,
+    chr: 8,
+  },
+  currentHp: 32,
+  tempHp: 0,
+  currentMp: 6,
+  tempMp: 0,
+  breakStep: 0,
+  heroPoints: 1,
+  gold: 1000,
+  notes: '',
+  trainedSkills: [],
+  focusedSkills: [],
+  technicks: [],
+  talents: [],
+  equipped: {},
+  inventory: [],
+}

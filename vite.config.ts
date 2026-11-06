@@ -1,4 +1,3 @@
-import { execSync } from 'node:child_process';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
@@ -9,15 +8,13 @@ import { cloudflare } from "@cloudflare/vite-plugin";
 
 // Resolve version: CI / GitHub Actions Tag -> Local Git Tag -> package.json fallback
 const getAppVersion = (): string => {
-  if (process.env.GITHUB_REF_NAME) {
-    return process.env.GITHUB_REF_NAME;
+  const ref = process.env.GITHUB_REF_NAME;
+
+  if (ref && /^v\d+\.\d+\.\d+$/.test(ref)) {
+    return ref;
   }
 
-  try {
-    return execSync('git describe --tags --abbrev=0').toString().trim();
-  } catch {
-    return `v${packageJson.version}`;
-  }
+  return `v${packageJson.version}`;
 };
 
 export default defineConfig({
