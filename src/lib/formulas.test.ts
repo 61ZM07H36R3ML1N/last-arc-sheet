@@ -419,3 +419,60 @@ it('prioritizes Foundry item edits over saved flags', () => {
   expect(restored.talents).toEqual(['New Talent']);
 });
 
+it('rejects malformed attribute values during import', () => {
+  const actor = exportToFoundryActor(testCharacter);
+
+  // Simulate malformed external JSON.
+  const corruptedActor: unknown = {
+    ...actor,
+    system: {
+      ...actor.system,
+      attributes: {
+        ...actor.system.attributes,
+        str: { value: '999' },
+        vit: { value: null },
+        agi: { value: Number.POSITIVE_INFINITY },
+      },
+    },
+  };
+
+  const restored = importFromFoundryActor(
+    corruptedActor,
+    testCharacter
+  );
+
+  expect(restored.baseAttributes.str).toBe(
+    testCharacter.baseAttributes.str
+  );
+
+  expect(restored.baseAttributes.vit).toBe(
+    testCharacter.baseAttributes.vit
+  );
+
+  expect(restored.baseAttributes.agi).toBe(
+    testCharacter.baseAttributes.agi
+  );
+});
+
+it('rejects malformed resource values during import', () => {
+  const actor = exportToFoundryActor(testCharacter);
+
+  const corruptedActor: unknown = {
+    ...actor,
+    system: {
+      ...actor.system,
+      health: { value: '999', max: 999 },
+      mana: { value: Number.POSITIVE_INFINITY, max: 100 },
+      breakGauge: { value: -1 },
+    },
+  };
+
+  const restored = importFromFoundryActor(
+    corruptedActor,
+    testCharacter
+  );
+
+  expect(restored.currentHp).toBe(testCharacter.currentHp);
+  expect(restored.currentMp).toBe(testCharacter.currentMp);
+  expect(restored.breakStep).toBe(testCharacter.breakStep);
+});

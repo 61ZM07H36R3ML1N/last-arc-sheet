@@ -103,6 +103,27 @@ export function exportToFoundryActor(sheet: CharacterSheet): FoundryActorJSON {
   };
 }
 
+function finiteNumberOr(
+  value: unknown,
+  fallback: number
+): number {
+  return typeof value === 'number' &&
+    Number.isFinite(value)
+    ? value
+    : fallback;
+}
+
+function nonNegativeNumberOr(
+  value: unknown,
+  fallback: number
+): number {
+  return typeof value === 'number' &&
+    Number.isFinite(value) &&
+    value >= 0
+    ? value
+    : fallback;
+}
+
 /**
  * Parses and maps a Foundry VTT Actor export back into a Last Arc character sheet.
  */
@@ -157,9 +178,9 @@ const talents = items
     race: details?.race || fallbackSheet.race,
     ethos: details?.ethos || fallbackSheet.ethos,
     zodiacSign: (details?.zodiacSign as ZodiacSign) || fallbackSheet.zodiacSign || 'Aries',
-    currentHp: sys.health?.value ?? fallbackSheet.currentHp,
-    currentMp: sys.mana?.value ?? fallbackSheet.currentMp,
-    breakStep: sys.breakGauge?.value ?? fallbackSheet.breakStep,
+    currentHp: nonNegativeNumberOr(sys.health?.value,fallbackSheet.currentHp),
+    currentMp: nonNegativeNumberOr(sys.mana?.value, fallbackSheet.currentMp),
+    breakStep: nonNegativeNumberOr(sys.breakGauge?.value, fallbackSheet.breakStep),
     notes: details?.notes ?? fallbackSheet.notes ?? '',
     classes: flags?.classes ?? fallbackSheet.classes,
     trainedSkills: trainedSkills ?? flags?.trainedSkills ?? fallbackSheet.trainedSkills,
@@ -170,12 +191,12 @@ const talents = items
     gold: flags?.gold ?? fallbackSheet.gold,
     equipped: flags?.equipped !== undefined ? structuredClone(flags.equipped) : structuredClone(fallbackSheet.equipped),
     baseAttributes: {
-      str: attrs.str?.value ?? fallbackSheet.baseAttributes.str,
-      vit: attrs.vit?.value ?? fallbackSheet.baseAttributes.vit,
-      agi: attrs.agi?.value ?? fallbackSheet.baseAttributes.agi,
-      int: attrs.int?.value ?? fallbackSheet.baseAttributes.int,
-      mnd: attrs.mnd?.value ?? fallbackSheet.baseAttributes.mnd,
-      chr: attrs.chr?.value ?? fallbackSheet.baseAttributes.chr
+      str: finiteNumberOr(attrs.str?.value, fallbackSheet.baseAttributes.str),
+      vit: finiteNumberOr(attrs.vit?.value, fallbackSheet.baseAttributes.vit),
+      agi: finiteNumberOr(attrs.agi?.value, fallbackSheet.baseAttributes.agi),
+      int: finiteNumberOr(attrs.int?.value, fallbackSheet.baseAttributes.int),
+      mnd: finiteNumberOr(attrs.mnd?.value, fallbackSheet.baseAttributes.mnd),
+      chr: finiteNumberOr(attrs.chr?.value, fallbackSheet.baseAttributes.chr)
     }
   };
 }
