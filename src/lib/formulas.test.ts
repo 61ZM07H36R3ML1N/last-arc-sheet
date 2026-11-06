@@ -208,6 +208,30 @@ describe('Last Arc — Foundry Adapter', () => {
     });
   });
 
+  it('preserves equipped armor during a Foundry round trip', () => {
+  const original: CharacterSheet = {
+    ...testCharacter,
+    equipped: {
+      armor: {
+        id: 'heavy-armor',
+        name: 'Heavy Armor',
+        slot: 'armor',
+        bulk: 3,
+        maxAgiBonus: 1,
+      },
+    },
+  };
+
+  const actor = exportToFoundryActor(original);
+
+  const restored = importFromFoundryActor(
+    actor,
+    testCharacter
+  );
+
+  expect(restored.equipped).toEqual(original.equipped);
+});
+
   it('preserves zero HP during import', () => {
     const actor = exportToFoundryActor(testCharacter);
 
@@ -271,14 +295,22 @@ describe('Last Arc — Foundry Adapter', () => {
     expect(result.baseAttributes.vit).toBe(14);
   });
 
-  it('preserves hero points in exported flags', () => {
-    const actor = exportToFoundryActor(testCharacter);
+  it('preserves character progression in exported flags', () => {
+  const actor = exportToFoundryActor(testCharacter);
 
-    expect(actor.flags?.lastArc).toEqual({
+  expect(actor.flags?.lastArc).toEqual(
+    expect.objectContaining({
+      schemaVersion: 1,
+      classes: testCharacter.classes,
+      trainedSkills: testCharacter.trainedSkills,
+      focusedSkills: testCharacter.focusedSkills,
+      technicks: testCharacter.technicks,
+      talents: testCharacter.talents,
       heroPoints: 1,
       gold: 1000,
-    });
-  });
+    })
+  );
+});
 
   it('exports trained skills and abilities', () => {
     const actor = exportToFoundryActor({
@@ -308,4 +340,284 @@ describe('Last Arc — Foundry Adapter', () => {
       ])
     );
   });
+});
+
+it('preserves character progression during a round trip', () => {
+  const original: CharacterSheet = {
+    ...testCharacter,
+    classes: [
+      { name: 'Warrior', level: 3 },
+      { name: 'Mage', level: 2 },
+    ],
+    trainedSkills: ['Athletics', 'Arcana'],
+    focusedSkills: ['Athletics'],
+    technicks: ['Power Attack', 'Dynamism'],
+    talents: ['Provoke'],
+    heroPoints: 3,
+    gold: 2750,
+  };
+
+  const actor = exportToFoundryActor(original);
+
+  // Import into a different fallback to detect data loss.
+  const restored = importFromFoundryActor(
+    actor,
+    testCharacter
+  );
+
+  expect(restored.classes).toEqual(original.classes);
+  expect(restored.trainedSkills)
+    .toEqual(original.trainedSkills);
+  expect(restored.focusedSkills)
+    .toEqual(original.focusedSkills);
+  expect(restored.technicks)
+    .toEqual(original.technicks);
+  expect(restored.talents)
+    .toEqual(original.talents);
+  expect(restored.heroPoints)
+    .toBe(original.heroPoints);
+  expect(restored.gold)
+    .toBe(original.gold);
+});
+
+it('prioritizes Foundry item edits over saved flags', () => {
+  const original: CharacterSheet = {
+    ...testCharacter,
+    trainedSkills: ['Athletics'],
+    technicks: ['Power Attack'],
+    talents: ['Provoke'],
+  };
+
+  const actor = exportToFoundryActor(original);
+
+  // Simulate edits made inside Foundry VTT.
+  actor.items = [
+    {
+      name: 'Arcana',
+      type: 'skill',
+      system: { trained: true },
+    },
+    {
+      name: 'Dynamism',
+      type: 'technick',
+      system: {},
+    },
+    {
+      name: 'New Talent',
+      type: 'talent',
+      system: {},
+    },
+  ];
+
+  const restored = importFromFoundryActor(
+    actor,
+    testCharacter
+  );
+
+  expect(restored.trainedSkills).toEqual(['Arcana']);
+  expect(restored.technicks).toEqual(['Dynamism']);
+  expect(restored.talents).toEqual(['New Talent']);
+});
+
+it('rejects malformed attribute values during import', () => {
+  const actor = exportToFoundryActor(testCharacter);
+
+  // Simulate malformed external JSON.
+  const corruptedActor: unknown = {
+    ...actor,
+    system: {
+      ...actor.system,
+      attributes: {
+        ...actor.system.attributes,
+        str: { value: '999' },
+        vit: { value: null },
+        agi: { value: Number.POSITIVE_INFINITY },
+      },
+    },
+  };
+
+  const restored = importFromFoundryActor(
+    corruptedActor,
+    testCharacter
+  );
+
+  expect(restored.baseAttributes.str).toBe(
+    testCharacter.baseAttributes.str
+  );
+
+  expect(restored.baseAttributes.vit).toBe(
+    testCharacter.baseAttributes.vit
+  );
+
+  expect(restored.baseAttributes.agi).toBe(
+    testCharacter.baseAttributes.agi
+  );
+});
+
+it('rejects malformed resource values during import', () => {
+  const actor = exportToFoundryActor(testCharacter);
+
+  const corruptedActor: unknown = {
+    ...actor,
+    system: {
+      ...actor.system,
+      health: { value: '999', max: 999 },
+      mana: { value: Number.POSITIVE_INFINITY, max: 100 },
+      breakGauge: { value: -1 },
+    },
+  };
+
+  const restored = importFromFoundryActor(
+    corruptedActor,
+    testCharacter
+  );
+
+  expect(restored.currentHp).toBe(testCharacter.currentHp);
+  expect(restored.currentMp).toBe(testCharacter.currentMp);
+  expect(restored.breakStep).toBe(testCharacter.breakStep);
+});
+
+it('safely handles malformed Foundry items', () => {
+  const actor = exportToFoundryActor(testCharacter);
+
+  const corruptedActor: unknown = {
+    ...actor,
+    items: [
+      null,
+      42,
+      'invalid item',
+      { type: 'skill', name: null, system: null },
+      { type: 'technick', name: 123, system: {} },
+      { type: 'talent', name: '', system: {} },
+    ],
+  };
+
+  expect(() =>
+    importFromFoundryActor(corruptedActor, testCharacter)
+  ).not.toThrow();
+
+  const restored = importFromFoundryActor(
+    corruptedActor,
+    testCharacter
+  );
+
+  expect(restored.trainedSkills)
+    .toEqual(testCharacter.trainedSkills);
+
+  expect(restored.technicks)
+    .toEqual(testCharacter.technicks);
+
+  expect(restored.talents)
+    .toEqual(testCharacter.talents);
+});
+
+it('rejects malformed progression flags during import', () => {
+  const actor = exportToFoundryActor(testCharacter);
+
+  const corruptedActor: unknown = {
+    ...actor,
+    flags: {
+      lastArc: {
+        ...(typeof actor.flags?.lastArc === 'object'
+          && actor.flags.lastArc !== null
+          ? actor.flags.lastArc
+          : {}),
+        classes: [
+          { name: 'Warrior', level: -5 },
+        ],
+        focusedSkills: 'corrupted',
+        heroPoints: Number.POSITIVE_INFINITY,
+        gold: -100,
+      },
+    },
+  };
+
+  const restored = importFromFoundryActor(
+    corruptedActor,
+    testCharacter
+  );
+
+  expect(restored.classes).toEqual(testCharacter.classes);
+  expect(restored.focusedSkills)
+    .toEqual(testCharacter.focusedSkills);
+  expect(restored.heroPoints)
+    .toBe(testCharacter.heroPoints);
+  expect(restored.gold).toBe(testCharacter.gold);
+});
+
+it('preserves progression when class data is partially corrupted', () => {
+  const actor = exportToFoundryActor(testCharacter);
+
+  const corruptedActor: unknown = {
+    ...actor,
+    flags: {
+      lastArc: {
+        ...(typeof actor.flags?.lastArc === 'object'
+          && actor.flags.lastArc !== null
+          ? actor.flags.lastArc
+          : {}),
+        classes: [
+          { name: 'Warrior', level: 3 },
+          { name: 'Mage', level: -2 },
+        ],
+      },
+    },
+  };
+
+  const restored = importFromFoundryActor(
+    corruptedActor,
+    testCharacter
+  );
+
+  expect(restored.classes).toEqual(testCharacter.classes);
+});
+
+it('rejects malformed equipped data during import', () => {
+  const actor = exportToFoundryActor(testCharacter);
+
+  const corruptedActor: unknown = {
+    ...actor,
+    flags: {
+      lastArc: {
+        ...(typeof actor.flags?.lastArc === 'object'
+          && actor.flags.lastArc !== null
+          ? actor.flags.lastArc
+          : {}),
+        equipped: 'corrupted',
+      },
+    },
+  };
+
+  const restored = importFromFoundryActor(
+    corruptedActor,
+    testCharacter
+  );
+
+  expect(restored.equipped).toEqual(
+    testCharacter.equipped
+  );
+});
+
+it('preserves equipped accessories during Foundry round trips', () => {
+  const sheet: CharacterSheet = {
+    ...testCharacter,
+    equipped: {
+      ...testCharacter.equipped,
+      accessory1: {
+        id: 'ring-1',
+        name: 'Silver Ring',
+        slot: 'accessory',
+        bulk: 0,
+        reflexBonus: 1,
+      },
+    },
+  };
+
+  const actor = exportToFoundryActor(sheet);
+  const restored = importFromFoundryActor(
+    actor,
+    testCharacter
+  );
+
+  expect(restored.equipped).toEqual(sheet.equipped);
 });
