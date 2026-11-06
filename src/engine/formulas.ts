@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import type { CharacterSheet } from '../types';
 
+
 // Attribute Modifier: Math.floor((score - 10) / 2)
 export function getModifier(score: number): number {
   return Math.floor((score - 10) / 2);
@@ -22,6 +23,7 @@ export interface DiceRollResult {
 export function rollExplodingDie(
   sides: number
 ): { rolls: number[]; total: number } {
+
   // Reject invalid dice configurations.
   if (!Number.isSafeInteger(sides) || sides < 2) {
     throw new RangeError(
