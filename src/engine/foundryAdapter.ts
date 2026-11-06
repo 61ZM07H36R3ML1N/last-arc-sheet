@@ -1,4 +1,4 @@
-import type { CharacterSheet } from '../types';
+import type { CharacterSheet, Equipment, EquipmentSlot, DamageType } from '../types';
 import type { ZodiacSign } from '../data/zodiac';
 import { calculateDefenses, getTotalLevel } from './formulas';
 
@@ -124,6 +124,216 @@ function nonNegativeNumberOr(
     : fallback;
 }
 
+function nonNegativeIntegerOr(
+  value: unknown,
+  fallback: number
+): number {
+  return typeof value === 'number' &&
+    Number.isSafeInteger(value) &&
+    value >= 0
+    ? value
+    : fallback;
+}
+
+function validStringArrayOr(
+  value: unknown,
+  fallback: string[]
+): string[] {
+  return Array.isArray(value) &&
+    value.every(
+      (item) =>
+        typeof item === 'string' &&
+        item.trim().length > 0
+    )
+    ? [...value]
+    : fallback;
+}
+
+function validClassesOr(
+  value: unknown,
+  fallback: CharacterSheet['classes']
+): CharacterSheet['classes'] {
+  if (
+    !Array.isArray(value) ||
+    !value.every(
+      (entry) =>
+        isRecord(entry) &&
+        typeof entry.name === 'string' &&
+        entry.name.trim().length > 0 &&
+        typeof entry.level === 'number' &&
+        Number.isSafeInteger(entry.level) &&
+        entry.level > 0
+    )
+  ) {
+    return fallback;
+  }
+
+  return value.map((entry) => ({
+    name: entry.name,
+    level: entry.level,
+  })) as CharacterSheet['classes'];
+}
+
+function isRecord(
+  value: unknown
+): value is Record<string, unknown> {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    !Array.isArray(value)
+  );
+}
+
+const equipmentSlots = [
+  'mainHand',
+  'offHand',
+  'armor',
+  'mask',
+  'tome',
+  'instrument',
+  'accessory',
+] as const satisfies readonly EquipmentSlot[];
+
+const damageTypes = [
+  'blunt',
+  'piercing',
+  'slashing',
+  'cold',
+  'dark',
+  'electric',
+  'fire',
+  'holy',
+  'unaspected',
+] as const satisfies readonly DamageType[];
+
+const slotMapping = {
+  mainHand: 'mainHand',
+  offHand: 'offHand',
+  armor: 'armor',
+  mask: 'mask',
+  tome: 'tome',
+  instrument: 'instrument',
+  accessory1: 'accessory',
+  accessory2: 'accessory',
+} as const satisfies Record<
+  keyof CharacterSheet['equipped'],
+  EquipmentSlot
+>;
+
+function isEquipment(
+  value: unknown
+): value is Equipment {
+  if (!isRecord(value)) return false;
+
+  if (
+    typeof value.id !== 'string' ||
+    !value.id.trim() ||
+    typeof value.name !== 'string' ||
+    !value.name.trim() ||
+    !equipmentSlots.some(
+      (slot) => slot === value.slot
+    ) ||
+    typeof value.bulk !== 'number' ||
+    !Number.isFinite(value.bulk) ||
+    value.bulk < 0
+  ) {
+    return false;
+  }
+
+  const numericFields = [
+    'atkBonus',
+    'reflexBonus',
+    'dr',
+    'maxAgiBonus',
+    'checkPenalty',
+    'performanceBonus',
+  ];
+
+  for (const field of numericFields) {
+    const fieldValue = value[field];
+
+    if (
+      fieldValue !== undefined &&
+      (typeof fieldValue !== 'number' ||
+        !Number.isFinite(fieldValue))
+    ) {
+      return false;
+    }
+  }
+
+  const stringFields = [
+    'damageDice',
+    'specialText',
+    'availability',
+  ];
+
+  for (const field of stringFields) {
+    const fieldValue = value[field];
+
+    if (
+      fieldValue !== undefined &&
+      typeof fieldValue !== 'string'
+    ) {
+      return false;
+    }
+  }
+
+  if (
+    value.damageType !== undefined &&
+    !damageTypes.some(
+      (type) => type === value.damageType
+    )
+  ) {
+    return false;
+  }
+
+  return true;
+}
+
+function isEquipped(
+  value: unknown
+): value is CharacterSheet['equipped'] {
+  return (
+    isRecord(value) &&
+    Object.entries(value).every(([slot, equipment]) => {
+      if (!(slot in slotMapping)) {
+        return false;
+      }
+
+      if (equipment === null) {
+        return true;
+      }
+
+      if (!isEquipment(equipment)) {
+        return false;
+      }
+
+      const expectedSlot =
+        slotMapping[slot as keyof typeof slotMapping];
+
+      return equipment.slot === expectedSlot;
+    })
+  );
+}
+
+type ValidFoundryItem = {
+  name: string;
+  type: string;
+  system: Record<string, unknown>;
+};
+
+function isValidFoundryItem(
+  value: unknown
+): value is ValidFoundryItem {
+  return (
+    isRecord(value) &&
+    typeof value.name === 'string' &&
+    value.name.trim().length > 0 &&
+    typeof value.type === 'string' &&
+    isRecord(value.system)
+  );
+}
+
 /**
  * Parses and maps a Foundry VTT Actor export back into a Last Arc character sheet.
  */
@@ -154,9 +364,22 @@ export function importFromFoundryActor(
     >>
   | undefined;
 
-const items = actor?.items;
+const rawItems: unknown = actor?.items;
 
-const trainedSkills = items
+const validItems = Array.isArray(rawItems)
+  ? rawItems.filter(isValidFoundryItem)
+  : undefined;
+
+// An empty array is intentional.
+// A nonempty array containing no valid items is malformed.
+const usableItems =
+  Array.isArray(rawItems) &&
+  validItems !== undefined &&
+  (rawItems.length === 0 || validItems.length > 0)
+    ? validItems
+    : undefined;
+
+const trainedSkills = usableItems
   ?.filter(
     (item) =>
       item.type === 'skill' &&
@@ -164,11 +387,11 @@ const trainedSkills = items
   )
   .map((item) => item.name);
 
-const technicks = items
+const technicks = usableItems
   ?.filter((item) => item.type === 'technick')
   .map((item) => item.name);
 
-const talents = items
+const talents = usableItems
   ?.filter((item) => item.type === 'talent')
   .map((item) => item.name);
 
@@ -182,14 +405,16 @@ const talents = items
     currentMp: nonNegativeNumberOr(sys.mana?.value, fallbackSheet.currentMp),
     breakStep: nonNegativeNumberOr(sys.breakGauge?.value, fallbackSheet.breakStep),
     notes: details?.notes ?? fallbackSheet.notes ?? '',
-    classes: flags?.classes ?? fallbackSheet.classes,
+    classes: validClassesOr(flags?.classes,fallbackSheet.classes),
     trainedSkills: trainedSkills ?? flags?.trainedSkills ?? fallbackSheet.trainedSkills,
-    focusedSkills: flags?.focusedSkills ?? fallbackSheet.focusedSkills,
+    focusedSkills: validStringArrayOr(flags?.focusedSkills,fallbackSheet.focusedSkills),
     technicks: technicks ?? flags?.technicks ?? fallbackSheet.technicks,
     talents: talents ?? flags?.talents ?? fallbackSheet.talents,
-    heroPoints: flags?.heroPoints ?? fallbackSheet.heroPoints,
-    gold: flags?.gold ?? fallbackSheet.gold,
-    equipped: flags?.equipped !== undefined ? structuredClone(flags.equipped) : structuredClone(fallbackSheet.equipped),
+    heroPoints: nonNegativeIntegerOr(flags?.heroPoints,fallbackSheet.heroPoints),
+    gold: nonNegativeIntegerOr(flags?.gold,fallbackSheet.gold),
+    equipped: isEquipped(flags?.equipped)
+      ? structuredClone(flags.equipped)
+      : structuredClone(fallbackSheet.equipped),
     baseAttributes: {
       str: finiteNumberOr(attrs.str?.value, fallbackSheet.baseAttributes.str),
       vit: finiteNumberOr(attrs.vit?.value, fallbackSheet.baseAttributes.vit),
