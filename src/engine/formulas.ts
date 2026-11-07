@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import type { CharacterSheet } from '../types';
-
+import { getBreakState } from './breakGauge';
 
 // Attribute Modifier: Math.floor((score - 10) / 2)
 export function getModifier(score: number): number {
@@ -115,4 +115,23 @@ export function calculateDefenses(sheet: CharacterSheet) {
   const breakThreshold = fortitude + (sheet.technicks?.includes('Threshold Up') ? 5 : 0);
 
   return { reflex, fortitude, will, breakThreshold };
+}
+
+export function calculateDefensesWithBreak(
+  sheet: CharacterSheet,
+) {
+  const base = calculateDefenses(sheet);
+  const breakState = getBreakState(sheet.breakStep);
+
+  return {
+    reflex: base.reflex + breakState.penalty,
+    fortitude: base.fortitude + breakState.penalty,
+    will: base.will + breakState.penalty,
+
+    // Deliberately unchanged.
+    breakThreshold: base.breakThreshold,
+
+    breakPenalty: breakState.penalty,
+    canAct: breakState.canAct,
+  };
 }

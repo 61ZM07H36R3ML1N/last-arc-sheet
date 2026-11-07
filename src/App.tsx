@@ -14,7 +14,7 @@ import {
   Info 
 } from 'lucide-react';
 import { useCharacterStore } from './store/useCharacterStore';
-import { getModifier, getTotalLevel, calculateDefenses, rollExplodingDie } from './engine/formulas';
+import { getModifier, getTotalLevel, calculateDefensesWithBreak, rollExplodingDie } from './engine/formulas';
 import { ZODIAC_SIGNS } from './data/zodiac';
 import CharacterEditorModal from './components/character/CharacterEditorModal';
 import JsonSyncModal from './components/character/JsonSyncModal';
@@ -44,7 +44,7 @@ export default function App() {
   const [diceLog, setDiceLog] = useState<{ label: string; rolls: number[]; total: number; exploded: boolean }[]>([]);
 
   const totalLevel = useMemo(() => getTotalLevel(sheet), [sheet]);
-  const defenses = useMemo(() => calculateDefenses(sheet), [sheet]);
+  const defenses = useMemo(() => calculateDefensesWithBreak(sheet), [sheet]);
   const primaryClass = sheet.classes[0]?.name || 'Warrior';
 
   const vitMod = useMemo(() => getModifier(sheet.baseAttributes.vit), [sheet.baseAttributes.vit]);
@@ -119,14 +119,14 @@ export default function App() {
     }
   };
 
-  const breakLabels = ['Normal', 'Step 1 (-2)', 'Step 2 (-5)', 'Step 3 (-10)', 'Broken!'];
-  const breakColors = [
-    'bg-arc-break-normal',
-    'bg-arc-break-step1',
-    'bg-arc-break-step2',
-    'bg-arc-break-step3',
-    'bg-arc-break-broken'
-  ];
+  const breakSteps = [
+    { label: 'Normal', penalty: '0', color: 'bg-arc-break-normal' },
+    { label: 'Step 1', penalty: '-1', color: 'bg-arc-break-step1' },
+    { label: 'Step 2', penalty: '-2', color: 'bg-arc-break-step2' },
+    { label: 'Step 3', penalty: '-5', color: 'bg-arc-break-step3' },
+    { label: 'Step 4', penalty: '-10', color: 'bg-arc-break-step3' },
+    { label: 'Broken!', penalty: '—', color: 'bg-arc-break-broken' },
+] as const;
 
   const currentZodiac = sheet.zodiacSign ? ZODIAC_SIGNS[sheet.zodiacSign] : null;
 
@@ -266,29 +266,33 @@ export default function App() {
               <AlertOctagon size={14} className="text-amber-400" /> Break Gauge
             </span>
             <span className="text-xs font-semibold px-2 py-0.5 rounded bg-arc-bg border border-arc-border text-slate-300">
-              Status: <span className="text-arc-accent">{breakLabels[sheet.breakStep]}</span>
+              Status: <span className="text-arc-accent"> {breakSteps[sheet.breakStep]?.label ?? 'Unknown'}</span>
             </span>
           </div>
 
-          <div className="grid grid-cols-5 gap-1.5">
-            {breakLabels.map((lbl, idx) => {
-              const isActive = sheet.breakStep === idx;
-              return (
-                <button
-                  key={lbl}
-                  onClick={() => setBreakStep(idx)}
-                  className={`py-2 px-1 text-[11px] font-medium rounded border transition-all text-center flex flex-col items-center justify-center ${
-                    isActive
-                      ? `${breakColors[idx]} text-white font-bold border-white/40 shadow-lg scale-[1.02]`
-                      : 'bg-arc-bg text-slate-400 border-arc-border hover:bg-arc-cardHover'
-                  }`}
-                >
-                  <span>{idx === 0 ? '0' : `-${idx}`}</span>
-                  <span className="text-[9px] opacity-80 truncate">{lbl.split(' ')[0]}</span>
-                </button>
-              );
-            })}
-          </div>
+          <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5">
+  {breakSteps.map((step, idx) => {
+    const isActive = sheet.breakStep === idx;
+
+    return (
+      <button
+        key={idx}
+        type="button"
+        onClick={() => setBreakStep(idx)}
+        className={`py-2 px-1 text-[11px] font-medium rounded border transition-all text-center flex flex-col items-center justify-center ${
+          isActive
+            ? `${step.color} text-white font-bold border-white/40 shadow-lg scale-[1.02]`
+            : 'bg-arc-bg text-slate-400 border-arc-border hover:bg-arc-cardHover'
+        }`}
+      >
+        <span>{step.penalty}</span>
+        <span className="text-[9px] opacity-80">
+          {step.label}
+        </span>
+      </button>
+    );
+  })}
+</div>
         </section>
 
         {/* DEFENSES & ATTRIBUTES */}
