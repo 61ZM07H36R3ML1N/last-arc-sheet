@@ -24,9 +24,16 @@ import SkillTable from './components/skills/SkillTable';
 import TalentsTab from './components/talents/TalentsTab';
 import NotesTab from './components/notes/NotesTab';
 import type { AttributeKey } from './types/index';
+import type { RollResult } from './engine/combat';
 
+interface DiceLogEntry {
+  label: string;
+  rolls: number[];
+  total: number;
+  exploded: boolean;
+  breakdown?: string[];
+}
 declare const __APP_VERSION__: string;
-
 export default function App() {
   const { 
     sheet, 
@@ -36,24 +43,19 @@ export default function App() {
     useHeroPoint, 
     resetHeroPoints 
   } = useCharacterStore();
-
   const [activeTab, setActiveTab] = useState<'combat' | 'skills' | 'talents' | 'notes'>('combat');
   const [isEditorOpen, setIsEditorOpen] = useState<boolean>(false);
   const [isSyncOpen, setIsSyncOpen] = useState<boolean>(false);
   const [isVersionOpen, setIsVersionOpen] = useState<boolean>(false);
-  const [diceLog, setDiceLog] = useState<{ label: string; rolls: number[]; total: number; exploded: boolean }[]>([]);
-
+  const [diceLog, setDiceLog] = useState<DiceLogEntry[]>([]);
   const totalLevel = useMemo(() => getTotalLevel(sheet), [sheet]);
   const defenses = useMemo(() => calculateDefensesWithBreak(sheet), [sheet]);
   const primaryClass = sheet.classes[0]?.name || 'Warrior';
-
   const vitMod = useMemo(() => getModifier(sheet.baseAttributes.vit), [sheet.baseAttributes.vit]);
   const mndMod = useMemo(() => getModifier(sheet.baseAttributes.mnd), [sheet.baseAttributes.mnd]);
-
   const { maxHp, maxMp } = useMemo(() => {
     let hp = 0;
     let mp = 0;
-
     sheet.classes.forEach((c, idx) => {
       const isBase = idx === 0;
       if (['Warrior', 'Ranger', 'Condottiere'].includes(c.name)) {
@@ -63,20 +65,17 @@ export default function App() {
         hp += (isBase ? 24 : 5) + vitMod + (c.level - 1) * (5 + vitMod);
         mp += (isBase ? 6 : 2) + mndMod + (c.level - 1) * (2 + mndMod);
       } else {
-        // Mage, Initiate, Astrologian, Scholar
+// Mage, Initiate, Astrologian, Scholar
         hp += (isBase ? 18 : 4) + vitMod + (c.level - 1) * (4 + vitMod);
         mp += (isBase ? 12 : 3) + mndMod + (c.level - 1) * (3 + mndMod);
       }
     });
-
     return { maxHp: Math.max(1, hp), maxMp: Math.max(0, mp) };
   }, [sheet.classes, vitMod, mndMod]);
-
   const handleRoll = useCallback((sides: number, label: string, explodes = false) => {
     let rolls: number[];
     let total: number;
     let wasExploded = false;
-
     if (explodes) {
       const res = rollExplodingDie(sides);
       rolls = res.rolls;
@@ -87,17 +86,24 @@ export default function App() {
       rolls = [roll];
       total = roll;
     }
-
     const newEntry = {
       label: explodes ? `${label} (Exploding)` : label,
       rolls,
       total,
       exploded: wasExploded
     };
-
     setDiceLog((prev) => [newEntry, ...prev.slice(0, 9)]);
   }, []);
-
+  const handleCombatResult = useCallback((label: string, result: RollResult) => {
+    const entry: DiceLogEntry = {
+      label,
+      rolls: result.rolls,
+      total: result.total,
+      exploded: result.breakdown.some((part) => part.includes('(exploded)')),
+      breakdown: result.breakdown,
+    };
+    setDiceLog((prev) => [entry, ...prev.slice(0, 9)]);
+  }, []);
   const getInitDie = (className: string) => {
     switch (className) {
       case 'Rogue':
@@ -118,7 +124,6 @@ export default function App() {
         return 'd12';
     }
   };
-
   const breakSteps = [
     { label: 'Normal', penalty: '0', color: 'bg-arc-break-normal' },
     { label: 'Step 1', penalty: '-1', color: 'bg-arc-break-step1' },
@@ -127,9 +132,7 @@ export default function App() {
     { label: 'Step 4', penalty: '-10', color: 'bg-arc-break-step3' },
     { label: 'Broken!', penalty: '—', color: 'bg-arc-break-broken' },
 ] as const;
-
   const currentZodiac = sheet.zodiacSign ? ZODIAC_SIGNS[sheet.zodiacSign] : null;
-
   return (
     <div className="min-h-screen bg-arc-bg text-slate-100 flex flex-col max-w-4xl mx-auto pb-24 border-x border-arc-border shadow-2xl">
       <header className="p-4 bg-arc-card border-b border-arc-border flex flex-wrap items-center justify-between gap-4 sticky top-0 z-30 shadow-md">
@@ -157,12 +160,10 @@ export default function App() {
             >
               <Info size={11} /> {__APP_VERSION__}
             </button>
-
             {/* Ethos Badge */}
             <span className="text-xs px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
               {sheet.ethos}
             </span>
-
             {/* Zodiac Badge */}
             {currentZodiac && (
               <span 
@@ -178,13 +179,11 @@ export default function App() {
             {sheet.race} • {sheet.classes.map(c => `${c.name} ${c.level}`).join(' / ')}
           </p>
         </div>
-
         <div className="flex items-center gap-3">
           <div className="flex flex-col items-center bg-arc-bg px-2.5 py-1 rounded border border-arc-border">
             <span className="text-[10px] text-slate-400 uppercase tracking-wider">Init Die</span>
             <span className="text-sm font-semibold text-emerald-400">{getInitDie(primaryClass)}</span>
           </div>
-
           <div className="flex flex-col items-center bg-arc-bg px-2.5 py-1 rounded border border-arc-border">
             <div className="flex items-center justify-between w-full gap-2">
               <span className="text-[10px] text-slate-400 uppercase tracking-wider">Hero Pts</span>
@@ -208,7 +207,6 @@ export default function App() {
           </div>
         </div>
       </header>
-
       <main className="p-4 space-y-5">
         {/* RESOURCE BARS (HP / MP) */}
         <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -234,7 +232,6 @@ export default function App() {
               <button onClick={() => updateHp(10)} className="px-2 py-1 text-xs bg-arc-bg hover:bg-arc-cardHover border border-arc-border rounded text-emerald-400">+10</button>
             </div>
           </div>
-
           <div className="bg-arc-card p-3.5 rounded-lg border border-arc-border shadow-sm">
             <div className="flex justify-between items-center mb-1.5">
               <span className="text-xs font-semibold text-cyan-400 flex items-center gap-1.5">
@@ -258,7 +255,6 @@ export default function App() {
             </div>
           </div>
         </section>
-
         {/* BREAK GAUGE */}
         <section className="bg-arc-card p-3.5 rounded-lg border border-arc-border">
           <div className="flex justify-between items-center mb-2">
@@ -269,11 +265,9 @@ export default function App() {
               Status: <span className="text-arc-accent"> {breakSteps[sheet.breakStep]?.label ?? 'Unknown'}</span>
             </span>
           </div>
-
           <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5">
   {breakSteps.map((step, idx) => {
     const isActive = sheet.breakStep === idx;
-
     return (
       <button
         key={idx}
@@ -294,7 +288,6 @@ export default function App() {
   })}
 </div>
         </section>
-
         {/* DEFENSES & ATTRIBUTES */}
         <section className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
           <div className="bg-arc-card p-2.5 rounded-lg border border-arc-border text-center">
@@ -302,26 +295,22 @@ export default function App() {
             <div className="text-xl font-bold text-arc-accent mt-0.5">{defenses.reflex}</div>
             <span className="text-[9px] text-slate-500">10 + ½Lv + Agi + Cls</span>
           </div>
-
           <div className="bg-arc-card p-2.5 rounded-lg border border-arc-border text-center">
             <span className="text-[10px] text-slate-400 uppercase font-semibold">Fortitude</span>
             <div className="text-xl font-bold text-emerald-400 mt-0.5">{defenses.fortitude}</div>
             <span className="text-[9px] text-slate-500">10 + ½Lv + Vit + Cls</span>
           </div>
-
           <div className="bg-arc-card p-2.5 rounded-lg border border-arc-border text-center">
             <span className="text-[10px] text-slate-400 uppercase font-semibold">Will</span>
             <div className="text-xl font-bold text-purple-400 mt-0.5">{defenses.will}</div>
             <span className="text-[9px] text-slate-500">10 + ½Lv + Mnd + Cls</span>
           </div>
-
           <div className="bg-arc-card p-2.5 rounded-lg border border-arc-border text-center">
             <span className="text-[10px] text-slate-400 uppercase font-semibold">Threshold</span>
             <div className="text-xl font-bold text-amber-400 mt-0.5">{defenses.breakThreshold}</div>
             <span className="text-[9px] text-slate-500">Max Hit Tolerance</span>
           </div>
         </section>
-
         {/* ATTRIBUTES ROW */}
         <section className="grid grid-cols-3 sm:grid-cols-6 gap-2">
           {(Object.keys(sheet.baseAttributes) as AttributeKey[]).map((attr) => {
@@ -341,7 +330,6 @@ export default function App() {
             );
           })}
         </section>
-
         {/* DICE TRAY */}
         <section className="bg-arc-card p-3 rounded-lg border border-arc-border">
           <div className="flex items-center justify-between mb-2">
@@ -361,9 +349,9 @@ export default function App() {
               </button>
             ))}
           </div>
-
           {diceLog.length > 0 && (
-            <div className="mt-2.5 p-2 bg-slate-950 rounded border border-arc-border flex items-center justify-between text-xs font-mono overflow-x-auto">
+          <div className="mt-2.5 space-y-2">
+            <div className="p-2 bg-slate-950 rounded border border-arc-border flex items-center justify-between gap-2 text-xs font-mono overflow-x-auto">
               <div className="flex items-center gap-2">
                 <span className="text-slate-400">{diceLog[0].label}:</span>
                 <span className="text-slate-200">[{diceLog[0].rolls.join(', ')}]</span>
@@ -373,11 +361,18 @@ export default function App() {
                   </span>
                 )}
               </div>
-              <div className="font-bold text-arc-accent text-sm pl-2">Total: {diceLog[0].total}</div>
+              <div className="font-bold text-arc-accent text-sm pl-2 whitespace-nowrap">Total: {diceLog[0].total}</div>
             </div>
-          )}
-        </section>
-
+            {diceLog[0].breakdown && (
+              <div className="p-2 bg-slate-950 rounded border border-arc-border text-[11px] font-mono text-slate-400 space-y-1">
+                {diceLog[0].breakdown.map((line, index) => (
+                  <div key={index}>{line}</div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </section>
         {/* DETAILS TABS */}
         <section className="space-y-3">
           <div className="flex border-b border-arc-border gap-4 text-xs font-semibold">
@@ -422,24 +417,58 @@ export default function App() {
               <BookMarked size={13} /> Journal & Notes
             </button>
           </div>
-
-          {activeTab === 'combat' && <GearManager onRoll={handleRoll} />}
+          {activeTab === 'combat' && <GearManager onRoll={handleRoll} onCombatResult={handleCombatResult} />}
           {activeTab === 'skills' && <SkillTable onRoll={handleRoll} />}
           {activeTab === 'talents' && <TalentsTab />}
           {activeTab === 'notes' && <NotesTab />}
         </section>
       </main>
+      <footer className="w-full mt-auto px-4 py-6 border-t border-arc-border bg-arc-card/50 text-center">
+  <div className="flex flex-col items-center gap-3">
 
-      <CharacterEditorModal
+    {/* Character Companion developer credit */}
+    <p className="text-[11px] text-slate-400 tracking-wide">
+      Character Companion
+      <span className="mx-1 text-slate-600">•</span>
+      Designed, Engineered &amp; Maintained by{' '}
+      <span className="font-semibold text-arc-accent">
+        Brian T Jamiel (6R3M)
+      </span>
+    </p>
+
+    <div className="w-16 h-px bg-arc-border" />
+
+    {/* Original tabletop game creator credit */}
+    <p className="text-[11px] text-slate-400">
+      <span className="font-semibold text-slate-300">
+        Last Arc: Tactics Analogue
+      </span>
+      {' '}created &amp; developed by{' '}
+      <span className="font-semibold text-arc-gold">
+        GobZoblin
+      </span>
+    </p>
+
+    {/* Unofficial companion disclaimer */}
+    <p className="max-w-xl text-[10px] leading-relaxed text-slate-500">
+      This is an independent, unofficial, fan-made companion
+      application for Last Arc: Tactics Analogue. It is not
+      officially affiliated with, endorsed by, or sponsored
+      by the game's creators or publishers. All rights to
+      the original tabletop game and its intellectual
+      property remain with their respective owners.
+    </p>
+
+  </div>
+</footer>
+    <CharacterEditorModal
         isOpen={isEditorOpen}
         onClose={() => setIsEditorOpen(false)}
       />
-
       <JsonSyncModal
         isOpen={isSyncOpen}
         onClose={() => setIsSyncOpen(false)}
       />
-
       <VersionModal
         isOpen={isVersionOpen}
         onClose={() => setIsVersionOpen(false)}
