@@ -4,15 +4,6 @@ All notable changes to **Last Arc: Tactics Analogue — Character Companion** wi
 
 This project follows the [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) format and uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
-
-### Planned
-- Review and correct Break Gauge calculations against the official game rules.
-- Evaluate Strength modifiers for weapon damage rolls.
-- Add Spellcraft as an available attack roll skill for applicable staff and wand users.
-- Continue regression testing and validation of character calculations.
-- Expand Foundry VTT interoperability.
-
 ---
 ## [0.4.16] - 2026-11-08
 Added
