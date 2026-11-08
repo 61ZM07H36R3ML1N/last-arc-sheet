@@ -1,16 +1,18 @@
- 
 import { useMemo } from 'react';
 import { Shield, Swords, ShieldAlert, Package, Book, Eye, Music, Sparkles } from 'lucide-react';
 import { WEAPONS, ARMORS, SHIELDS, MASKS, TOMES, INSTRUMENTS } from '../../data';
 import { useCharacterStore } from '../../store/useCharacterStore';
 import ClassCombatHelpers from '../combat/ClassCombatHelper';
 import type { Equipment } from '../../types';
+import { rollWeaponDamage, toCombatWeapon, type RollResult } from '../../engine/combat';
+
 
 interface GearManagerProps {
   onRoll: (sides: number, label: string, explodes?: boolean) => void;
+  onCombatResult: (label: string, result: RollResult) => void;
 }
 
-export default function GearManager({ onRoll }: GearManagerProps) {
+export default function GearManager({ onRoll, onCombatResult }: GearManagerProps) {
   const { sheet, importSheet } = useCharacterStore();
 
   const mainHand = sheet.equipped.mainHand;
@@ -298,8 +300,11 @@ export default function GearManager({ onRoll }: GearManagerProps) {
             <button
               type="button"
               onClick={() => {
-                const sides = parseInt(mainHand.damageDice?.split('d')[1]?.split(/[+-]/)[0] || '8', 10);
-                onRoll(sides, `${mainHand.name} Damage`, true);
+                const weapon = toCombatWeapon(mainHand);
+                const result = rollWeaponDamage(sheet, weapon, {
+                  attribute: 'str'
+                });
+                onCombatResult(`${mainHand.name} Damage`, result);
               }}
               className="px-3 py-1 bg-arc-bg hover:bg-arc-cardHover border border-arc-border rounded text-arc-accent font-semibold transition-all shadow-sm"
             >
