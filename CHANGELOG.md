@@ -8,55 +8,55 @@ This project follows the [Keep a Changelog](https://keepachangelog.com/en/1.1.0/
 ## [0.4.16] - 2026-11-08
 Added
 
-Added 10 automated component regression tests for CharacterEditorModal.
+- Added 10 automated component regression tests for CharacterEditorModal.
 
-Added React Testing Library, @testing-library/user-event, and @testing-library/jest-dom for UI interaction testing.
+- Added React Testing Library, @testing-library/user-event, and @testing-library/jest-dom for UI interaction testing.
 
-Added jsdom support for React component tests in Vitest.
+- Added jsdom support for React component tests in Vitest.
 
-Added shared test setup with automatic component cleanup.
+- Added shared test setup with automatic component cleanup.
 
-Added regression coverage for:
+- Added regression coverage for:
 
-Character creation and initialization.
+- Character creation and initialization.
 
-Character editing and saving.
+- Character editing and saving.
 
-Cancellation without modifying character data.
+- Cancellation without modifying character data.
 
-Rejected and confirmed character replacement.
+- Rejected and confirmed character replacement.
 
-Unsaved changes being discarded when reopening the editor.
+- Unsaved changes being discarded when reopening the editor.
 
-Locked progression and ancestry controls in Edit mode.
+- Locked progression and ancestry controls in Edit mode.
 
-Equipment and inventory preservation during character editing.
+- Equipment and inventory preservation during character editing.
 
-Improved
+### Improved
 
-Strengthened character lifecycle regression coverage using non-default character data.
+- Strengthened character lifecycle regression coverage using non-default character data.
 
-Verified preservation of HP, MP, temporary resources, Break Gauge state, Hero Points, and gold during character editing.
+- Verified preservation of HP, MP, temporary resources, Break Gauge state, Hero Points, and gold during character editing.
 
-Verified preservation of character identity, class progression, Technicks, talents, attributes, and ancestry.
+- Verified preservation of character identity, class progression, Technicks, talents, attributes, and ancestry.
 
-Added populated equipment fixtures covering weapons, armor, and accessories.
+- Added populated equipment fixtures covering weapons, armor, and accessories.
 
-Added inventory fixtures to verify item identity and collection integrity.
+- Added inventory fixtures to verify item identity and collection integrity.
 
-Expanded Vitest test discovery to include .test.tsx files while maintaining existing engine tests.
+- Expanded Vitest test discovery to include .test.tsx files while maintaining existing engine tests.
 
-Testing
+### Testing
 
-10 Character Editor component tests passing.
+- 10 Character Editor component tests passing.
 
-128 total automated tests expected, including 118 existing engine tests.
+- 128 total automated tests expected, including 118 existing engine tests.
 
-Character Editor component suite completed successfully.
+- Character Editor component suite completed successfully.
 
-Full test suite and production build passed during development; final release validation pending.
+- Full test suite and production build passed during development; final release validation pending.
 
-Notes
+### Notes
 
 No intentional changes to gameplay calculations or character progression rules.
 
