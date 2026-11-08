@@ -4,7 +4,7 @@ import classesData from './baseClasses.json';
 import skillsData from './skills.json';
 import equipmentData from './equipment.json';
 import type { DamageType } from '../types';
-
+import type {CreatureSize} from '../engine/characterSize';
 export interface ClassItem {
   id: string;
   name: string;
@@ -35,7 +35,7 @@ export interface ClassItem {
 export interface RaceItem {
   id: string;
   name: string;
-  size: string;
+  size: CreatureSize;
   speed: number;
   attributeAdjustments: Record<string, number>;
   attributeCaps: Record<string, number>;
@@ -53,7 +53,7 @@ export interface WeaponItem {
   id: string;
   name: string;
   category: string;
-  size: 'Tiny' | 'Small' | 'Medium' | 'Large';
+  size: CreatureSize;
   damage: string;
   damageType: DamageType;
   cost: number;
