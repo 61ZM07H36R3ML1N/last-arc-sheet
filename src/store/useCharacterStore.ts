@@ -2,37 +2,63 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { CharacterSheet } from '../types';
 import type { ZodiacSign } from '../data/zodiac';
+import { CLASSES } from '../data';
 
-const defaultCharacter: CharacterSheet = {
-  id: 'char-1',
-  name: 'Kress',
-  race: 'Human',
-  zodiacSign: 'Aries',
-  ethos: 'Pure Good',
-  classes: [{ name: 'Warrior', level: 1 }],
-  baseAttributes: {
-    str: 16,
-    vit: 14,
-    agi: 12,
-    int: 10,
-    mnd: 10,
-    chr: 8
-  },
-  currentHp: 32,
-  tempHp: 0,
-  currentMp: 6,
-  tempMp: 0,
-  breakStep: 0,
-  heroPoints: 1,
-  gold: 1000,
-  notes: 'Campaign notes, quest logs, and NPC interactions...',
-  trainedSkills: ['Athletics', '1-Handed', '2-Handed'],
-  focusedSkills: [],
-  technicks: ['Shield Proficiency', 'Power Attack'],
-  talents: ['Provoke'],
-  equipped: {},
-  inventory: []
-};
+const DEFAULT_CLASS_ID = 'warrior';
+
+function getDefaultClass() {
+  const found = CLASSES.flat().find(
+    (entry) => entry.id === DEFAULT_CLASS_ID,
+  );
+
+  if (!found) {
+    throw new Error(
+      `Default character class not found: ${DEFAULT_CLASS_ID}`,
+    );
+  }
+
+  return found;
+}
+
+const defaultClass = getDefaultClass();
+
+export function getDefaultCharacter(): CharacterSheet {
+  return {
+    id: 'char-1',
+    name: 'Kress',
+    race: 'Human',
+    zodiacSign: 'Aries',
+    ethos: 'Pure Good',
+    classes: [{ name: defaultClass.name, level: 1 }],
+    baseAttributes: {
+      str: 16,
+      vit: 14,
+      agi: 12,
+      int: 10,
+      mnd: 10,
+      chr: 8,
+    },
+    currentHp: 32,
+    tempHp: 0,
+    currentMp: 6,
+    tempMp: 0,
+    breakStep: 0,
+    heroPoints: 1,
+    gold: 1000,
+    notes: 'Campaign notes, quest logs, and NPC interactions...',
+    trainedSkills: ['Athletics', '1-Handed', '2-Handed'],
+    focusedSkills: [],
+    technicks: Array.from(
+      new Set([
+        ...defaultClass.startingTechnicks,
+        'Power Attack',
+      ]),
+    ),
+    talents: ['Provoke'],
+    equipped: {},
+    inventory: [],
+  };
+}
 
 interface CharacterStore {
   sheet: CharacterSheet;
@@ -49,7 +75,7 @@ interface CharacterStore {
 export const useCharacterStore = create<CharacterStore>()(
   persist(
     (set) => ({
-      sheet: defaultCharacter,
+      sheet: getDefaultCharacter(),
       updateHp: (delta) =>
         set((state) => ({
           sheet: {
