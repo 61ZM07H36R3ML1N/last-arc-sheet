@@ -2,7 +2,7 @@
 
 <div align="center">
 
-<img src="https://last-arc.brianjamiel.dev/og-banner.png" alt="Last Arc Character Companion" width="100%" />
+<img src="https://last-arc.brianjamiel.dev/LATA-Character Companion.WEBP" alt="Last Arc Character Companion" width="100%" />
 
 ### Your adventure. Your character. Your companion.
 
