@@ -272,6 +272,10 @@ function CharacterEditorForm({ onClose, mode }: { onClose: () => void; mode: Cha
 
     name,
 
+    race: selectedRace.name,
+
+    classId: selectedClass.id,
+
     ethos,
 
     zodiacSign,
@@ -431,7 +435,6 @@ function CharacterEditorForm({ onClose, mode }: { onClose: () => void; mode: Cha
                 max={20}
 
                 value={level}
-              disabled={!isCreating}
 
                 onChange={(e) => setLevel(Math.max(1, Math.min(20, parseInt(e.target.value) || 1)))}
 
@@ -456,27 +459,16 @@ function CharacterEditorForm({ onClose, mode }: { onClose: () => void; mode: Cha
               <label className="block text-[10px] uppercase font-bold text-slate-400">Race & Ancestry</label>
 
               <select
-
-                value={raceId}
-              disabled={!isCreating}
-
-                onChange={(e) => setRaceId(e.target.value)}
-
-                className="w-full bg-arc-card border border-arc-border rounded px-2 py-1.5 focus:border-arc-accent focus:outline-none font-semibold text-slate-100"
-
-              >
-
-                {RACES.map((r) => (
-
-                  <option key={r.id} value={r.id}>
-
-                    {r.name} ({r.size}, Spd {r.speed})
-
-                  </option>
-
-                ))}
-
-              </select>
+  value={raceId}
+  onChange={(e) => setRaceId(e.target.value)}
+  className="w-full bg-arc-card border border-arc-border rounded px-2 py-1.5 focus:border-arc-accent focus:outline-none font-semibold text-slate-100"
+>
+  {RACES.map((r) => (
+    <option key={r.id} value={r.id}>
+      {r.name} ({r.size}, Spd {r.speed})
+    </option>
+  ))}
+</select>
 
 
 
@@ -552,33 +544,24 @@ function CharacterEditorForm({ onClose, mode }: { onClose: () => void; mode: Cha
               <label className="block text-[10px] uppercase font-bold text-slate-400">Base Class</label>
 
               <select
+  value={classId}
+  onChange={(e) => {
+    setClassId(e.target.value);
 
-                value={classId}
-              disabled={!isCreating}
-
-                onChange={(e) => {
-
-                  setClassId(e.target.value);
-
-                  setTrainedSkills([]); // Reset skill selection to prevent illegal out-of-class choices*
-
-                }}
-
-                className="w-full bg-arc-card border border-arc-border rounded px-2 py-1.5 focus:border-arc-accent focus:outline-none font-semibold text-slate-100"
-
-              >
-
-                {AVAILABLE_CLASSES.map((c) => (
-
-                  <option key={c.id} value={c.id}>
-
-                    {c.name} (Init {c.initiativeDie}, HP {c.startingHp}, MP {c.startingMp})
-
-                  </option>
-
-                ))}
-
-              </select>
+    // Only reset trained skills when creating a new character.
+    // Preserve existing training when editing a character.
+    if (isCreating) {
+      setTrainedSkills([]);
+    }
+  }}
+  className="w-full bg-arc-card border border-arc-border rounded px-2 py-1.5 focus:border-arc-accent focus:outline-none font-semibold text-slate-100"
+>
+  {AVAILABLE_CLASSES.map((c) => (
+    <option key={c.id} value={c.id}>
+      {c.name} (Init {c.initiativeDie}, HP {c.startingHp}, MP {c.startingMp})
+    </option>
+  ))}
+</select>
 
 
 
@@ -619,7 +602,6 @@ function CharacterEditorForm({ onClose, mode }: { onClose: () => void; mode: Cha
                 type="button"
 
                 onClick={applyStandardArray}
-              disabled={!isCreating}
 
                 className="text-[10px] text-arc-accent hover:underline flex items-center gap-1"
 
