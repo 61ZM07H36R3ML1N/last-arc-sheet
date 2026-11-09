@@ -404,7 +404,7 @@ it('discards unsaved changes when the modal is reopened', async () => {
   );
 });
 
-it('locks progression and ancestry controls in Edit mode', () => {
+it('allows editing level, ancestry, and base class', () => {
   const { container } = render(
     <CharacterEditorModal
       isOpen={true}
@@ -433,15 +433,15 @@ it('locks progression and ancestry controls in Edit mode', () => {
     return control as HTMLInputElement | HTMLSelectElement;
   };
 
-  expect(findControl('Level')).toBeDisabled();
-  expect(findControl('Race & Ancestry')).toBeDisabled();
-  expect(findControl('Base Class')).toBeDisabled();
+  expect(findControl('Level')).toBeEnabled();
+  expect(findControl('Race & Ancestry')).toBeEnabled();
+  expect(findControl('Base Class')).toBeEnabled();
 
   const standardArrayButton = screen.getByRole('button', {
     name: /Load Standard Array/,
   });
 
-  expect(standardArrayButton).toBeDisabled();
+  expect(standardArrayButton).toBeEnabled();
 
   // Six attribute inputs must be read-only in Edit mode.
   const attributeInputs = Array.from(
