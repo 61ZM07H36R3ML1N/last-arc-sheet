@@ -86,7 +86,7 @@ Explore the Character Companion interface.
 
 ### Character Sheet
 
-![Character Sheet Preview](docs/screenshots/character-sheet.png)
+![Character Sheet Preview](public/screenshots/charactersheet.webp)
 
 ### Combat Management
 
