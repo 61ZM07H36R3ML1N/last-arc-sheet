@@ -18,35 +18,62 @@ const getAppVersion = (): string => {
 };
 
 export default defineConfig({
-  plugins: [react(), tailwindcss(), VitePWA({
-    registerType: 'autoUpdate',
-    includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
-    manifest: {
-      name: 'Last Arc: Tactics Analogue Sheet',
-      short_name: 'Last Arc Sheet',
-      description: 'TTRPG Character Sheet & Live Tracker for Last Arc: Tactics Analogue',
-      theme_color: '#090d16',
-      background_color: '#090d16',
-      display: 'standalone',
-      orientation: 'portrait',
-      icons: [
-        {
-          src: '/icon-192.webp',
-          sizes: '192x192',
-          type: 'image/webp'
-        },
-        {
-          src: '/icon-512.webp',
-          sizes: '512x512',
-          type: 'image/webp'
-        }
-      ]
-    },
-    workbox: {
-      globPatterns: ['**/*.{js,css,html,ico,png,svg,webp}'],
-    }
-  }), cloudflare()],
+  plugins: [
+    react(),
+    tailwindcss(),
+    VitePWA({
+  registerType: 'autoUpdate',
+
+  includeAssets: [
+    'favicon.ico',
+    'apple-touch-icon.png',
+    'masked-icon.svg',
+  ],
+
+  manifest: {
+    id: '/',
+    name: 'Last Arc: Tactics Analogue — Character Companion',
+    short_name: 'Last Arc',
+    description:
+      'TTRPG Character Sheet & Live Tracker for Last Arc: Tactics Analogue',
+
+    start_url: '/',
+    scope: '/',
+    display: 'standalone',
+    orientation: 'portrait',
+
+    theme_color: '#090d16',
+    background_color: '#090d16',
+
+    icons: [
+      {
+        src: '/icon-192.png',
+        sizes: '192x192',
+        type: 'image/png',
+        purpose: 'any',
+      },
+      {
+        src: '/icon-512.png',
+        sizes: '512x512',
+        type: 'image/png',
+        purpose: 'any',
+      },
+      {
+        src: '/icon-512.png',
+        sizes: '512x512',
+        type: 'image/png',
+        purpose: 'maskable',
+      },
+    ],
+  },
+
+  workbox: {
+    globPatterns: ['**/*.{js,css,html,ico,png,svg,webp}'],
+  },
+    }),
+    cloudflare(),
+  ],
   define: {
-    __APP_VERSION__: JSON.stringify(getAppVersion())
-  }
+    __APP_VERSION__: JSON.stringify(getAppVersion()),
+  },
 });
