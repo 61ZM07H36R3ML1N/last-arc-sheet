@@ -88,6 +88,10 @@ Explore the Character Companion interface.
 
 ![Character Sheet Preview](public/screenshots/charactersheet.webp)
 
+### Character Editor
+
+![Character Editor Preview](public/screenshots/charactereditor.webp)
+
 ### Combat Management
 
 ![Combat Interface Preview](docs/screenshots/combat.png)
