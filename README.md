@@ -1,8 +1,14 @@
 # Last Arc: Tactics Analogue — Character Companion
 
 <div align="center">
-
-<img src="https://last-arc.brianjamiel.dev/LATA-Character Companion.WEBP" alt="Last Arc Character Companion" width="100%" />
+  <a href="https://last-arc.brianjamiel.dev">
+    <img
+      src="./public/branding/cover.webp"
+      alt="Last Arc Character Companion"
+      width="100%"
+    />
+  </a>
+</div>
 
 ### Your adventure. Your character. Your companion.
 

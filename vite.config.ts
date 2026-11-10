@@ -31,19 +31,19 @@ export default defineConfig({
       orientation: 'portrait',
       icons: [
         {
-          src: '/icon-192.png',
+          src: '/icon-192.webp',
           sizes: '192x192',
-          type: 'image/png'
+          type: 'image/webp'
         },
         {
-          src: '/icon-512.png',
+          src: '/icon-512.webp',
           sizes: '512x512',
-          type: 'image/png'
+          type: 'image/webp'
         }
       ]
     },
     workbox: {
-      globPatterns: ['**/*.{js,css,html,ico,png,svg}']
+      globPatterns: ['**/*.{js,css,html,ico,png,svg,webp}'],
     }
   }), cloudflare()],
   define: {
