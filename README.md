@@ -201,66 +201,64 @@ Please review the following documents before contributing:
 
 You can also open a GitHub Issue to report bugs or suggest improvements.
 
-🐛 Community Testers & Bug Hunters
+Acknowledgments & Credits
 
-Great software isn't built through engineering alone.
+The Character Companion benefits from the creativity, time, and contributions of individuals who believe in the project.
 
-It takes dedicated individuals willing to test features, uncover bugs, challenge assumptions, and provide feedback that helps shape the application.
+🎨 Artwork & Visual Identity
 
-I'd like to extend a special thank you to the following community members whose time, patience, and contributions have been invaluable throughout development.
+Zylo — Cover Artwork & Application Icon Design
 
-🏅 Recognized Contributors
+Special thanks to Zylo for creating the cover artwork and application icons used throughout the project.
 
-@onetrueping
+Their creative contributions help establish a recognizable visual identity for the Character Companion.
 
-For their dedication to testing the Character Companion, identifying bugs, providing feedback, and helping improve the application's functionality and overall user experience.
+🐛 Quality Assurance & Community Testing
 
-@jcvanundermoon
+onetrueping & jcvanundermoon
 
-For their continued support, application testing, bug hunting, and thoughtful feedback that has helped refine and strengthen the Character Companion.
+For their continued testing, bug hunting, feedback, and support throughout development.
 
-A Personal Thank You
+See Community Testers & Bug Hunters for individual recognition.
 
-Every issue identified, every feature tested, and every suggestion shared helps make this project better.
+💻 Development & Engineering
 
-Your willingness to invest time in something I'm building means a great deal, and your contributions deserve to be recognized.
+Brian T. Jamiel (6R3M) — Creator, Lead Developer & Maintainer
 
-Thank you both for helping turn this project into something the Last Arc community can enjoy.
+Responsible for the application's architecture, engineering, implementation, and ongoing maintenance.
 
-— Brian T. Jamiel (6R3M)
+The Last Arc Community
 
-## Security
+Thank you to the players, testers, and community members who share feedback, report issues, and support the continued development of this project.
 
-If you discover a security vulnerability, please follow the responsible disclosure instructions in [SECURITY.md](SECURITY.md).
+Your involvement helps guide the Character Companion toward becoming a more useful tool for everyone.
 
-Avoid publicly disclosing vulnerabilities before they have been reviewed.
+License
 
-## License
+This application's original source code is distributed under the MIT License.
 
-This application's original source code is distributed under the [MIT License](LICENSE).
+The MIT License applies to the original software implementation and does not automatically grant rights to third-party game content, trademarks, artwork, icons, or other intellectual property.
 
-The MIT License applies to the original software implementation and does not grant rights to third-party game content, trademarks, or other intellectual property.
+Artwork and icons credited to Zylo remain subject to their applicable permissions and licensing terms.
 
-## Disclaimer
+Disclaimer
 
-This is an independent, unofficial, community-created companion application for **Last Arc: Tactics Analogue**.
+This is an independent, unofficial, community-created companion application for Last Arc: Tactics Analogue.
 
 Last Arc: Tactics Analogue and associated intellectual property belong to their respective rights holders.
 
 This project is not officially affiliated with, endorsed by, or sponsored by Succubus Publishing.
 
-## Author and Maintainer
+Author and Maintainer
 
-**Designed, Engineered & Maintained by Brian T Jamiel (6R3M)**
-
-[Developer Website](https://brianjamiel.dev) · [Launch Application](https://last-arc.brianjamiel.dev)
-
----
+Designed, Engineered & Maintained by Brian T Jamiel (6R3M)
 
 <div align="center">
 
-**Built for the Last Arc community.**
+Built for the Last Arc community.
 
-*An independent open-source project.*
+An independent, community-driven open-source project.
+
+Your adventure. Your character. Your companion.
 
 </div>
