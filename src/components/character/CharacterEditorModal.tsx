@@ -193,8 +193,10 @@ function CharacterEditorForm({
               <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">Zodiac Sign</label>
               <select value={zodiacSign} onChange={(event) => setZodiacSign(event.target.value as ZodiacSign)} className="w-full bg-arc-bg border border-arc-border rounded px-2 py-1.5 focus:border-arc-accent focus:outline-none">
                 {ZODIAC_LIST.map((sign) => (
-                  <option key={sign} value={sign}>{ZODIAC_SIGNS[sign].symbol} {sign} ({ZODIAC_SIGNS[sign].element})</option>
-                ))}
+  <option key={sign} value={sign}>
+    {ZODIAC_SIGNS[sign].symbol} {sign} ({ZODIAC_SIGNS[sign].celestial} — {ZODIAC_SIGNS[sign].domain})
+  </option>
+))}
               </select>
             </div>
             <div>
