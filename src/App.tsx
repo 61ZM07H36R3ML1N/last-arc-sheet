@@ -168,7 +168,7 @@ export default function App() {
             {currentZodiac && (
               <span 
                 className="text-xs px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 flex items-center gap-1 font-medium cursor-help"
-                title={`Zodiac: ${currentZodiac.sign} (${currentZodiac.element})\n• Compatible (+Benefic): ${currentZodiac.compatible.join(', ')}\n• Incompatible (+Malefic): ${currentZodiac.incompatible.join(', ')}`}
+                title={`Zodiac: ${currentZodiac.sign} (${currentZodiac.domain})\n• Compatible (+Benefic): ${currentZodiac.compatible.join(', ')}\n• Incompatible (+Malefic): ${currentZodiac.incompatible.join(', ')}`}
               >
                 <span>{currentZodiac.symbol}</span>
                 <span>{currentZodiac.sign}</span>

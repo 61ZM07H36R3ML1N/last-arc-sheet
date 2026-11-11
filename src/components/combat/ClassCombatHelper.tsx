@@ -150,7 +150,7 @@ export default function ClassCombatHelpers({ onRoll }: ClassCombatHelpersProps) 
               >
                 {ZODIAC_LIST.map((sign) => (
                   <option key={sign} value={sign}>
-                    {ZODIAC_SIGNS[sign].symbol} {sign} ({ZODIAC_SIGNS[sign].element})
+                    {ZODIAC_SIGNS[sign].symbol} {sign} ({ZODIAC_SIGNS[sign].domain})
                   </option>
                 ))}
               </select>
