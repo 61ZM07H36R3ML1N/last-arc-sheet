@@ -201,11 +201,11 @@ Please review the following documents before contributing:
 
 You can also open a GitHub Issue to report bugs or suggest improvements.
 
-Acknowledgments & Credits
+## Acknowledgments & Credits
 
 The Character Companion benefits from the creativity, time, and contributions of individuals who believe in the project.
 
-🎨 Artwork & Visual Identity
+🎨 ## Artwork & Visual Identity
 
 Zylo — Cover Artwork & Application Icon Design
 
@@ -213,7 +213,7 @@ Special thanks to Zylo for creating the cover artwork and application icons used
 
 Their creative contributions help establish a recognizable visual identity for the Character Companion.
 
-🐛 Quality Assurance & Community Testing
+🐛## Quality Assurance & Community Testing
 
 onetrueping & jcvanundermoon
 
@@ -221,13 +221,13 @@ For their continued testing, bug hunting, feedback, and support throughout devel
 
 See Community Testers & Bug Hunters for individual recognition.
 
-💻 Development & Engineering
+💻## Development & Engineering
 
 Brian T. Jamiel (6R3M) — Creator, Lead Developer & Maintainer
 
 Responsible for the application's architecture, engineering, implementation, and ongoing maintenance.
 
-The Last Arc Community
+## The Last Arc Community
 
 Thank you to the players, testers, and community members who share feedback, report issues, and support the continued development of this project.
 
@@ -239,9 +239,7 @@ This application's original source code is distributed under the MIT License.
 
 The MIT License applies to the original software implementation and does not automatically grant rights to third-party game content, trademarks, artwork, icons, or other intellectual property.
 
-Artwork and icons credited to Zylo remain subject to their applicable permissions and licensing terms.
-
-Disclaimer
+## Disclaimer
 
 This is an independent, unofficial, community-created companion application for Last Arc: Tactics Analogue.
 
@@ -249,11 +247,12 @@ Last Arc: Tactics Analogue and associated intellectual property belong to their 
 
 This project is not officially affiliated with, endorsed by, or sponsored by Succubus Publishing.
 
+
+
+<div align="center">
 Author and Maintainer
 
 Designed, Engineered & Maintained by Brian T Jamiel (6R3M)
-
-<div align="center">
 
 Built for the Last Arc community.
 
