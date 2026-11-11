@@ -201,6 +201,34 @@ Please review the following documents before contributing:
 
 You can also open a GitHub Issue to report bugs or suggest improvements.
 
+🐛 Community Testers & Bug Hunters
+
+Great software isn't built through engineering alone.
+
+It takes dedicated individuals willing to test features, uncover bugs, challenge assumptions, and provide feedback that helps shape the application.
+
+I'd like to extend a special thank you to the following community members whose time, patience, and contributions have been invaluable throughout development.
+
+🏅 Recognized Contributors
+
+@onetrueping
+
+For their dedication to testing the Character Companion, identifying bugs, providing feedback, and helping improve the application's functionality and overall user experience.
+
+@jcvanundermoon
+
+For their continued support, application testing, bug hunting, and thoughtful feedback that has helped refine and strengthen the Character Companion.
+
+A Personal Thank You
+
+Every issue identified, every feature tested, and every suggestion shared helps make this project better.
+
+Your willingness to invest time in something I'm building means a great deal, and your contributions deserve to be recognized.
+
+Thank you both for helping turn this project into something the Last Arc community can enjoy.
+
+— Brian T. Jamiel (6R3M)
+
 ## Security
 
 If you discover a security vulnerability, please follow the responsible disclosure instructions in [SECURITY.md](SECURITY.md).
