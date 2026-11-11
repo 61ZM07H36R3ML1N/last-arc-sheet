@@ -8,6 +8,11 @@
       width="100%"
     />
   </a>
+  <p align="center">
+  <sub>
+    Cover artwork & application icons by Zylo
+  </sub>
+</p>
 </div>
 
 ### Your adventure. Your character. Your companion.
