@@ -1,9 +1,18 @@
-import { CLASSES } from '../data';
+import { CLASSES, RACES } from '../data';
 import { getModifier } from './formulas';
-import type { CharacterSheet } from '../types';
+import type { AttributeKey, CharacterSheet } from '../types';
 
 export type BaseClass = (typeof CLASSES)[number];
-export const BASE_CLASSES = CLASSES.flat().filter((entry) => entry.type !== 'advanced');
+
+export const BASE_CLASSES = CLASSES.flat().filter(
+  (entry) => entry.type !== 'advanced'
+);
+
+type Attributes = CharacterSheet['baseAttributes'];
+
+const ATTRIBUTE_KEYS: AttributeKey[] = [
+  'str', 'vit', 'agi', 'int', 'mnd', 'chr',
+];
 
 export interface CharacterCreationOptions {
   id: string;
@@ -13,90 +22,227 @@ export interface CharacterCreationOptions {
   zodiacSign: CharacterSheet['zodiacSign'];
   classId: string;
   level: number;
-  baseAttributes: CharacterSheet['baseAttributes'];
+  baseAttributes: Attributes;
+  racialAttributeChoice?: AttributeKey;
+  attributeIncreases?: Partial<Record<AttributeKey, number>>;
   trainedSkills?: string[];
 }
 
 export type CharacterEditChanges = Partial<
-Pick<
-CharacterSheet,
-  |'name' 
-  | 'race' 
-  | 'ethos' 
-  | 'zodiacSign' 
-  | 'baseAttributes' 
-  | 'trainedSkills' 
-  | 'focusedSkills' 
-  | 'notes'
+  Pick<
+    CharacterSheet,
+    | 'name'
+    | 'race'
+    | 'ethos'
+    | 'zodiacSign'
+    | 'baseAttributes'
+    | 'trainedSkills'
+    | 'focusedSkills'
+    | 'notes'
+    | 'racialAttributeChoice'
+    | 'attributeIncreases'
   >
-  > & {
-    classId?: string;
-  };
+> & {
+  classId?: string;
+  level?: number;
+};
 
 function validateLevel(level: number): void {
   if (!Number.isInteger(level) || level < 1 || level > 20) {
-    throw new Error('Character level must be an integer between 1 and 20.');
+    throw new Error(
+      'Character level must be an integer between 1 and 20.'
+    );
   }
 }
 
 function getBaseClass(id: string) {
   const found = BASE_CLASSES.find((entry) => entry.id === id);
-  if (!found) throw new Error(`Unknown base class: ${id}`);
+
+  if (!found) {
+    throw new Error(`Unknown base class: ${id}`);
+  }
+
   return found;
 }
 
-export function createCharacter(options: CharacterCreationOptions): CharacterSheet {
-  validateLevel(options.level);
-  if (!options.id.trim()) throw new Error('Character ID is required.');
-  const selectedClass = getBaseClass(options.classId);
-  const vitMod = getModifier(options.baseAttributes.vit);
-  const mndMod = getModifier(options.baseAttributes.mnd);
-  const level = options.level;
-  const hp = selectedClass.startingHp + vitMod +
+function getRace(name: string) {
+  const found = RACES.find(
+    (entry) => entry.name.toLowerCase() === name.toLowerCase()
+  );
+
+  if (!found) {
+    throw new Error(`Unknown race: ${name}`);
+  }
+
+  return found;
+}
+
+/**
+ * Calculates effective attributes without modifying base scores.
+ */
+export function calculateEffectiveAttributes(
+  sheet: Pick<
+    CharacterSheet,
+    | 'race'
+    | 'baseAttributes'
+    | 'racialAttributeChoice'
+    | 'attributeIncreases'
+  >
+): Attributes {
+  const race = getRace(sheet.race);
+  const adjustments = race.attributeAdjustments;
+  const increases = sheet.attributeIncreases ?? {};
+
+  if (adjustments.any && !sheet.racialAttributeChoice) {
+    throw new Error(
+      'A racial attribute choice is required for this race.'
+    );
+  }
+
+  const result = { ...sheet.baseAttributes };
+
+  for (const key of ATTRIBUTE_KEYS) {
+    const racialBonus = adjustments[key] ?? 0;
+
+    const flexibleBonus =
+      sheet.racialAttributeChoice === key
+        ? (adjustments.any ?? 0)
+        : 0;
+
+    const levelBonus = increases[key] ?? 0;
+
+    const value =
+      sheet.baseAttributes[key] +
+      racialBonus +
+      flexibleBonus +
+      levelBonus;
+
+    const cap = race.attributeCaps[key] ?? 20;
+
+    if (value > cap) {
+      throw new Error(
+        `${key.toUpperCase()} exceeds the racial cap of ${cap}.`
+      );
+    }
+
+    result[key] = value;
+  }
+
+  return result;
+}
+
+/**
+ * Calculates initial HP/MP from class and effective attributes.
+ */
+function calculateStartingResources(
+  classId: string,
+  level: number,
+  attributes: Attributes
+) {
+  const selectedClass = getBaseClass(classId);
+
+  const vitMod = getModifier(attributes.vit);
+  const mndMod = getModifier(attributes.mnd);
+
+  const hp =
+    selectedClass.startingHp +
+    vitMod +
     (level - 1) * (selectedClass.hpPerLevel + vitMod);
-  const mp = selectedClass.startingMp + mndMod +
+
+  const mp =
+    selectedClass.startingMp +
+    mndMod +
     (level - 1) * (selectedClass.mpPerLevel + mndMod);
+
+  return {
+    hp: Math.max(1, hp),
+    mp: Math.max(0, mp),
+  };
+}
+
+export function getHeroPointMaximum(level: number): number {
+  validateLevel(level);
+  return Math.min(4, 1 + Math.floor((level - 1) / 5));
+}
+
+/**
+ * Creates a new character at any level from 1 to 20.
+ */
+export function createCharacter(
+  options: CharacterCreationOptions
+): CharacterSheet {
+  validateLevel(options.level);
+
+  if (!options.id.trim()) {
+    throw new Error('Character ID is required.');
+  }
+
+  const selectedClass = getBaseClass(options.classId);
+
+  const attributes = calculateEffectiveAttributes({
+    race: options.race,
+    baseAttributes: options.baseAttributes,
+    racialAttributeChoice: options.racialAttributeChoice,
+    attributeIncreases: options.attributeIncreases,
+  });
+
+  const resources = calculateStartingResources(
+    options.classId,
+    options.level,
+    attributes
+  );
+
   return {
     id: options.id,
     name: options.name.trim() || 'Hero',
     race: options.race,
     ethos: options.ethos,
     zodiacSign: options.zodiacSign,
-    classes: [{ name: selectedClass.name, level }],
+
+    classes: [
+      {
+        name: selectedClass.name,
+        level: options.level,
+      },
+    ],
+
     baseAttributes: { ...options.baseAttributes },
-    currentHp: Math.max(1, hp),
+    racialAttributeChoice: options.racialAttributeChoice,
+    attributeIncreases: {
+      ...options.attributeIncreases,
+    },
+
+    currentHp: resources.hp,
     tempHp: 0,
-    currentMp: Math.max(0, mp),
+    currentMp: resources.mp,
     tempMp: 0,
+
     breakStep: 0,
-    heroPoints: Math.min(4, Math.floor(1 + level / 5)),
+    heroPoints: getHeroPointMaximum(options.level),
     gold: selectedClass.startingGold ?? 0,
     notes: '',
+
     trainedSkills: [...new Set(options.trainedSkills ?? [])],
     focusedSkills: [],
     technicks: [...new Set(selectedClass.startingTechnicks)],
     talents: [],
+
     equipped: {},
     inventory: [],
   };
 }
 
-/** Does not support class changes or level changes. Those require an explicit progression workflow. */
 /**
- * Safely edits an existing character's profile and primary class.
+ * Edits an existing character.
  *
- * Class changes preserve the primary class level, additional
- * classes, resources, equipment, inventory, and learned abilities.
+ * Preserves inventory, equipment, learned abilities,
+ * additional classes, and current resource values.
  *
- * Race changes update ancestry identity only. Existing attributes
- * are preserved because pre-racial attribute scores are not
- * separately stored in CharacterSheet.
- *
- * This is not a character rebuild or respec operation.
+ * Level changes currently support single-class characters.
  */
 export function editCharacter(
   existing: CharacterSheet,
-  changes: CharacterEditChanges,
+  changes: CharacterEditChanges
 ): CharacterSheet {
   const forbidden = [
     'classes',
@@ -122,7 +268,6 @@ export function editCharacter(
     }
   }
 
-  // Validate the requested class before modifying anything.
   const selectedClass =
     changes.classId !== undefined
       ? getBaseClass(changes.classId)
@@ -134,9 +279,24 @@ export function editCharacter(
     );
   }
 
-  // classId is an editor command, not a CharacterSheet field.
-  const { classId: _classId, ...profileChanges } = changes;
+  if (changes.level !== undefined) {
+    validateLevel(changes.level);
+
+    if (existing.classes.length !== 1) {
+      throw new Error(
+        'Direct level editing currently supports single-class characters only.'
+      );
+    }
+  }
+
+  const {
+    classId: _classId,
+    level: _level,
+    ...profileChanges
+  } = changes;
+
   void _classId;
+  void _level;
 
   const result: CharacterSheet = {
     ...existing,
@@ -144,6 +304,10 @@ export function editCharacter(
 
     baseAttributes: {
       ...(changes.baseAttributes ?? existing.baseAttributes),
+    },
+
+    attributeIncreases: {
+      ...(changes.attributeIncreases ?? existing.attributeIncreases),
     },
 
     trainedSkills: [
@@ -159,9 +323,7 @@ export function editCharacter(
     technicks: [...existing.technicks],
     talents: [...existing.talents],
 
-    inventory: existing.inventory.map((item) => ({
-      ...item,
-    })),
+    inventory: existing.inventory.map((item) => ({ ...item })),
 
     equipped: Object.fromEntries(
       Object.entries(existing.equipped).map(
@@ -177,14 +339,22 @@ export function editCharacter(
     result.name = changes.name.trim() || 'Hero';
   }
 
-  // Change only the primary class identity.
-  // Preserve its level and any additional class entries.
   if (selectedClass) {
     result.classes[0] = {
       ...result.classes[0],
       name: selectedClass.name,
     };
   }
+
+  if (changes.level !== undefined) {
+    result.classes[0] = {
+      ...result.classes[0],
+      level: changes.level,
+    };
+  }
+
+  // Validate the resulting attributes before saving.
+  calculateEffectiveAttributes(result);
 
   return result;
 }
