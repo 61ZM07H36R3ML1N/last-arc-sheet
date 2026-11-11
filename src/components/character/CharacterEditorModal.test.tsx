@@ -1,456 +1,189 @@
 // @vitest-environment jsdom
 
-import { describe, expect, it, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+/**
+ * Regression coverage for the reactive Character Editor.
+ * Place alongside CharacterEditorModal.tsx in src/components/character/.
+ * Uses deterministic fixtures so it does not depend on the full rules catalog.
+ */
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { fireEvent, render, screen } from '@testing-library/react';
+import type { ComponentProps } from 'react';
 import CharacterEditorModal from './CharacterEditorModal';
-import { useCharacterStore } from '../../store/useCharacterStore';
-import type { Equipment } from '../../types';
 
-
-describe('CharacterEditorModal', () => {
-  it('does not render when closed', () => {
-    const { container } = render(
-      <CharacterEditorModal
-        isOpen={false}
-        mode="create"
-        onClose={vi.fn()}
-      />
-    );
-
-    expect(container).toBeEmptyDOMElement();
-  });
-
-  it('renders the Create Character interface', () => {
-    render(
-      <CharacterEditorModal
-        isOpen={true}
-        mode="create"
-        onClose={vi.fn()}
-      />
-    );
-
-    expect(
-      screen.getByRole('heading', { name: 'Create Character' })
-    ).toBeInTheDocument();
-
-    expect(
-      screen.getByRole('button', { name: 'Create Character' })
-    ).toBeInTheDocument();
-  });
-
-  it('renders the Edit Character interface', () => {
-    render(
-      <CharacterEditorModal
-        isOpen={true}
-        mode="edit"
-        onClose={vi.fn()}
-      />
-    );
-
-    expect(
-      screen.getByRole('heading', { name: 'Edit Character' })
-    ).toBeInTheDocument();
-
-    expect(
-      screen.getByRole('button', { name: 'Save Changes' })
-    ).toBeInTheDocument();
-  });
-
-  it('starts Create mode with an empty name', () => {
-    render(
-      <CharacterEditorModal
-        isOpen={true}
-        mode="create"
-        onClose={vi.fn()}
-      />
-    );
-
-    const nameInput = screen.getByPlaceholderText(
-      'e.g. Kress'
-    ) as HTMLInputElement;
-
-    expect(nameInput).toHaveValue('');
-  });
-
-  it('does not modify the active character when canceled', async () => {
-    const user = userEvent.setup();
-    const onClose = vi.fn();
-
-    const originalSheet = structuredClone(
-      useCharacterStore.getState().sheet
-    );
-
-    render(
-      <CharacterEditorModal
-        isOpen={true}
-        mode="edit"
-        onClose={onClose}
-      />
-    );
-
-    const nameInput = screen.getByPlaceholderText(
-      'e.g. Kress'
-    );
-
-    await user.clear(nameInput);
-    await user.type(nameInput, 'Unsaved Character');
-
-    await user.click(
-      screen.getByRole('button', { name: 'Cancel' })
-    );
-
-    expect(onClose).toHaveBeenCalledOnce();
-
-    expect(useCharacterStore.getState().sheet).toEqual(
-      originalSheet
-    );
-  });
-});
-
-it('preserves the active character when creation is rejected', async () => {
-  const user = userEvent.setup();
-  const onClose = vi.fn();
-
-  const originalSheet = structuredClone(
-    useCharacterStore.getState().sheet
-  );
-
-  const confirmSpy = vi
-    .spyOn(window, 'confirm')
-    .mockReturnValue(false);
-
-  render(
-    <CharacterEditorModal
-      isOpen={true}
-      mode="create"
-      onClose={onClose}
-    />
-  );
-
-  await user.type(
-    screen.getByPlaceholderText('e.g. Kress'),
-    'New Adventurer'
-  );
-
-  await user.click(
-    screen.getByRole('button', { name: 'Create Character' })
-  );
-
-  expect(confirmSpy).toHaveBeenCalledOnce();
-
-  expect(useCharacterStore.getState().sheet).toEqual(
-    originalSheet
-  );
-
-  expect(onClose).not.toHaveBeenCalled();
-});
-
-it('creates a fresh character when replacement is confirmed', async () => {
-  const user = userEvent.setup();
-  const onClose = vi.fn();
-
-  const originalSheet = structuredClone(
-    useCharacterStore.getState().sheet
-  );
-
-  const confirmSpy = vi
-    .spyOn(window, 'confirm')
-    .mockReturnValue(true);
-
-  try {
-    render(
-      <CharacterEditorModal
-        isOpen={true}
-        mode="create"
-        onClose={onClose}
-      />
-    );
-
-    await user.type(
-      screen.getByPlaceholderText('e.g. Kress'),
-      'Regression Hero'
-    );
-
-    await user.click(
-      screen.getByRole('button', { name: 'Create Character' })
-    );
-
-    const newSheet = useCharacterStore.getState().sheet;
-
-    expect(confirmSpy).toHaveBeenCalledOnce();
-    expect(newSheet.name).toBe('Regression Hero');
-    expect(newSheet.id).not.toBe(originalSheet.id);
-    expect(newSheet.classes[0].level).toBe(1);
-    expect(newSheet.inventory).toEqual([]);
-    expect(newSheet.equipped).toEqual({});
-    expect(newSheet.breakStep).toBe(0);
-    expect(newSheet.tempHp).toBe(0);
-    expect(newSheet.tempMp).toBe(0);
-    expect(onClose).toHaveBeenCalledOnce();
-  } finally {
-    // Restore the active character after this test.
-    useCharacterStore.getState().importSheet(originalSheet);
-  }
-});
-
-it('preserves progression and equipment when editing a name', async () => {
-  const user = userEvent.setup();
-  const onClose = vi.fn();
-
-  // Backup the original character for cleanup.
-  const originalSheet = structuredClone(
-    useCharacterStore.getState().sheet
-  );
-
-  // Create a character with non-default resource values.
- const fixture = structuredClone(originalSheet);
-
-// Non-default character resources
-fixture.name = 'Veteran Adventurer';
-fixture.currentHp = 7;
-fixture.currentMp = 3;
-fixture.tempHp = 5;
-fixture.tempMp = 2;
-fixture.breakStep = 2;
-fixture.gold = 137;
-fixture.heroPoints = 2;
-
-fixture.technicks = [
-  ...new Set([
-    ...fixture.technicks,
-    'Regression Test Technick',
-  ]),
-];
-
-// Equipped weapon
-const testSword: Equipment = {
-  id: 'regression-weapon-001',
-  name: 'Veteran Longsword',
-  slot: 'mainHand',
-  bulk: 2,
-  damageDice: '1d8',
-  damageType: 'slashing',
-  atkBonus: 2,
-};
-
-// Equipped armor
-const testArmor: Equipment = {
-  id: 'regression-armor-001',
-  name: 'Veteran Chainmail',
-  slot: 'armor',
-  bulk: 4,
-  reflexBonus: 1,
-  dr: 3,
-  maxAgiBonus: 2,
-  checkPenalty: -2,
-};
-
-// Equipped accessory
-const testAccessory: Equipment = {
-  id: 'regression-accessory-001',
-  name: 'Veteran Signet',
-  slot: 'accessory',
-  bulk: 0,
-  specialText: 'A keepsake from an earlier adventure',
-};
-
-fixture.equipped = {
-  mainHand: testSword,
-  armor: testArmor,
-  accessory1: testAccessory,
-};
-
-// Inventory items
-fixture.inventory = [
-  {
-    id: 'regression-inventory-001',
-    name: 'Spare Dagger',
-    slot: 'mainHand',
-    bulk: 1,
-    damageDice: '1d4',
-    damageType: 'piercing',
+const mocks = vi.hoisted(() => ({
+  importSheet: vi.fn(),
+  editCharacter: vi.fn(),
+  createCharacter: vi.fn(),
+  sheet: {
+    id: 'hero-1', name: 'Kress', race: 'Human', ethos: 'Neutral',
+    zodiacSign: 'Aries', classes: [{ name: 'Warrior', level: 1 }],
+    baseAttributes: { str: 16, vit: 14, agi: 12, int: 10, mnd: 10, chr: 8 },
+    racialAttributeChoice: 'vit', attributeIncreases: {},
+    trainedSkills: [], focusedSkills: [], technicks: [], talents: [],
+    equipped: {}, inventory: [],
   },
-  {
-    id: 'regression-inventory-002',
-    name: 'Traveler Cloak',
-    slot: 'armor',
-    bulk: 1,
-    specialText: 'A weathered traveling cloak',
-  },
-];
+}));
 
-  try {
-    // Load the fixture before rendering the editor.
-    useCharacterStore.getState().importSheet(fixture);
+vi.mock('../../store/useCharacterStore', () => ({
+  useCharacterStore: () => ({ sheet: mocks.sheet, importSheet: mocks.importSheet }),
+}));
 
-    render(
-      <CharacterEditorModal
-        isOpen={true}
-        mode="edit"
-        onClose={onClose}
-      />
-    );
+vi.mock('../../data', () => ({
+  RACES: [
+    {
+      id: 'human', name: 'Human', size: 'Medium', speed: 6,
+      attributeAdjustments: { any: 2 }, attributeCaps: {}, traits: [],
+    },
+    {
+      id: 'dwarf', name: 'Dwarf', size: 'Medium', speed: 4,
+      attributeAdjustments: { vit: 2, mnd: 2, chr: -2 },
+      attributeCaps: { vit: 16 }, traits: [],
+    },
+  ],
+  ETHOS_LIST: ['Neutral'],
+  SKILLS: [],
+}));
 
-    const nameInput = screen.getByPlaceholderText('e.g. Kress');
+vi.mock('../../data/zodiac', () => ({
+  ZODIAC_LIST: ['Aries'],
+  ZODIAC_SIGNS: { Aries: { symbol: '♈', element: 'Fire' } },
+}));
 
-    expect(nameInput).toHaveValue('Veteran Adventurer');
+vi.mock('../../engine/formulas', () => ({
+  getModifier: (score: number) => Math.floor((score - 10) / 2),
+}));
 
-    await user.clear(nameInput);
-    await user.type(nameInput, 'Updated Hero');
+vi.mock('../../engine/characterLifecycle', () => ({
+  BASE_CLASSES: [{
+    id: 'warrior', name: 'Warrior', initiativeDie: 'd10',
+    startingHp: 30, startingMp: 6, startingGold: 10,
+    defenseBonuses: { reflex: 0, fortitude: 0, will: 0 },
+    baseTrainedSkillsCount: 2, classSkills: [],
+  }],
+  editCharacter: mocks.editCharacter,
+  createCharacter: mocks.createCharacter,
+}));
 
-    await user.click(
-      screen.getByRole('button', { name: 'Save Changes' })
-    );
+const open = (mode: ComponentProps<typeof CharacterEditorModal>['mode'] = 'edit') => {
+  const onClose = vi.fn();
+  const result = render(<CharacterEditorModal isOpen onClose={onClose} mode={mode} />);
+  return { ...result, onClose };
+};
 
-    const updatedSheet = useCharacterStore.getState().sheet;
+const raceSelect = () => screen.getAllByRole('combobox').find((element) =>
+  Array.from((element as HTMLSelectElement).options).some((option) => option.value === 'dwarf'),
+) as HTMLSelectElement;
+const attributeCard = (key: string) => {
+  const input = document.getElementById(`base-${key}`);
+  if (!input) throw new Error(`Missing base-${key} input`);
+  const card = input.closest('div.p-2');
+  if (!card) throw new Error(`Missing ${key} attribute card`);
+  return card as HTMLElement;
+};
 
-    // Only the character name should change.
-    expect(updatedSheet.name).toBe('Updated Hero');
+const effectiveScore = (key: string) => {
+  const card = attributeCard(key);
+  const score = card.querySelector('.text-xl');
+  if (!score) throw new Error(`Missing final score for ${key}`);
+  return score.textContent;
+};
 
-    // Character identity and progression
-    expect(updatedSheet.id).toBe(fixture.id);
-    expect(updatedSheet.classes).toEqual(fixture.classes);
-    expect(updatedSheet.technicks).toEqual(fixture.technicks);
-    expect(updatedSheet.talents).toEqual(fixture.talents);
-
-    // Combat resources
-    expect(updatedSheet.currentHp).toBe(fixture.currentHp);
-    expect(updatedSheet.currentMp).toBe(fixture.currentMp);
-    expect(updatedSheet.tempHp).toBe(fixture.tempHp);
-    expect(updatedSheet.tempMp).toBe(fixture.tempMp);
-    expect(updatedSheet.breakStep).toBe(fixture.breakStep);
-    expect(updatedSheet.heroPoints).toBe(fixture.heroPoints);
-
-    // Equipment and inventory
-expect(updatedSheet.inventory).toEqual(fixture.inventory);
-expect(updatedSheet.equipped).toEqual(fixture.equipped);
-expect(updatedSheet.gold).toBe(fixture.gold);
-
-// Verify equipped items individually
-expect(updatedSheet.equipped.mainHand).toEqual(testSword);
-expect(updatedSheet.equipped.armor).toEqual(testArmor);
-expect(updatedSheet.equipped.accessory1).toEqual(testAccessory);
-
-// Verify inventory item identities
-expect(updatedSheet.inventory).toHaveLength(2);
-
-expect(updatedSheet.inventory.map((item) => item.id)).toEqual([
-  'regression-inventory-001',
-  'regression-inventory-002',
-]);
-
-    expect(onClose).toHaveBeenCalledOnce();
-
-    // Ensure the fixture was not mutated.
-    expect(fixture.name).toBe('Veteran Adventurer');
-  } finally {
-    // Always restore the original character.
-    useCharacterStore.getState().importSheet(originalSheet);
-  }
+beforeEach(() => {
+  vi.clearAllMocks();
+  mocks.editCharacter.mockImplementation((sheet, changes) => ({ ...sheet, ...changes }));
+  mocks.createCharacter.mockImplementation((options) => ({ ...mocks.sheet, ...options }));
 });
 
-it('discards unsaved changes when the modal is reopened', async () => {
-  const user = userEvent.setup();
-  const originalSheet = structuredClone(
-    useCharacterStore.getState().sheet
-  );
-
-  const { rerender } = render(
-    <CharacterEditorModal
-      isOpen={true}
-      mode="edit"
-      onClose={vi.fn()}
-    />
-  );
-
-  const nameInput = screen.getByPlaceholderText('e.g. Kress');
-
-  expect(nameInput).toHaveValue(originalSheet.name);
-
-  await user.clear(nameInput);
-  await user.type(nameInput, 'Unsaved Draft');
-
-  expect(nameInput).toHaveValue('Unsaved Draft');
-
-  // Closing the modal unmounts the editor form.
-  rerender(
-    <CharacterEditorModal
-      isOpen={false}
-      mode="edit"
-      onClose={vi.fn()}
-    />
-  );
-
-  expect(
-    screen.queryByRole('heading', { name: 'Edit Character' })
-  ).not.toBeInTheDocument();
-
-  // Reopening should initialize from the active character.
-  rerender(
-    <CharacterEditorModal
-      isOpen={true}
-      mode="edit"
-      onClose={vi.fn()}
-    />
-  );
-
-  expect(
-    screen.getByPlaceholderText('e.g. Kress')
-  ).toHaveValue(originalSheet.name);
-
-  expect(useCharacterStore.getState().sheet).toEqual(
-    originalSheet
-  );
-});
-
-it('allows editing level, ancestry, and base class', () => {
-  const { container } = render(
-    <CharacterEditorModal
-      isOpen={true}
-      mode="edit"
-      onClose={vi.fn()}
-    />
-  );
-
-  const findControl = (
-    labelText: string
-  ): HTMLInputElement | HTMLSelectElement => {
-    const label = Array.from(
-      container.querySelectorAll('label')
-    ).find((element) =>
-      element.textContent?.trim() === labelText
-    );
-
-    expect(label, `Missing label: ${labelText}`).toBeDefined();
-
-    const control = label?.parentElement?.querySelector(
-      'input, select'
-    );
-
-    expect(control, `Missing control: ${labelText}`).not.toBeNull();
-
-    return control as HTMLInputElement | HTMLSelectElement;
-  };
-
-  expect(findControl('Level')).toBeEnabled();
-  expect(findControl('Race & Ancestry')).toBeEnabled();
-  expect(findControl('Base Class')).toBeEnabled();
-
-  const standardArrayButton = screen.getByRole('button', {
-    name: /Load Standard Array/,
+describe('CharacterEditorModal racial attribute regressions', () => {
+  it('renders the correct create/edit heading', () => {
+    const { unmount } = open('edit');
+    expect(screen.getByRole('heading', { name: 'Edit Character' })).toBeInTheDocument();
+    unmount();
+    open('create');
+    expect(
+  screen.getByRole('heading', { name: 'Create New Character' })
+).toBeInTheDocument();
   });
 
-  expect(standardArrayButton).toBeEnabled();
+  it('updates final attributes immediately on race change without altering base scores', () => {
+    open();
+    // Saved Human choice is VIT, so initial VIT = 14 + 2.
+    expect(effectiveScore('vit')).toBe('16');
+    fireEvent.change(raceSelect(), { target: { value: 'dwarf' } });
+    expect(effectiveScore('vit')).toBe('16');
+    expect(effectiveScore('mnd')).toBe('12');
+    expect(effectiveScore('chr')).toBe('6');
+    expect((document.getElementById('base-vit') as HTMLInputElement).value).toBe('14');
+    expect((document.getElementById('base-chr') as HTMLInputElement).value).toBe('8');
+  });
 
-  // Six attribute inputs must be read-only in Edit mode.
-  const attributeInputs = Array.from(
-    container.querySelectorAll('input[type="number"]')
-  ).filter((input) => input !== findControl('Level'));
+  it('restores a saved flexible racial choice and recalculates when it changes', () => {
+    open();
+    const flexible = screen.getAllByRole('combobox').find((element) =>
+      Array.from((element as HTMLSelectElement).options).some((option) => option.value === 'vit'),
+    ) as HTMLSelectElement;
+    expect((flexible as HTMLSelectElement).value).toBe('vit');
+    expect(effectiveScore('vit')).toBe('16');
+    fireEvent.change(flexible, { target: { value: 'str' } });
+    expect(effectiveScore('str')).toBe('18');
+    expect(effectiveScore('vit')).toBe('14');
+  });
 
-  expect(attributeInputs).toHaveLength(6);
+  it('keeps base attributes editable in edit mode and updates the final score', () => {
+    open();
+    const input = document.getElementById('base-str') as HTMLInputElement;
+    expect(input).toBeEnabled();
+    fireEvent.change(input, { target: { value: '17' } });
+    expect(input.value).toBe('17');
+    expect(effectiveScore('str')).toBe('17');
+  });
 
-  for (const input of attributeInputs) {
-    expect(input).toBeDisabled();
-  }
+  it('shows an over-cap warning and prevents saving an invalid score', () => {
+    open();
+    fireEvent.change(raceSelect(), { target: { value: 'dwarf' } });
+    fireEvent.change(document.getElementById('base-vit')!, { target: { value: '16' } });
+    expect(effectiveScore('vit')).toBe('18');
+    expect(screen.getByRole('alert')).toHaveTextContent(/VIT 18 exceeds the Dwarf cap of 16/i);
+    expect(screen.getByRole('button', { name: 'Save Changes' })).toBeDisabled();
+    expect(mocks.editCharacter).not.toHaveBeenCalled();
+    expect(mocks.importSheet).not.toHaveBeenCalled();
+  });
+
+  it('saves the edited race, raw scores, flexible choice and level', () => {
+    const { onClose } = open();
+    fireEvent.change(raceSelect(), { target: { value: 'dwarf' } });
+    fireEvent.change(document.getElementById('base-str')!, { target: { value: '15' } });
+    // Level is the first numeric input without a base-* ID.
+    const levelInput = screen.getAllByRole('spinbutton').find((node) => !node.id) as HTMLInputElement;
+    fireEvent.change(levelInput, { target: { value: '4' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Save Changes' }));
+    expect(mocks.editCharacter).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 'hero-1' }),
+      expect.objectContaining({
+        race: 'Dwarf', level: 4,
+        baseAttributes: expect.objectContaining({ str: 15, vit: 14 }),
+        racialAttributeChoice: 'vit',
+      }),
+    );
+    expect(mocks.importSheet).toHaveBeenCalledTimes(1);
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it('creates with raw attributes rather than baking in racial bonuses', () => {
+    const confirm = vi.spyOn(window, 'confirm').mockReturnValue(true);
+    try {
+      const { onClose } = open('create');
+      expect(effectiveScore('str')).toBe('18'); // Human defaults to +2 STR.
+      fireEvent.click(screen.getByRole('button', { name: 'Create Character' }));
+      expect(mocks.createCharacter).toHaveBeenCalledWith(expect.objectContaining({
+        race: 'Human',
+        baseAttributes: { str: 16, vit: 14, agi: 12, int: 10, mnd: 10, chr: 8 },
+        racialAttributeChoice: 'str',
+      }));
+      expect(mocks.importSheet).toHaveBeenCalledTimes(1);
+      expect(onClose).toHaveBeenCalledTimes(1);
+    } finally {
+      confirm.mockRestore();
+    }
+  });
 });

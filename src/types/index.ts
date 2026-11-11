@@ -39,7 +39,13 @@ export interface CharacterSheet {
   race: string;
   ethos: string;
   zodiacSign: ZodiacSign;
-  classes: Array<{ name: string; level: number }>;
+
+  classes: Array<{
+    name: string;
+    level: number;
+  }>;
+
+  // Raw attribute scores before racial and level bonuses
   baseAttributes: {
     str: number;
     vit: number;
@@ -48,18 +54,28 @@ export interface CharacterSheet {
     mnd: number;
     chr: number;
   };
+
+  // Human / Half-Elf flexible racial +2 selection
+  racialAttributeChoice?: AttributeKey;
+
+  // Attribute increases earned through character progression
+  attributeIncreases?: Partial<Record<AttributeKey, number>>;
+
   currentHp: number;
   tempHp: number;
   currentMp: number;
   tempMp: number;
+
   breakStep: number;
   heroPoints: number;
   gold: number;
   notes: string;
+
   trainedSkills: string[];
   focusedSkills: string[];
   technicks: string[];
   talents: string[];
+
   equipped: {
     mainHand?: Equipment;
     offHand?: Equipment;
@@ -70,5 +86,6 @@ export interface CharacterSheet {
     accessory1?: Equipment;
     accessory2?: Equipment;
   };
+
   inventory: Equipment[];
 }

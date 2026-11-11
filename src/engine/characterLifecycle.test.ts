@@ -3,12 +3,43 @@ import { createCharacter, editCharacter, BASE_CLASSES } from './characterLifecyc
 import { resolveWeaponProficiency } from './weaponProficiency';
 
 const options = {
-  id: 'test-hero', name: '  Kress  ', race: 'Human', ethos: 'Pure Good',
-  zodiacSign: 'Aries' as const, classId: 'warrior', level: 1,
-  baseAttributes: { str: 16, vit: 14, agi: 12, int: 10, mnd: 10, chr: 8 },
+  id: 'test-hero',
+  name: '  Kress  ',
+  race: 'Human',
+  ethos: 'Pure Good',
+  zodiacSign: 'Aries' as const,
+  classId: 'warrior',
+  level: 1,
+  racialAttributeChoice: 'str' as const,
+  baseAttributes: {
+    str: 16,
+    vit: 14,
+    agi: 12,
+    int: 10,
+    mnd: 10,
+    chr: 8,
+  },
 };
 
 describe('character lifecycle', () => {
+  it('requires a flexible racial attribute choice for Humans', () => {
+  expect(() =>
+    createCharacter({
+      ...options,
+      racialAttributeChoice: undefined,
+    })
+  ).toThrow('A racial attribute choice is required for this race.');
+});
+
+it('preserves raw attributes and the racial choice on creation', () => {
+  const sheet = createCharacter(options);
+
+  expect(sheet.racialAttributeChoice).toBe('str');
+
+  // Racial bonuses must not be baked into the raw attributes.
+  expect(sheet.baseAttributes).toEqual(options.baseAttributes);
+});
+
   it('excludes advanced classes from new character choices', () => {
     expect(BASE_CLASSES).toHaveLength(6);
     expect(BASE_CLASSES.every((entry) => entry.type !== 'advanced')).toBe(true);
