@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useCharacterStore } from '../../store/useCharacterStore';
 import CharacterAdvancementModal from './CharacterAdvancementModal';
+import { ArrowUpCircle } from 'lucide-react';
 
 /**
  * Place next to the character level display.
@@ -19,13 +20,29 @@ export function CharacterAdvancementControl() {
   return (
     <>
       <button
-        type="button"
-        disabled={characterLevel >= 20}
-        onClick={() => setIsOpen(true)}
-        className="rounded-lg bg-emerald-700 px-4 py-2 font-semibold text-white transition-colors hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-50"
-      >
-        {characterLevel >= 20 ? 'Maximum Level' : 'Advance Character'}
-      </button>
+  type="button"
+  onClick={() => setIsOpen(true)}
+  disabled={characterLevel >= 20}
+  title={
+    characterLevel >= 20
+      ? 'Maximum character level reached'
+      : 'Advance Character'
+  }
+  aria-label="Advance Character"
+  className="
+    p-1 rounded
+    bg-arc-bg
+    hover:bg-arc-cardHover
+    border border-arc-border
+    text-emerald-400
+    hover:border-emerald-400
+    transition-all
+    disabled:opacity-40
+    disabled:cursor-not-allowed
+  "
+>
+  <ArrowUpCircle size={14} />
+</button>
 
       <CharacterAdvancementModal
         open={isOpen}
