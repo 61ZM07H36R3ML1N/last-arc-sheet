@@ -13,10 +13,11 @@ import {
   BookMarked, 
   Info 
 } from 'lucide-react';
-import { useCharacterStore } from './store/useCharacterStore';
+import { useCharacterStore, getMaxHeroPoints } from './store/useCharacterStore';
 import { getModifier, getTotalLevel, calculateDefensesWithBreak, rollExplodingDie } from './engine/formulas';
 import { ZODIAC_SIGNS } from './data/zodiac';
 import CharacterEditorModal from './components/character/CharacterEditorModal';
+import CharacterAdvancementControl from './components/character/CharacterAdvancementControl';
 import JsonSyncModal from './components/character/JsonSyncModal';
 import VersionModal from './components/shared/VersionModal';
 import GearManager from './components/equipment/GearManager';
@@ -142,10 +143,11 @@ export default function App() {
             <button
               onClick={() => setIsEditorOpen(true)}
               className="p-1 rounded bg-arc-bg hover:bg-arc-cardHover border border-arc-border text-arc-accent hover:border-arc-accent transition-all"
-              title="Edit / Level Up Character"
+              title="Edit Character"
             >
               <UserCheck size={14} />
             </button>
+            <CharacterAdvancementControl />
             <button
               onClick={() => setIsSyncOpen(true)}
               className="p-1 rounded bg-arc-bg hover:bg-arc-cardHover border border-arc-border text-slate-400 hover:text-white transition-all ml-0.5"
@@ -192,7 +194,7 @@ export default function App() {
               </button>
             </div>
             <div className="flex gap-1 mt-1">
-              {[...Array(Math.min(4, Math.floor(1 + totalLevel / 5)))].map((_, i) => (
+              {[...Array(getMaxHeroPoints(totalLevel))].map((_, i) => (
                 <button
                   key={i}
                   onClick={useHeroPoint}
