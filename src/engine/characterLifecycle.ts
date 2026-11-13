@@ -1,6 +1,7 @@
 import { CLASSES, RACES } from '../data';
 import { getModifier } from './formulas';
 import type { AttributeKey, CharacterSheet } from '../types';
+import type { AbilityAcquisition, AbilityProgressionState } from '../types/abilities';
 
 export type BaseClass = (typeof CLASSES)[number];
 
@@ -192,6 +193,33 @@ export function createCharacter(
     attributes
   );
 
+  // A single-class creation choice provides a complete, explicit history.
+  const levelHistory = Array.from({ length: options.level }, (_, index) => ({
+    characterLevel: index + 1,
+    classId: selectedClass.id,
+    classLevel: index + 1,
+  }));
+  const startingTechnicks = [...new Set(selectedClass.startingTechnicks)];
+  const acquisitions: AbilityAcquisition[] = startingTechnicks.map((name, index) => ({
+    id: `starting:${selectedClass.id}:${index}`,
+    abilityId: `starting:${selectedClass.id}:${index}`,
+    abilityName: name,
+    kind: 'technick',
+    source: 'class-starting-technick',
+    characterLevel: 1,
+    classId: selectedClass.id,
+    classLevel: 1,
+    selectedOptions: {},
+    acquisitionOrder: index + 1,
+    provenance: 'recorded',
+  }));
+  const abilityProgression: AbilityProgressionState = {
+    schemaVersion: 1,
+    levelHistory,
+    acquisitions,
+    needsReconciliation: false,
+  };
+
   return {
     id: options.id,
     name: options.name.trim() || 'Hero',
@@ -199,6 +227,7 @@ export function createCharacter(
     ethos: options.ethos,
     zodiacSign: options.zodiacSign,
 
+    abilityProgression,
     classes: [
       {
         name: selectedClass.name,
@@ -224,7 +253,7 @@ export function createCharacter(
 
     trainedSkills: [...new Set(options.trainedSkills ?? [])],
     focusedSkills: [],
-    technicks: [...new Set(selectedClass.startingTechnicks)],
+    technicks: startingTechnicks,
     talents: [],
 
     equipped: {},
@@ -265,6 +294,22 @@ export function editCharacter(
       throw new Error(
         `Cannot edit ${key} through character profile editing.`
       );
+    }
+  }
+
+  // Profile editing must never rewrite a character's advancement history.
+  // Allow unchanged values for compatibility with existing editor callers.
+  if (changes.level !== undefined) {
+    validateLevel(changes.level);
+    const currentLevel = existing.classes.reduce((sum, entry) => sum + entry.level, 0);
+    if (changes.level !== currentLevel) {
+      throw new Error('Change character level through the advancement workflow.');
+    }
+  }
+  if (changes.classId !== undefined) {
+    const requested = getBaseClass(changes.classId);
+    if (existing.classes.length !== 1 || existing.classes[0].name !== requested.name) {
+      throw new Error('Change character class through the advancement workflow.');
     }
   }
 
