@@ -41,7 +41,7 @@ export interface CharacterSheet {
   ethos: string;
   zodiacSign: ZodiacSign;
 
-abilityProgression: AbilityProgressionState;
+abilityProgression?: AbilityProgressionState;
 
   classes: Array<{
     name: string;
