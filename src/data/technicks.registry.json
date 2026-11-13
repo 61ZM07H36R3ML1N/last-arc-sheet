@@ -1,0 +1,344 @@
+[
+  {
+    "id": "technick:power-attack",
+    "name": "Power Attack",
+    "kind": "technick",
+    "sourcebookId": "core-v04",
+    "prerequisiteText": "Strength 13",
+    "description": "Spend 2 minor actions in the same turn to deal +1 damage die on all melee attacks.",
+    "repeatable": false
+  },
+  {
+    "id": "technick:mighty-strikes",
+    "name": "Mighty Strikes",
+    "kind": "technick",
+    "sourcebookId": "core-v04",
+    "prerequisiteText": "Strength 13",
+    "description": "Take -1 on melee attacks to gain +1 damage (+2 for 2-handed weapons). Scales every 4 levels.",
+    "repeatable": false
+  },
+  {
+    "id": "technick:rapid-strike",
+    "name": "Rapid Strike",
+    "kind": "technick",
+    "sourcebookId": "core-v04",
+    "prerequisiteText": "Agility 13",
+    "description": "Take -2 penalty to melee attack roll to deal +1 die of damage.",
+    "repeatable": false
+  },
+  {
+    "id": "technick:cleave",
+    "name": "Cleave",
+    "kind": "technick",
+    "sourcebookId": "core-v04",
+    "prerequisiteText": "Mighty Strikes, Strength 13",
+    "description": "As an all-out action, make a single melee attack against a target and any targets adjacent to both.",
+    "repeatable": false
+  },
+  {
+    "id": "technick:whirlwind-attack",
+    "name": "Whirlwind Attack",
+    "kind": "technick",
+    "sourcebookId": "core-v04",
+    "prerequisiteText": "Cleave, Mighty Strikes, Strength 15",
+    "description": "When using Cleave, hit all creatures adjacent to you (or 2 squares away with reach).",
+    "repeatable": false
+  },
+  {
+    "id": "technick:dodge",
+    "name": "Dodge",
+    "kind": "technick",
+    "sourcebookId": "core-v04",
+    "prerequisiteText": "Agility 13",
+    "description": "Once per turn as a reaction, make an Acrobatics check to avoid an attack that beat your Reflex.",
+    "repeatable": false
+  },
+  {
+    "id": "technick:dodge-roll",
+    "name": "Dodge Roll",
+    "kind": "technick",
+    "sourcebookId": "core-v04",
+    "prerequisiteText": "Agility 13, Dodge",
+    "description": "Whenever you successfully dodge an attack, immediately move 1 square without provoking counterattacks.",
+    "repeatable": false
+  },
+  {
+    "id": "technick:dual-wield-i",
+    "name": "Dual Wield I",
+    "kind": "technick",
+    "sourcebookId": "core-v04",
+    "prerequisiteText": "Agility 15",
+    "description": "Reduces the two-weapon attack penalty from -10 to -5.",
+    "repeatable": false
+  },
+  {
+    "id": "technick:dual-wield-ii",
+    "name": "Dual Wield II",
+    "kind": "technick",
+    "sourcebookId": "core-v04",
+    "prerequisiteText": "Agility 17, Level 6, Dual Wield I",
+    "description": "Reduces the two-weapon attack penalty from -5 to -2.",
+    "repeatable": false
+  },
+  {
+    "id": "technick:dual-wield-iii",
+    "name": "Dual Wield III",
+    "kind": "technick",
+    "sourcebookId": "core-v04",
+    "prerequisiteText": "Agility 19, Level 11, Dual Wield II",
+    "description": "Take no penalty when attacking with 2 weapons.",
+    "repeatable": false
+  },
+  {
+    "id": "technick:precise-shot",
+    "name": "Precise Shot",
+    "kind": "technick",
+    "sourcebookId": "core-v04",
+    "prerequisiteText": "None",
+    "description": "Make ranged attacks into melee without suffering the standard -5 penalty.",
+    "repeatable": false
+  },
+  {
+    "id": "technick:rapid-shot",
+    "name": "Rapid Shot",
+    "kind": "technick",
+    "sourcebookId": "core-v04",
+    "prerequisiteText": "Strength 13 or Agility 13",
+    "description": "Take -2 on ranged attacks to deal +1 die of damage (uses 2 ammo).",
+    "repeatable": false
+  },
+  {
+    "id": "technick:shield-bash",
+    "name": "Shield Bash",
+    "kind": "technick",
+    "sourcebookId": "core-v04",
+    "prerequisiteText": "Shield Proficiency",
+    "description": "Make counterattacks with your shield (Tiny 1d4, Small 1d6, Med 1d8, Large 1d10).",
+    "repeatable": false
+  },
+  {
+    "id": "technick:threshold-up",
+    "name": "Threshold Up",
+    "kind": "technick",
+    "sourcebookId": "core-v04",
+    "prerequisiteText": "None",
+    "description": "Gain +5 bonus to your Break Threshold.",
+    "repeatable": false
+  },
+  {
+    "id": "technick:channel",
+    "name": "Channel",
+    "kind": "technick",
+    "sourcebookId": "core-v04",
+    "prerequisiteText": "Trained in Spellcraft",
+    "description": "Once per day when <= 1/2 MP, spend a minor action to restore MP equal to Mind score or 1/4 max MP.",
+    "repeatable": true
+  },
+  {
+    "id": "technick:arcane-study",
+    "name": "Arcane Study",
+    "kind": "technick",
+    "sourcebookId": "core-v04",
+    "prerequisiteText": "Trained in Spellcraft",
+    "description": "Learn a number of spells equal to 1 + Int modifier from scrolls.",
+    "repeatable": true
+  },
+  {
+    "id": "technick:bardic-study",
+    "name": "Bardic Study",
+    "kind": "technick",
+    "sourcebookId": "core-v04",
+    "prerequisiteText": "Trained in Perform",
+    "description": "Learn a number of performances equal to 1 + Int modifier from scores.",
+    "repeatable": true
+  },
+  {
+    "id": "technick:burnout",
+    "name": "Burnout",
+    "kind": "technick",
+    "sourcebookId": "atlas-dtr-v03",
+    "prerequisiteText": "Trained in Athletics",
+    "description": "Move twice your base speed in a single secondary action, then move -1 step on the Break Gauge.",
+    "repeatable": false
+  },
+  {
+    "id": "technick:cannoneer",
+    "name": "Cannoneer",
+    "kind": "technick",
+    "sourcebookId": "atlas-dtr-v03",
+    "prerequisiteText": "None",
+    "description": "Reroll ranged attacks made with an airship artillery piece, keeping the second result.",
+    "repeatable": false
+  },
+  {
+    "id": "technick:cooperative",
+    "name": "Cooperative",
+    "kind": "technick",
+    "sourcebookId": "atlas-dtr-v03",
+    "prerequisiteText": "Mind 13",
+    "description": "When aiding another, the bonus provided increases to +5 rather than +2.",
+    "repeatable": false
+  },
+  {
+    "id": "technick:coordinated-attack",
+    "name": "Coordinated Attack",
+    "kind": "technick",
+    "sourcebookId": "atlas-dtr-v03",
+    "prerequisiteText": "None",
+    "description": "Aided ally deals +1 damage die per 5 points their attack beats target Reflex (max 5 dice).",
+    "repeatable": false
+  },
+  {
+    "id": "technick:crippling-attack",
+    "name": "Crippling Attack",
+    "kind": "technick",
+    "sourcebookId": "atlas-dtr-v03",
+    "prerequisiteText": "None",
+    "description": "Reduce target speed by 1 square per exploding melee damage die (minimum 2 squares).",
+    "repeatable": false
+  },
+  {
+    "id": "technick:dynamism",
+    "name": "Dynamism",
+    "kind": "technick",
+    "sourcebookId": "atlas-dtr-v03",
+    "prerequisiteText": "Charisma 13",
+    "description": "Substitute Charisma modifier in place of Mind modifier when calculating Will Defence.",
+    "repeatable": false
+  },
+  {
+    "id": "technick:fight-or-flight",
+    "name": "Fight or Flight",
+    "kind": "technick",
+    "sourcebookId": "atlas-dtr-v03",
+    "prerequisiteText": "None",
+    "description": "Substitute a reactionary attack to move up to half speed without provoking.",
+    "repeatable": false
+  },
+  {
+    "id": "technick:first-strike",
+    "name": "First Strike",
+    "kind": "technick",
+    "sourcebookId": "atlas-dtr-v03",
+    "prerequisiteText": "None",
+    "description": "Add your full level instead of half level to attack rolls against targets that have not acted.",
+    "repeatable": false
+  },
+  {
+    "id": "technick:hit-and-run",
+    "name": "Hit and Run",
+    "kind": "technick",
+    "sourcebookId": "atlas-dtr-v03",
+    "prerequisiteText": "Running Attack",
+    "description": "Gain +2 squares of movement when using Running Attack.",
+    "repeatable": false
+  },
+  {
+    "id": "technick:hold-together",
+    "name": "Hold Together",
+    "kind": "technick",
+    "sourcebookId": "atlas-dtr-v03",
+    "prerequisiteText": "Trained in Pilot",
+    "description": "Minor action when piloted vehicle is below half HP: grant temporary HP equal to 1/4 max HP.",
+    "repeatable": false
+  },
+  {
+    "id": "technick:mad-charge",
+    "name": "Mad Charge",
+    "kind": "technick",
+    "sourcebookId": "atlas-dtr-v03",
+    "prerequisiteText": "None",
+    "description": "Free Persuasion check during a charge to intimidate targets and adjacent enemies, causing flat-footed.",
+    "repeatable": false
+  },
+  {
+    "id": "technick:mantra",
+    "name": "Mantra",
+    "kind": "technick",
+    "sourcebookId": "atlas-dtr-v03",
+    "prerequisiteText": "Channel",
+    "description": "Once per day, use the Channel technick as a free action.",
+    "repeatable": false
+  },
+  {
+    "id": "technick:no-honour",
+    "name": "No Honour",
+    "kind": "technick",
+    "sourcebookId": "atlas-dtr-v03",
+    "prerequisiteText": "Trained in Stealth",
+    "description": "Gain +2 Stealth per status effect on target when stealing (max +10).",
+    "repeatable": false
+  },
+  {
+    "id": "technick:no-nonsense",
+    "name": "No-nonsense",
+    "kind": "technick",
+    "sourcebookId": "atlas-dtr-v03",
+    "prerequisiteText": "Trained in Perception",
+    "description": "+5 bonus to Will Defence against Deception, Persuasion, and Performance checks.",
+    "repeatable": false
+  },
+  {
+    "id": "technick:reposition",
+    "name": "Reposition",
+    "kind": "technick",
+    "sourcebookId": "atlas-dtr-v03",
+    "prerequisiteText": "Rapid Counter",
+    "description": "Move 1 square without provoking after hitting with a reactionary attack.",
+    "repeatable": false
+  },
+  {
+    "id": "technick:salvage",
+    "name": "Salvage",
+    "kind": "technick",
+    "sourcebookId": "atlas-dtr-v03",
+    "prerequisiteText": "Trained in Disable",
+    "description": "25% to 100% chance to recover a Trap Kit when successfully disarming traps.",
+    "repeatable": false
+  },
+  {
+    "id": "technick:stagger",
+    "name": "Stagger",
+    "kind": "technick",
+    "sourcebookId": "atlas-dtr-v03",
+    "prerequisiteText": "None",
+    "description": "Move target 1 square per exploding melee damage die (max 2 squares).",
+    "repeatable": false
+  },
+  {
+    "id": "technick:stubborn",
+    "name": "Stubborn",
+    "kind": "technick",
+    "sourcebookId": "atlas-dtr-v03",
+    "prerequisiteText": "None",
+    "description": "Once per encounter, gain resistance (or turn resistance to immunity) against incoming damage, then move -1 step on Break Gauge.",
+    "repeatable": false
+  },
+  {
+    "id": "technick:sucker-punch",
+    "name": "Sucker Punch",
+    "kind": "technick",
+    "sourcebookId": "atlas-dtr-v03",
+    "prerequisiteText": "None",
+    "description": "Knock target prone if surprise melee attack beats both Ref and Fort defence.",
+    "repeatable": false
+  },
+  {
+    "id": "technick:unflinching",
+    "name": "Unflinching",
+    "kind": "technick",
+    "sourcebookId": "atlas-dtr-v03",
+    "prerequisiteText": "None",
+    "description": "Gain a temporary Hero Point whenever a fear or mind effect fails to affect you.",
+    "repeatable": false
+  },
+  {
+    "id": "technick:visceral-strike",
+    "name": "Visceral Strike",
+    "kind": "technick",
+    "sourcebookId": "atlas-dtr-v03",
+    "prerequisiteText": "None",
+    "description": "Reroll the lowest damage die on melee attacks that roll 2 or more dice.",
+    "repeatable": false
+  }
+]

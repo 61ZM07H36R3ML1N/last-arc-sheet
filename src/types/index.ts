@@ -1,4 +1,5 @@
 import type { ZodiacSign } from '../data/zodiac';
+import type { AbilityProgressionState } from './abilities';
 
 export type AttributeKey = 'str' | 'vit' | 'agi' | 'int' | 'mnd' | 'chr';
 
@@ -39,6 +40,8 @@ export interface CharacterSheet {
   race: string;
   ethos: string;
   zodiacSign: ZodiacSign;
+
+abilityProgression: AbilityProgressionState;
 
   classes: Array<{
     name: string;
