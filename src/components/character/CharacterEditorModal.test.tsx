@@ -149,22 +149,24 @@ describe('CharacterEditorModal racial attribute regressions', () => {
     expect(mocks.importSheet).not.toHaveBeenCalled();
   });
 
-  it('saves the edited race, raw scores, flexible choice and level', () => {
+  it('saves profile edits without changing class or level', () => {
     const { onClose } = open();
     fireEvent.change(raceSelect(), { target: { value: 'dwarf' } });
     fireEvent.change(document.getElementById('base-str')!, { target: { value: '15' } });
-    // Level is the first numeric input without a base-* ID.
     const levelInput = screen.getAllByRole('spinbutton').find((node) => !node.id) as HTMLInputElement;
-    fireEvent.change(levelInput, { target: { value: '4' } });
+    expect(levelInput).toBeDisabled();
     fireEvent.click(screen.getByRole('button', { name: 'Save Changes' }));
     expect(mocks.editCharacter).toHaveBeenCalledWith(
       expect.objectContaining({ id: 'hero-1' }),
       expect.objectContaining({
-        race: 'Dwarf', level: 4,
+        race: 'Dwarf',
         baseAttributes: expect.objectContaining({ str: 15, vit: 14 }),
         racialAttributeChoice: 'vit',
       }),
     );
+    const changes = mocks.editCharacter.mock.calls[0][1];
+    expect(changes).not.toHaveProperty('level');
+    expect(changes).not.toHaveProperty('classId');
     expect(mocks.importSheet).toHaveBeenCalledTimes(1);
     expect(onClose).toHaveBeenCalledTimes(1);
   });

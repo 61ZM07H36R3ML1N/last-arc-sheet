@@ -152,8 +152,6 @@ function CharacterEditorForm({
         const updatedSheet = editCharacter(sheet, {
           name: name.trim() || 'Hero',
           race: selectedRace.name,
-          classId: selectedClass.id,
-          level,
           ethos,
           zodiacSign,
           baseAttributes: { ...baseAttributes },
@@ -207,10 +205,11 @@ function CharacterEditorForm({
             </div>
             <div>
               <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">Level</label>
-              <input type="number" min={1} max={20} value={level} onChange={(event) => setLevel(Math.max(1, Math.min(20, Number.parseInt(event.target.value, 10) || 1)))} className="w-full bg-arc-bg border border-arc-border rounded px-2.5 py-1.5 focus:border-arc-accent focus:outline-none" />
+              <input type="number" min={1} max={20} disabled={!isCreating} value={level} onChange={(event) => setLevel(Math.max(1, Math.min(20, Number.parseInt(event.target.value, 10) || 1)))} className="w-full bg-arc-bg border border-arc-border rounded px-2.5 py-1.5 focus:border-arc-accent focus:outline-none" />
             </div>
           </div>
 
+          {!isCreating && <p className="text-[11px] text-slate-400">Class and level are managed through Character Advancement.</p>}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="p-3 bg-arc-bg rounded-lg border border-arc-border space-y-2">
               <label className="block text-[10px] uppercase font-bold text-slate-400">Race &amp; Ancestry</label>
@@ -234,7 +233,7 @@ function CharacterEditorForm({
 
             <div className="p-3 bg-arc-bg rounded-lg border border-arc-border space-y-2">
               <label className="block text-[10px] uppercase font-bold text-slate-400">Base Class</label>
-              <select value={classId} onChange={(event) => { setClassId(event.target.value); if (isCreating) setTrainedSkills([]); }} className="w-full bg-arc-card border border-arc-border rounded px-2 py-1.5 focus:border-arc-accent focus:outline-none font-semibold text-slate-100">
+              <select value={classId} disabled={!isCreating} onChange={(event) => { setClassId(event.target.value); if (isCreating) setTrainedSkills([]); }} className="w-full bg-arc-card border border-arc-border rounded px-2 py-1.5 focus:border-arc-accent focus:outline-none font-semibold text-slate-100">
                 {AVAILABLE_CLASSES.map((entry) => <option key={entry.id} value={entry.id}>{entry.name} (Init {entry.initiativeDie}, HP {entry.startingHp}, MP {entry.startingMp})</option>)}
               </select>
               <div className="text-[11px] text-slate-400 pt-1 flex justify-between gap-2 flex-wrap">
