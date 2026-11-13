@@ -3,8 +3,25 @@ import { persist } from 'zustand/middleware';
 
 import type { CharacterSheet } from '../types';
 import type { ZodiacSign } from '../data/zodiac';
+import type { AbilityProgressionState } from '../types/abilities';
 
 import { CLASSES } from '../data';
+
+import {
+  abilityRegistry,
+  type EligibilityContext,
+} from '../engine/abilityEligibility';
+
+import {
+  acquireAbility as validateAbilityAcquisition,
+} from '../engine/abilitySelection';
+
+import {
+  generateAbilitySlots,
+  importLegacyAbilities,
+  validateLevelHistory,
+  validateAcquisitionSlots,
+} from '../engine/abilityProgression';
 
 import {
   advanceCharacter,
@@ -17,8 +34,13 @@ import {
 
 const DEFAULT_CLASS_ID = 'warrior';
 const STORAGE_KEY = 'last-arc-character-storage';
+
 const MAX_CHARACTER_LEVEL = 20;
 const MAX_HERO_POINTS = 4;
+
+// Adjust these IDs to match the sourcebook registry.
+// Atlas content remains disabled until explicitly configured.
+const DEFAULT_ENABLED_SOURCEBOOKS = new Set(['core']);
 
 // ============================================================
 // Helpers
@@ -39,10 +61,7 @@ function getDefaultClass() {
 }
 
 /**
- * Calculate the total character level across all classes.
- *
- * Example:
- * Warrior 7 + Scholar 2 = Character Level 9
+ * Calculate total character level across all classes.
  */
 export function getCharacterLevel(
   sheet: CharacterSheet,
@@ -79,13 +98,127 @@ export function getMaxHeroPoints(
   );
 }
 
-const defaultClass = getDefaultClass();
+/**
+ * Preserve historical abilities without inventing when
+ * or how they were acquired.
+ */
+function ensureAbilityProgression(
+  sheet: CharacterSheet,
+): AbilityProgressionState {
+  return (
+    sheet.abilityProgression ??
+    importLegacyAbilities(
+      sheet.technicks,
+      sheet.talents,
+    )
+  );
+}
+
+/**
+ * Ensure imported characters have progression metadata.
+ *
+ * Existing level histories are preserved unchanged.
+ */
+function normalizeCharacter(
+  sheet: CharacterSheet,
+): CharacterSheet {
+  return {
+    ...sheet,
+    abilityProgression: ensureAbilityProgression(sheet),
+  };
+}
+
+/**
+ * Verify that recorded history describes the character's
+ * current class levels.
+ *
+ * This does not reconstruct missing multiclass history.
+ */
+function validateCharacterHistory(
+  sheet: CharacterSheet,
+  progression: AbilityProgressionState,
+): void {
+  const history = progression.levelHistory;
+  const characterLevel = getCharacterLevel(sheet);
+
+  if (history.length !== characterLevel) {
+    throw new Error(
+      'Complete level history is required before ' +
+      'selecting abilities.',
+    );
+  }
+
+  const issues = validateLevelHistory(history);
+
+  if (issues.length > 0) {
+    throw new Error(issues.join('; '));
+  }
+
+  const recordedLevels = new Map<string, number>();
+
+  for (const event of history) {
+    recordedLevels.set(
+      event.classId,
+      event.classLevel,
+    );
+  }
+
+  const currentLevels = new Map<string, number>();
+
+  for (const entry of sheet.classes) {
+    const definition = CLASSES.flat().find(
+      (candidate) =>
+        candidate.name.toLowerCase() ===
+        entry.name.toLowerCase(),
+    );
+
+    if (!definition) {
+      throw new Error(
+        `Unknown character class: ${entry.name}`,
+      );
+    }
+
+    currentLevels.set(
+      definition.id,
+      (currentLevels.get(definition.id) ?? 0) +
+        entry.level,
+    );
+  }
+
+  for (const [classId, level] of currentLevels) {
+    if (recordedLevels.get(classId) !== level) {
+      throw new Error(
+        `Level history does not match ${classId} ` +
+        `class level ${level}.`,
+      );
+    }
+  }
+
+  for (const classId of recordedLevels.keys()) {
+    if (!currentLevels.has(classId)) {
+      throw new Error(
+        `Level history contains an unexpected class: ${classId}`,
+      );
+    }
+  }
+}
 
 // ============================================================
 // Default Character
 // ============================================================
 
+const defaultClass = getDefaultClass();
+
 export function getDefaultCharacter(): CharacterSheet {
+  const technicks = Array.from(
+    new Set([
+      ...defaultClass.startingTechnicks,
+      'Power Attack',
+    ]),
+  );
+
+  const talents = ['Provoke'];
+
   return {
     id: 'char-1',
     name: 'Kress',
@@ -131,14 +264,13 @@ export function getDefaultCharacter(): CharacterSheet {
 
     focusedSkills: [],
 
-    technicks: Array.from(
-      new Set([
-        ...defaultClass.startingTechnicks,
-        'Power Attack',
-      ]),
-    ),
+    technicks,
+    talents,
 
-    talents: ['Provoke'],
+    abilityProgression: importLegacyAbilities(
+      technicks,
+      talents,
+    ),
 
     equipped: {},
     inventory: [],
@@ -168,6 +300,14 @@ export interface CharacterStore {
   // Import / Export
   importSheet: (sheet: CharacterSheet) => void;
 
+  // Ability acquisition
+  acquireAbility: (
+    slotId: string,
+    abilityId: string,
+  ) => void;
+
+
+  
   // Character advancement
   saveAdvancement: (
     expectedCharacterId: string,
@@ -249,11 +389,6 @@ export const useCharacterStore = create<CharacterStore>()(
           },
         })),
 
-      /**
-       * Restore daily Hero Points based on total level.
-       *
-       * Multiclass levels are included automatically.
-       */
       resetHeroPoints: () =>
         set((state) => {
           const level = getCharacterLevel(state.sheet);
@@ -296,32 +431,155 @@ export const useCharacterStore = create<CharacterStore>()(
 
       importSheet: (newSheet) =>
         set({
-          sheet: newSheet,
+          sheet: normalizeCharacter(newSheet),
+        }),
+
+      // ------------------------------------------------------
+      // Atomic Ability Acquisition
+      // ------------------------------------------------------
+
+      acquireAbility: (slotId, abilityId) =>
+        set((state) => {
+          const current = state.sheet;
+
+          // Read the latest progression state.
+          const progression =
+            ensureAbilityProgression(current);
+
+          // Never invent multiclass advancement history.
+          validateCharacterHistory(
+            current,
+            progression,
+          );
+
+          // Generate slots from authoritative history.
+          const slots = generateAbilitySlots(
+            progression.levelHistory,
+          );
+
+          const slot = slots.find(
+            (entry) => entry.id === slotId,
+          );
+
+          if (!slot) {
+            throw new Error(
+              `Unknown progression slot: ${slotId}`,
+            );
+          }
+
+          // Reject already-spent slots.
+          if (
+            progression.acquisitions.some(
+              (entry) => entry.slotId === slotId,
+            )
+          ) {
+            throw new Error(
+              'This ability selection slot is already spent.',
+            );
+          }
+
+          // Validate all previously recorded acquisitions.
+          const existingIssues =
+            validateAcquisitionSlots(
+              slots,
+              progression.acquisitions,
+            );
+
+          if (existingIssues.length > 0) {
+            throw new Error(
+              existingIssues.join('; '),
+            );
+          }
+
+          // Resolve the ability from the registry.
+          const rule = abilityRegistry.find(
+            (entry) => entry.id === abilityId,
+          );
+
+          if (!rule) {
+            throw new Error(
+              `Unknown ability: ${abilityId}`,
+            );
+          }
+
+          // Construct eligibility using recorded facts.
+          //
+          // Historical attributes, training, and ability
+          // snapshots are intentionally omitted.
+          //
+          // Requirements that depend on unavailable
+          // history must remain unresolved.
+          const context: EligibilityContext = {
+            slot,
+            enabledSourcebooks:
+              DEFAULT_ENABLED_SOURCEBOOKS,
+            acquired: progression.acquisitions,
+          };
+
+          // Validate and create the acquisition.
+          // This function must not mutate existing state.
+          const acquisitions =
+            validateAbilityAcquisition(
+              slot,
+              rule,
+              context,
+            );
+
+          // Validate the complete resulting ledger.
+          const acquisitionIssues =
+            validateAcquisitionSlots(
+              slots,
+              acquisitions,
+            );
+
+          if (acquisitionIssues.length > 0) {
+            throw new Error(
+              acquisitionIssues.join('; '),
+            );
+          }
+
+          // Maintain legacy name-based compatibility.
+          //
+          // Repeatable acquisitions remain distinct in
+          // the authoritative progression ledger.
+          const technicks =
+            rule.kind === 'technick' &&
+            !current.technicks.includes(rule.name)
+              ? [
+                  ...current.technicks,
+                  rule.name,
+                ]
+              : current.technicks;
+
+          const talents =
+            rule.kind === 'talent' &&
+            !current.talents.includes(rule.name)
+              ? [
+                  ...current.talents,
+                  rule.name,
+                ]
+              : current.talents;
+
+          // Single atomic state update.
+          return {
+            sheet: {
+              ...current,
+
+              abilityProgression: {
+                ...progression,
+                acquisitions,
+              },
+
+              technicks,
+              talents,
+            },
+          };
         }),
 
       // ------------------------------------------------------
       // Character Advancement
       // ------------------------------------------------------
 
-      /**
-       * Save a character advancement using the authoritative
-       * progression engine.
-       *
-       * The modal provides:
-       * - Expected character ID
-       * - Expected character level
-       * - Advancement choices
-       *
-       * The store:
-       * 1. Reads the latest character state.
-       * 2. Checks that the character has not changed identity
-       *    or level since the preview.
-       * 3. Revalidates advancement rules.
-       * 4. Applies the updated character sheet.
-       * 5. Lets Zustand persist the update.
-       *
-       * Invalid advancement throws before committing.
-       */
       saveAdvancement: (
         expectedCharacterId,
         expectedLevel,
@@ -330,7 +588,8 @@ export const useCharacterStore = create<CharacterStore>()(
         set((state) => {
           const current = state.sheet;
 
-          const currentLevel = getCharacterLevel(current);
+          const currentLevel =
+            getCharacterLevel(current);
 
           // Prevent stale advancement previews.
           if (
@@ -343,22 +602,35 @@ export const useCharacterStore = create<CharacterStore>()(
             );
           }
 
-          // Enforce the character level cap.
-          if (currentLevel >= MAX_CHARACTER_LEVEL) {
+          // Enforce character level cap.
+          if (
+            currentLevel >= MAX_CHARACTER_LEVEL
+          ) {
             throw new Error(
               'Character has reached the maximum level.',
             );
           }
 
-          // Revalidate against the latest character sheet.
+          // Revalidate against latest character state.
           const result = advanceCharacter(
             current,
             choices,
           );
 
-          // Commit the validated advancement.
+          // Preserve existing progression metadata
+          // if advancement returns an older sheet shape.
+          const progression =
+            ensureAbilityProgression(current);
+
+          const advanced = result.character;
+
           return {
-            sheet: result.character,
+            sheet: {
+              ...advanced,
+              abilityProgression:
+                advanced.abilityProgression ??
+                progression,
+            },
           };
         }),
     }),
@@ -369,6 +641,26 @@ export const useCharacterStore = create<CharacterStore>()(
 
     {
       name: STORAGE_KEY,
+
+      // Upgrade persisted characters that predate
+      // the ability progression schema.
+      merge: (persistedState, currentState) => {
+        const persisted = persistedState as
+          | Partial<CharacterStore>
+          | undefined;
+
+        if (!persisted?.sheet) {
+          return currentState;
+        }
+
+        return {
+          ...currentState,
+          ...persisted,
+          sheet: normalizeCharacter(
+            persisted.sheet,
+          ),
+        };
+      },
     },
   ),
 );
