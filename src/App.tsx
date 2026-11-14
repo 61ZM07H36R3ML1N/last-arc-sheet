@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { 
   Heart, 
   Sparkles, 
@@ -47,6 +47,13 @@ export default function App() {
     useHeroPoint, 
     resetHeroPoints 
   } = useCharacterStore();
+  const [storageReady, setStorageReady] = useState(() => useCharacterStore.persist.hasHydrated());
+  useEffect(() => {
+    const unsubscribe = useCharacterStore.persist.onFinishHydration(() => setStorageReady(true));
+    // Handles hydration completing between initial render and effect registration.
+    if (useCharacterStore.persist.hasHydrated()) setStorageReady(true);
+    return unsubscribe;
+  }, []);
   const [activeTab, setActiveTab] = useState<'combat' | 'skills' | 'talents' | 'history' | 'notes'>('combat');
   const [isEditorOpen, setIsEditorOpen] = useState<boolean>(false);
   const [isSyncOpen, setIsSyncOpen] = useState<boolean>(false);
@@ -139,6 +146,10 @@ export default function App() {
   const currentZodiac = sheet.zodiacSign ? ZODIAC_SIGNS[sheet.zodiacSign] : null;
   // New visitors see creation first, not the internal sample character.
   // The persisted store restores returning players before this view renders.
+  if (!storageReady) {
+    return <div role="status" className="min-h-screen bg-arc-bg p-8 text-center text-slate-300">Loading saved character…</div>;
+  }
+
   if (!hasCharacter) {
     return (
       <div className="min-h-screen bg-arc-bg text-slate-100">
