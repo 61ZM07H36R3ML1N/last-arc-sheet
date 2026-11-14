@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useCharacterStore } from '../../store/useCharacterStore';
-import { getEnabledSourcebooks } from '../../data/sourcebooks';
+import { getAbilityEligibilityContext } from '../../engine/abilityContext';
 import { generateAbilitySlots, validateLevelHistory } from '../../engine/abilityProgression';
 import TechnickPicker from './TechnickPicker';
 import TalentTreeBrowser from './TalentTreeBrowser';
@@ -14,7 +14,7 @@ export default function ProgressionAbilityPanel() {
   const validHistory = Boolean(progression && progression.levelHistory.length === level && !validateLevelHistory(progression.levelHistory).length && !progression.needsReconciliation);
   const slots = useMemo(() => validHistory && progression ? generateAbilitySlots(progression.levelHistory) : [], [validHistory, progression]);
   const openSlots = slots.filter(s => !progression?.acquisitions.some(a => a.slotId === s.id));
-  const enabledSourcebooks = useMemo(() => getEnabledSourcebooks(), []);
+
   const selectAbility = (slotId: string, abilityId: string) => {
     try {
       acquireAbility(slotId, abilityId);
@@ -32,8 +32,8 @@ export default function ProgressionAbilityPanel() {
     {error && <p role="alert" className="text-rose-300">{error}</p>}
     {openSlots.map(slot => <div key={slot.id} className="rounded border border-arc-border bg-arc-card p-3">
       <p className="mb-2 font-semibold text-slate-200">Level {slot.characterLevel} · {slot.classId} {slot.classLevel} · {slot.source}</p>
-      {slot.kind === 'technick' ? <TechnickPicker slot={slot} acquired={progression?.acquisitions ?? []} enabledSourcebooks={enabledSourcebooks} onSelect={id => selectAbility(slot.id,id)} /> :
-        <TalentTreeBrowser slot={slot} acquired={progression?.acquisitions ?? []} enabledSourcebooks={enabledSourcebooks} onSelect={id => selectAbility(slot.id,id)} />}
+      {slot.kind === 'technick' ? <TechnickPicker slot={slot} acquired={progression?.acquisitions ?? []} enabledSourcebooks={getAbilityEligibilityContext(slot, progression?.acquisitions ?? []).enabledSourcebooks} knownAbilitiesAtLevel={getAbilityEligibilityContext(slot, progression?.acquisitions ?? []).knownAbilitiesAtLevel} onSelect={id => selectAbility(slot.id,id)} /> :
+        <TalentTreeBrowser slot={slot} acquired={progression?.acquisitions ?? []} enabledSourcebooks={getAbilityEligibilityContext(slot, progression?.acquisitions ?? []).enabledSourcebooks} knownAbilitiesAtLevel={getAbilityEligibilityContext(slot, progression?.acquisitions ?? []).knownAbilitiesAtLevel} onSelect={id => selectAbility(slot.id,id)} />}
     </div>)}
     <div className="rounded border border-arc-border p-3">
       <h3 className="font-semibold text-arc-gold">Acquisition ledger</h3>
