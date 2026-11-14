@@ -14,6 +14,7 @@ interface CharacterEditorModalProps {
   isOpen: boolean;
   onClose: () => void;
   mode?: CharacterEditorMode;
+  required?: boolean;
 }
 
 const ATTRIBUTE_KEYS: AttributeKey[] = ['str', 'vit', 'agi', 'int', 'mnd', 'chr'];
@@ -26,20 +27,23 @@ export default function CharacterEditorModal({
   isOpen,
   onClose,
   mode = 'edit',
+  required = false,
 }: CharacterEditorModalProps) {
   if (!isOpen) return null;
-  return <CharacterEditorForm key={mode} mode={mode} onClose={onClose} />;
+  return <CharacterEditorForm key={mode} mode={mode} onClose={onClose} required={required} />;
 }
 
 function CharacterEditorForm({
   mode,
   onClose,
+  required,
 }: {
   mode: CharacterEditorMode;
   onClose: () => void;
+  required: boolean;
 }) {
   const isCreating = mode === 'create';
-  const { sheet, importSheet } = useCharacterStore();
+  const { sheet, importSheet, hasCharacter } = useCharacterStore();
 
   const [name, setName] = useState(isCreating ? '' : sheet.name);
   const [raceId, setRaceId] = useState(() => {
@@ -142,7 +146,7 @@ function CharacterEditorForm({
           trainedSkills,
         });
 
-        const confirmed = window.confirm(
+        const confirmed = !hasCharacter || window.confirm(
           'Creating a new character will replace your currently active character. ' +
           'Export your existing character first if you want to keep it.\n\nContinue?',
         );
@@ -176,9 +180,9 @@ function CharacterEditorForm({
               {isCreating ? 'Create New Character' : 'Edit Character'}
             </h2>
           </div>
-          <button type="button" onClick={onClose} aria-label="Close editor" className="p-1 rounded-md text-slate-400 hover:text-white hover:bg-arc-border transition-colors">
+          {!required && <button type="button" onClick={onClose} aria-label="Close editor" className="p-1 rounded-md text-slate-400 hover:text-white hover:bg-arc-border transition-colors">
             <X size={18} />
-          </button>
+          </button>}
         </div>
 
         <div className="p-4 overflow-y-auto space-y-5 text-xs text-slate-200">
@@ -315,7 +319,7 @@ function CharacterEditorForm({
         <div className="p-3 border-t border-arc-border bg-arc-bg/80 space-y-2">
           {saveError && <p role="alert" className="text-xs text-rose-400">{saveError}</p>}
           <div className="flex justify-end gap-2">
-            <button type="button" onClick={onClose} className="px-3 py-1.5 rounded border border-arc-border hover:bg-arc-card transition-colors text-slate-300">Cancel</button>
+            {!required && <button type="button" onClick={onClose} className="px-3 py-1.5 rounded border border-arc-border hover:bg-arc-card transition-colors text-slate-300">Cancel</button>}
             <button type="button" onClick={handleSave} disabled={capErrors.length > 0} className="px-4 py-1.5 rounded bg-arc-accent text-slate-950 font-bold hover:brightness-110 flex items-center gap-1.5 transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
               <Check size={14} /> {isCreating ? 'Create Character' : 'Save Changes'}
             </button>
