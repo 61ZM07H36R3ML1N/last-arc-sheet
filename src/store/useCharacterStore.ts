@@ -286,6 +286,10 @@ export function getDefaultCharacter(): CharacterSheet {
 export interface CharacterStore {
   sheet: CharacterSheet;
   hasCharacter: boolean;
+  advancementUndo: CharacterSheet | null;
+  advancementAfter: CharacterSheet | null;
+  resetCharacter: (expectedId: string) => void;
+  backstepCharacter: (expectedId: string, expectedLevel: number) => void;
   atlasEnabled: boolean;
   setAtlasEnabled: (enabled: boolean) => void;
 
@@ -337,6 +341,19 @@ export const useCharacterStore = create<CharacterStore>()(
       sheet: getDefaultCharacter(),
       // Internal compatibility fixture; never shown as a player's first character.
       hasCharacter: false,
+      advancementUndo: null,
+      advancementAfter: null,
+      resetCharacter: (expectedId) => set((state) => {
+        if (!state.hasCharacter || state.sheet.id !== expectedId) throw new Error('Character changed. Reopen reset confirmation.');
+        return { sheet: getDefaultCharacter(), hasCharacter: false, advancementUndo: null, advancementAfter: null };
+      }),
+      backstepCharacter: (expectedId, expectedLevel) => set((state) => {
+        const previous = state.advancementUndo;
+        if (!previous || !state.advancementAfter || JSON.stringify(state.sheet) !== JSON.stringify(state.advancementAfter) || state.sheet.id !== expectedId || getCharacterLevel(state.sheet) !== expectedLevel || previous.id !== expectedId || getCharacterLevel(previous) !== expectedLevel - 1) {
+          throw new Error('No matching advancement snapshot is available. Backstepping is blocked to protect character data.');
+        }
+        return { sheet: previous, advancementUndo: null, advancementAfter: null };
+      }),
       atlasEnabled: false,
       setAtlasEnabled: (enabled) => set({ atlasEnabled: enabled }),
 
@@ -444,6 +461,8 @@ export const useCharacterStore = create<CharacterStore>()(
         set({
           sheet: normalizeCharacter(newSheet),
           hasCharacter: true,
+          advancementUndo: null,
+          advancementAfter: null,
         }),
 
       // ------------------------------------------------------
@@ -456,6 +475,8 @@ export const useCharacterStore = create<CharacterStore>()(
             throw new Error('Character changed while reconciling. Reopen the wizard.');
           }
           return {
+            advancementUndo: null,
+            advancementAfter: null,
             sheet: {
               ...state.sheet,
               abilityProgression: reconcileCharacter(state.sheet, draft, state.atlasEnabled),
@@ -645,6 +666,8 @@ export const useCharacterStore = create<CharacterStore>()(
           const advanced = result.character;
 
           return {
+            advancementUndo: current,
+            advancementAfter: { ...advanced, abilityProgression: advanced.abilityProgression ?? progression },
             sheet: {
               ...advanced,
               abilityProgression:
@@ -693,6 +716,8 @@ export const useCharacterStore = create<CharacterStore>()(
           sheet: normalizeCharacter(
             persisted.sheet,
           ),
+          advancementUndo: persisted.advancementUndo && persisted.advancementAfter && persisted.advancementUndo.id === persisted.sheet.id && getCharacterLevel(persisted.advancementUndo) === getCharacterLevel(persisted.sheet) - 1 && JSON.stringify(persisted.sheet) === JSON.stringify(persisted.advancementAfter) ? persisted.advancementUndo : null,
+          advancementAfter: persisted.advancementAfter ?? null,
         };
       },
     },
