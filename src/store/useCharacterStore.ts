@@ -676,19 +676,19 @@ export const useCharacterStore = create<CharacterStore>()(
         return {
           ...currentState,
           ...persisted,
-          // Existing real characters remain intact. Older installs that only
-          // persisted the bundled Kress fixture start at character creation.
-          hasCharacter: typeof persisted.hasCharacter === 'boolean'
-            ? persisted.hasCharacter
-            : !(persisted.sheet.id === 'char-1' &&
-                persisted.sheet.name === 'Kress' &&
-                persisted.sheet.classes.length === 1 &&
-                persisted.sheet.classes[0]?.name === 'Warrior' &&
-                persisted.sheet.classes[0]?.level === 1 &&
-                persisted.sheet.race === 'Human' &&
-                persisted.sheet.technicks.includes('Power Attack') &&
-                persisted.sheet.talents.includes('Provoke') &&
-                persisted.sheet.notes === 'Campaign notes, quest logs, and NPC interactions...'),
+          // A saved, non-demo character is authoritative even if an older
+          // onboarding flag was accidentally persisted as false.
+          hasCharacter: !(
+            persisted.sheet.id === 'char-1' &&
+            persisted.sheet.name === 'Kress' &&
+            persisted.sheet.classes.length === 1 &&
+            persisted.sheet.classes[0]?.name === 'Warrior' &&
+            persisted.sheet.classes[0]?.level === 1 &&
+            persisted.sheet.race === 'Human' &&
+            persisted.sheet.technicks.includes('Power Attack') &&
+            persisted.sheet.talents.includes('Provoke') &&
+            persisted.sheet.notes === 'Campaign notes, quest logs, and NPC interactions...'
+          ),
           atlasEnabled: persisted.atlasEnabled === true,
           sheet: normalizeCharacter(
             persisted.sheet,
