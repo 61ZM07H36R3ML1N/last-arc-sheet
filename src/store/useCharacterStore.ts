@@ -6,10 +6,10 @@ import type { ZodiacSign } from '../data/zodiac';
 import type { AbilityProgressionState } from '../types/abilities';
 
 import { CLASSES } from '../data';
+import { getAbilityEligibilityContext } from '../engine/abilityContext';
 
 import {
   abilityRegistry,
-  type EligibilityContext,
 } from '../engine/abilityEligibility';
 
 import {
@@ -38,9 +38,6 @@ const STORAGE_KEY = 'last-arc-character-storage';
 const MAX_CHARACTER_LEVEL = 20;
 const MAX_HERO_POINTS = 4;
 
-// Adjust these IDs to match the sourcebook registry.
-// Atlas content remains disabled until explicitly configured.
-const DEFAULT_ENABLED_SOURCEBOOKS = new Set(['core']);
 
 // ============================================================
 // Helpers
@@ -138,6 +135,10 @@ function validateCharacterHistory(
   sheet: CharacterSheet,
   progression: AbilityProgressionState,
 ): void {
+  if (progression.needsReconciliation) {
+    throw new Error('Reconcile legacy ability history before selecting abilities.');
+  }
+
   const history = progression.levelHistory;
   const characterLevel = getCharacterLevel(sheet);
 
@@ -283,6 +284,8 @@ export function getDefaultCharacter(): CharacterSheet {
 
 export interface CharacterStore {
   sheet: CharacterSheet;
+  atlasEnabled: boolean;
+  setAtlasEnabled: (enabled: boolean) => void;
 
   // Combat resources
   updateHp: (delta: number) => void;
@@ -328,6 +331,8 @@ export const useCharacterStore = create<CharacterStore>()(
       // ------------------------------------------------------
 
       sheet: getDefaultCharacter(),
+      atlasEnabled: false,
+      setAtlasEnabled: (enabled) => set({ atlasEnabled: enabled }),
 
       // ------------------------------------------------------
       // HP Management
@@ -509,12 +514,7 @@ export const useCharacterStore = create<CharacterStore>()(
           //
           // Requirements that depend on unavailable
           // history must remain unresolved.
-          const context: EligibilityContext = {
-            slot,
-            enabledSourcebooks:
-              DEFAULT_ENABLED_SOURCEBOOKS,
-            acquired: progression.acquisitions,
-          };
+          const context = getAbilityEligibilityContext(slot, progression.acquisitions, state.atlasEnabled);
 
           // Validate and create the acquisition.
           // This function must not mutate existing state.
@@ -656,6 +656,7 @@ export const useCharacterStore = create<CharacterStore>()(
         return {
           ...currentState,
           ...persisted,
+          atlasEnabled: persisted.atlasEnabled === true,
           sheet: normalizeCharacter(
             persisted.sheet,
           ),
