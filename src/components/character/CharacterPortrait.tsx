@@ -1,5 +1,5 @@
 import { useEffect, useState, type ChangeEvent } from 'react';
-import { getPortrait, putPortrait, removePortrait, processPortrait } from '../../engine/portraitStorage';
+import { getPortrait, putPortrait, removePortrait, processPortrait, notifyPortraitUpdated, PORTRAIT_UPDATED_EVENT } from '../../engine/portraitStorage';
 
 interface Props {
   characterId: string;
@@ -16,12 +16,22 @@ export default function CharacterPortrait({ characterId, editable = false }: Pro
     let live = true;
     setPortrait(null);
     setError(null);
-    getPortrait(characterId).then(value => {
-      if (live) setPortrait(value);
-    }).catch(() => {
-      if (live) setError('Local portrait storage is unavailable.');
-    });
-    return () => { live = false; };
+    const refresh = () => {
+      getPortrait(characterId).then(value => {
+        if (live) setPortrait(value);
+      }).catch(() => {
+        if (live) setError('Local portrait storage is unavailable.');
+      });
+    };
+    const onUpdated = (event: Event) => {
+      if ((event as CustomEvent<string>).detail === characterId) refresh();
+    };
+    window.addEventListener(PORTRAIT_UPDATED_EVENT, onUpdated);
+    refresh();
+    return () => {
+      live = false;
+      window.removeEventListener(PORTRAIT_UPDATED_EVENT, onUpdated);
+    };
   }, [characterId]);
 
   const upload = async (event: ChangeEvent<HTMLInputElement>) => {
@@ -34,6 +44,7 @@ export default function CharacterPortrait({ characterId, editable = false }: Pro
       const data = await processPortrait(file);
       await putPortrait(characterId, data);
       setPortrait(data);
+      notifyPortraitUpdated(characterId);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'Unable to save portrait.');
     } finally {
@@ -47,6 +58,7 @@ export default function CharacterPortrait({ characterId, editable = false }: Pro
     try {
       await removePortrait(characterId);
       setPortrait(null);
+      notifyPortraitUpdated(characterId);
     } catch {
       setError('Unable to remove portrait.');
     } finally {
