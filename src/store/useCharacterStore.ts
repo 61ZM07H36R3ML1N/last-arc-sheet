@@ -7,6 +7,7 @@ import type { AbilityProgressionState } from '../types/abilities';
 
 import { CLASSES } from '../data';
 import { getAbilityEligibilityContext } from '../engine/abilityContext';
+import { reconcileCharacter, type ReconciliationDraft } from '../engine/characterReconciliation';
 
 import {
   abilityRegistry,
@@ -303,6 +304,8 @@ export interface CharacterStore {
   // Import / Export
   importSheet: (sheet: CharacterSheet) => void;
 
+  reconcileHistory: (expectedCharacterId: string, expectedProgression: AbilityProgressionState, draft: ReconciliationDraft) => void;
+
   // Ability acquisition
   acquireAbility: (
     slotId: string,
@@ -442,6 +445,19 @@ export const useCharacterStore = create<CharacterStore>()(
       // ------------------------------------------------------
       // Atomic Ability Acquisition
       // ------------------------------------------------------
+
+      reconcileHistory: (expectedCharacterId, expectedProgression, draft) =>
+        set((state) => {
+          if (state.sheet.id !== expectedCharacterId || state.sheet.abilityProgression !== expectedProgression) {
+            throw new Error('Character changed while reconciling. Reopen the wizard.');
+          }
+          return {
+            sheet: {
+              ...state.sheet,
+              abilityProgression: reconcileCharacter(state.sheet, draft, state.atlasEnabled),
+            },
+          };
+        }),
 
       acquireAbility: (slotId, abilityId) =>
         set((state) => {
