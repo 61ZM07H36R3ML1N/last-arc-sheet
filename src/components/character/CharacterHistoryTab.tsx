@@ -6,6 +6,11 @@ import CharacterReconciliationWizard from '../talents/CharacterReconciliationWiz
 
 export default function CharacterHistoryTab() {
   const sheet = useCharacterStore(state => state.sheet);
+  const advancementUndo = useCharacterStore(state => state.advancementUndo);
+  const advancementAfter = useCharacterStore(state => state.advancementAfter);
+  const backstepCharacter = useCharacterStore(state => state.backstepCharacter);
+  const resetCharacter = useCharacterStore(state => state.resetCharacter);
+  const [actionError, setActionError] = useState<string | null>(null);
   const [editing, setEditing] = useState(false);
   const progression = sheet.abilityProgression;
   const total = sheet.classes.reduce((sum, entry) => sum + entry.level, 0);
@@ -40,6 +45,28 @@ export default function CharacterHistoryTab() {
           )}
         </ol>
       ) : <p className="mt-2 text-slate-400">No verified level-by-level history is available yet.</p>}
+    </div>
+
+    <div className="rounded-lg border border-arc-border bg-arc-card p-4 space-y-3">
+      <h3 className="font-semibold text-arc-gold">Character lifecycle</h3>
+      <p className="text-slate-400">Backstep restores the exact snapshot from the last advancement only. Changes made since that advancement prevent rollback. Older levels cannot be reconstructed safely.</p>
+      <button type="button" disabled={!advancementUndo || !advancementAfter || JSON.stringify(sheet) !== JSON.stringify(advancementAfter)}
+        className="rounded border border-arc-border px-3 py-2 disabled:opacity-40"
+        onClick={() => {
+          setActionError(null);
+          if (!window.confirm('Undo the most recent level advancement? The previous character snapshot will be restored.')) return;
+          try { backstepCharacter(sheet.id, total); } catch (error) { setActionError(error instanceof Error ? error.message : 'Unable to backstep.'); }
+        }}>Undo last advancement</button>
+      <p className="text-slate-400">Reset removes this active character from the companion and returns to character creation. Export a backup first; this cannot be undone.</p>
+      <button type="button" className="rounded border border-rose-500/60 px-3 py-2 text-rose-300"
+        onClick={() => {
+          setActionError(null);
+          if (!window.confirm(`Reset ${sheet.name}? This permanently removes the active character from local storage. Export a JSON backup before continuing.`)) return;
+          const confirmation = window.prompt('Type RESET to confirm character reset:');
+          if (confirmation !== 'RESET') return;
+          try { resetCharacter(sheet.id); } catch (error) { setActionError(error instanceof Error ? error.message : 'Unable to reset.'); }
+        }}>Reset character</button>
+      {actionError && <p role="alert" className="text-rose-400">{actionError}</p>}
     </div>
 
     {!valid && !editing && <div className="rounded-lg border border-amber-500/40 p-4">
