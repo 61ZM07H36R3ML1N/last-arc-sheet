@@ -6,11 +6,10 @@ import type { ZodiacSign } from '../data/zodiac';
 import type { AbilityProgressionState } from '../types/abilities';
 
 import { CLASSES } from '../data';
-import { getEnabledSourcebooks } from '../data/sourcebooks';
+import { getAbilityEligibilityContext } from '../engine/abilityContext';
 
 import {
   abilityRegistry,
-  type EligibilityContext,
 } from '../engine/abilityEligibility';
 
 import {
@@ -39,9 +38,6 @@ const STORAGE_KEY = 'last-arc-character-storage';
 const MAX_CHARACTER_LEVEL = 20;
 const MAX_HERO_POINTS = 4;
 
-// Adjust these IDs to match the sourcebook registry.
-// Atlas content remains disabled until explicitly configured.
-const DEFAULT_ENABLED_SOURCEBOOKS = getEnabledSourcebooks();
 
 // ============================================================
 // Helpers
@@ -514,12 +510,7 @@ export const useCharacterStore = create<CharacterStore>()(
           //
           // Requirements that depend on unavailable
           // history must remain unresolved.
-          const context: EligibilityContext = {
-            slot,
-            enabledSourcebooks:
-              DEFAULT_ENABLED_SOURCEBOOKS,
-            acquired: progression.acquisitions,
-          };
+          const context = getAbilityEligibilityContext(slot, progression.acquisitions);
 
           // Validate and create the acquisition.
           // This function must not mutate existing state.
