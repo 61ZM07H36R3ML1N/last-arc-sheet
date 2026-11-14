@@ -45,7 +45,7 @@ export async function putPortrait(characterId: string, dataUrl: string): Promise
 }
 
 export async function removePortrait(characterId: string): Promise<void> {
-  await transaction(characterId, 'readwrite', store => store.delete(characterId));
+  await transaction('readwrite', store => store.delete(characterId));
 }
 
 export async function processPortrait(file: File): Promise<string> {
