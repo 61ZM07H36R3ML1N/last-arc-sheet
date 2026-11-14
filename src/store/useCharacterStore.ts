@@ -684,7 +684,11 @@ export const useCharacterStore = create<CharacterStore>()(
                 persisted.sheet.name === 'Kress' &&
                 persisted.sheet.classes.length === 1 &&
                 persisted.sheet.classes[0]?.name === 'Warrior' &&
-                persisted.sheet.classes[0]?.level === 1),
+                persisted.sheet.classes[0]?.level === 1 &&
+                persisted.sheet.race === 'Human' &&
+                persisted.sheet.technicks.includes('Power Attack') &&
+                persisted.sheet.talents.includes('Provoke') &&
+                persisted.sheet.notes === 'Campaign notes, quest logs, and NPC interactions...'),
           atlasEnabled: persisted.atlasEnabled === true,
           sheet: normalizeCharacter(
             persisted.sheet,
