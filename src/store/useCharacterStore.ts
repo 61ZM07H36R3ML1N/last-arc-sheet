@@ -285,6 +285,7 @@ export function getDefaultCharacter(): CharacterSheet {
 
 export interface CharacterStore {
   sheet: CharacterSheet;
+  hasCharacter: boolean;
   atlasEnabled: boolean;
   setAtlasEnabled: (enabled: boolean) => void;
 
@@ -334,6 +335,8 @@ export const useCharacterStore = create<CharacterStore>()(
       // ------------------------------------------------------
 
       sheet: getDefaultCharacter(),
+      // Internal compatibility fixture; never shown as a player's first character.
+      hasCharacter: false,
       atlasEnabled: false,
       setAtlasEnabled: (enabled) => set({ atlasEnabled: enabled }),
 
@@ -440,6 +443,7 @@ export const useCharacterStore = create<CharacterStore>()(
       importSheet: (newSheet) =>
         set({
           sheet: normalizeCharacter(newSheet),
+          hasCharacter: true,
         }),
 
       // ------------------------------------------------------
@@ -672,6 +676,15 @@ export const useCharacterStore = create<CharacterStore>()(
         return {
           ...currentState,
           ...persisted,
+          // Existing real characters remain intact. Older installs that only
+          // persisted the bundled Kress fixture start at character creation.
+          hasCharacter: typeof persisted.hasCharacter === 'boolean'
+            ? persisted.hasCharacter
+            : !(persisted.sheet.id === 'char-1' &&
+                persisted.sheet.name === 'Kress' &&
+                persisted.sheet.classes.length === 1 &&
+                persisted.sheet.classes[0]?.name === 'Warrior' &&
+                persisted.sheet.classes[0]?.level === 1),
           atlasEnabled: persisted.atlasEnabled === true,
           sheet: normalizeCharacter(
             persisted.sheet,
