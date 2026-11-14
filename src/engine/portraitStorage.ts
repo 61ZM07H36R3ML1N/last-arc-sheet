@@ -18,7 +18,7 @@ function database(): Promise<IDBDatabase> {
   });
 }
 
-async function transaction<T>(characterId: string, mode: IDBTransactionMode, action: (store: IDBObjectStore) => IDBRequest<T>): Promise<T> {
+async function transaction<T>(mode: IDBTransactionMode, action: (store: IDBObjectStore) => IDBRequest<T>): Promise<T> {
   const db = await database();
   try {
     return await new Promise<T>((resolve, reject) => {
@@ -34,14 +34,14 @@ async function transaction<T>(characterId: string, mode: IDBTransactionMode, act
 }
 
 export async function getPortrait(characterId: string): Promise<string | null> {
-  return (await transaction<string | undefined>(characterId, 'readonly', store => store.get(characterId))) ?? null;
+  return (await transaction<string | undefined>('readonly', store => store.get(characterId))) ?? null;
 }
 
 export async function putPortrait(characterId: string, dataUrl: string): Promise<void> {
   if (!/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(dataUrl) || dataUrl.length > 1500000) {
     throw new Error('Invalid or oversized portrait data.');
   }
-  await transaction(characterId, 'readwrite', store => store.put(dataUrl, characterId));
+  await transaction('readwrite', store => store.put(dataUrl, characterId));
 }
 
 export async function removePortrait(characterId: string): Promise<void> {
