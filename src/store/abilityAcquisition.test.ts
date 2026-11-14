@@ -1,8 +1,9 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { getEnabledSourcebooks, SOURCEBOOK_IDS } from '../data/sourcebooks';
 import { getDefaultCharacter, useCharacterStore } from './useCharacterStore';
+import type { CharacterSheet } from '../types';
 
-function verifiedWarrior() {
+function verifiedWarrior(): CharacterSheet {
   const sheet = getDefaultCharacter();
   return {
     ...sheet,
@@ -86,6 +87,13 @@ describe('advancement ability acquisition', () => {
     });
     expect(() => useCharacterStore.getState().acquireAbility(slotId, 'technick:precise-shot'))
       .toThrow(/reconcile/i);
+  });
+
+  it('rejects abilities whose prerequisites were not acquired at an earlier level', () => {
+    const before = useCharacterStore.getState().sheet;
+    expect(() => useCharacterStore.getState().acquireAbility(slotId, 'technick:cleave'))
+      .toThrow(/requires mighty strikes|attribute history unavailable/i);
+    expect(useCharacterStore.getState().sheet).toBe(before);
   });
 
   it('rejects nonexistent slots', () => {
