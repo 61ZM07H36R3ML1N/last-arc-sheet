@@ -39,7 +39,8 @@ interface DiceLogEntry {
 declare const __APP_VERSION__: string;
 export default function App() {
   const { 
-    sheet, 
+    sheet,
+    hasCharacter,
     updateHp, 
     updateMp, 
     setBreakStep, 
@@ -136,6 +137,20 @@ export default function App() {
     { label: 'Broken!', penalty: '—', color: 'bg-arc-break-broken' },
 ] as const;
   const currentZodiac = sheet.zodiacSign ? ZODIAC_SIGNS[sheet.zodiacSign] : null;
+  // New visitors see creation first, not the internal sample character.
+  // The persisted store restores returning players before this view renders.
+  if (!hasCharacter) {
+    return (
+      <div className="min-h-screen bg-arc-bg text-slate-100">
+        <div className="mx-auto max-w-xl px-4 py-12 text-center">
+          <h1 className="text-2xl font-bold text-arc-accent">Last Arc Character Companion</h1>
+          <p className="mt-3 text-slate-300">Create your first character to begin your adventure.</p>
+        </div>
+        <CharacterEditorModal isOpen mode="create" required onClose={() => {}} />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-arc-bg text-slate-100 flex flex-col max-w-4xl mx-auto pb-24 border-x border-arc-border shadow-2xl">
       <header className="p-4 bg-arc-card border-b border-arc-border flex flex-wrap items-center justify-between gap-4 sticky top-0 z-30 shadow-md">
