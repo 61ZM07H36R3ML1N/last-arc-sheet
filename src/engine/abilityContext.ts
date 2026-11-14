@@ -12,11 +12,12 @@ import { getEnabledSourcebooks } from '../data/sourcebooks';
 export function getAbilityEligibilityContext(
   slot: AbilitySlot,
   acquired: readonly AbilityAcquisition[],
+  atlasEnabled = false,
 ): EligibilityContext {
   return {
     slot,
     acquired,
-    enabledSourcebooks: getEnabledSourcebooks(),
+    enabledSourcebooks: getEnabledSourcebooks(atlasEnabled),
     knownAbilitiesAtLevel: acquired
       .filter((item) =>
         item.provenance === 'recorded' &&
