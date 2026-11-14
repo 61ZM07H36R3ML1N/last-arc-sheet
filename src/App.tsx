@@ -11,6 +11,7 @@ import {
   UserCheck, 
   Share2, 
   BookMarked, 
+  History,
   Info 
 } from 'lucide-react';
 import { useCharacterStore, getMaxHeroPoints } from './store/useCharacterStore';
@@ -23,6 +24,7 @@ import VersionModal from './components/shared/VersionModal';
 import GearManager from './components/equipment/GearManager';
 import SkillTable from './components/skills/SkillTable';
 import TalentsTab from './components/talents/TalentsTab';
+import CharacterHistoryTab from './components/character/CharacterHistoryTab';
 import NotesTab from './components/notes/NotesTab';
 import type { AttributeKey } from './types/index';
 import type { RollResult } from './engine/combat';
@@ -44,7 +46,7 @@ export default function App() {
     useHeroPoint, 
     resetHeroPoints 
   } = useCharacterStore();
-  const [activeTab, setActiveTab] = useState<'combat' | 'skills' | 'talents' | 'notes'>('combat');
+  const [activeTab, setActiveTab] = useState<'combat' | 'skills' | 'talents' | 'history' | 'notes'>('combat');
   const [isEditorOpen, setIsEditorOpen] = useState<boolean>(false);
   const [isSyncOpen, setIsSyncOpen] = useState<boolean>(false);
   const [isVersionOpen, setIsVersionOpen] = useState<boolean>(false);
@@ -377,7 +379,7 @@ export default function App() {
       </section>
         {/* DETAILS TABS */}
         <section className="space-y-3">
-          <div className="flex border-b border-arc-border gap-4 text-xs font-semibold">
+          <div className="flex flex-wrap border-b border-arc-border gap-x-4 gap-y-2 text-xs font-semibold">
             <button
               onClick={() => setActiveTab('combat')}
               className={`pb-2 border-b-2 flex items-center gap-1.5 transition-all ${
@@ -409,6 +411,16 @@ export default function App() {
               <Zap size={13} /> Talents & Technicks
             </button>
             <button
+              onClick={() => setActiveTab('history')}
+              className={`pb-2 border-b-2 flex items-center gap-1.5 transition-all ${
+                activeTab === 'history'
+                  ? 'border-arc-accent text-arc-accent'
+                  : 'border-transparent text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <History size={13} /> Character History
+            </button>
+            <button
               onClick={() => setActiveTab('notes')}
               className={`pb-2 border-b-2 flex items-center gap-1.5 transition-all ${
                 activeTab === 'notes' 
@@ -422,6 +434,7 @@ export default function App() {
           {activeTab === 'combat' && <GearManager onRoll={handleRoll} onCombatResult={handleCombatResult} />}
           {activeTab === 'skills' && <SkillTable onRoll={handleRoll} />}
           {activeTab === 'talents' && <TalentsTab />}
+          {activeTab === 'history' && <CharacterHistoryTab />}
           {activeTab === 'notes' && <NotesTab />}
         </section>
       </main>
