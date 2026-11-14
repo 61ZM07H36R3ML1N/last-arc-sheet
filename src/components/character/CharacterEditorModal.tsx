@@ -3,6 +3,7 @@ import { Check, RefreshCw, User, X } from 'lucide-react';
 import { RACES, ETHOS_LIST, SKILLS } from '../../data';
 import { ZODIAC_LIST, ZODIAC_SIGNS, type ZodiacSign } from '../../data/zodiac';
 import { useCharacterStore } from '../../store/useCharacterStore';
+import CharacterPortrait from './CharacterPortrait';
 import { getModifier } from '../../engine/formulas';
 import { BASE_CLASSES, createCharacter, editCharacter } from '../../engine/characterLifecycle';
 import type { AttributeKey } from '../../types';
@@ -186,6 +187,7 @@ function CharacterEditorForm({
         </div>
 
         <div className="p-4 overflow-y-auto space-y-5 text-xs text-slate-200">
+          {!isCreating && <CharacterPortrait characterId={sheet.id} editable />}
           <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
             <div>
               <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">Character Name</label>
