@@ -4,11 +4,13 @@ import { getAbilityEligibilityContext } from '../../engine/abilityContext';
 import { generateAbilitySlots, validateLevelHistory } from '../../engine/abilityProgression';
 import TechnickPicker from './TechnickPicker';
 import TalentTreeBrowser from './TalentTreeBrowser';
+import CharacterReconciliationWizard from './CharacterReconciliationWizard';
 
 /** Opt-in replacement panel: uses only complete, verifiable progression histories. */
 export default function ProgressionAbilityPanel() {
   const { sheet, acquireAbility, atlasEnabled, setAtlasEnabled } = useCharacterStore();
   const [error, setError] = useState('');
+  const [reconciling, setReconciling] = useState(false);
   const progression = sheet.abilityProgression;
   const level = sheet.classes.reduce((sum, c) => sum + c.level, 0);
   const validHistory = Boolean(progression && progression.levelHistory.length === level && !validateLevelHistory(progression.levelHistory).length && !progression.needsReconciliation);
@@ -29,7 +31,8 @@ export default function ProgressionAbilityPanel() {
       <label className="mt-2 flex items-center gap-2"><input type="checkbox" checked={atlasEnabled} onChange={e => setAtlasEnabled(e.target.checked)} /> Enable Atlas DTR v0.3 for this campaign</label>
       <p className="mt-2 text-slate-400">Corebook is always enabled. Atlas opt-in is saved locally with this character workspace; confirm permission with your GM. This setting is not proof of GM approval.</p>
     </div>
-    {!validHistory ? <div role="status" className="rounded border border-amber-500/40 p-3 text-amber-200">This character needs progression-history reconciliation before slot-based selection can be enabled. Existing abilities remain preserved. No acquisition levels will be guessed.</div> : null}
+    {!validHistory ? <div role="status" className="rounded border border-amber-500/40 p-3 text-amber-200">This character needs progression-history reconciliation before slot-based selection can be enabled. Existing abilities remain preserved. No acquisition levels will be guessed.<div className="mt-3"><button type="button" onClick={() => setReconciling(true)} className="rounded border border-amber-500/50 px-3 py-2 font-semibold">Reconcile character history</button></div></div> : null}
+    {!validHistory && reconciling && <CharacterReconciliationWizard key={sheet.id} onClose={() => setReconciling(false)} />}
     {error && <p role="alert" className="text-rose-300">{error}</p>}
     {openSlots.map(slot => <div key={slot.id} className="rounded border border-arc-border bg-arc-card p-3">
       <p className="mb-2 font-semibold text-slate-200">Level {slot.characterLevel} · {slot.classId} {slot.classLevel} · {slot.source}</p>
