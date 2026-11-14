@@ -8,13 +8,13 @@ import TalentTreeBrowser from './TalentTreeBrowser';
 /** Opt-in replacement panel: uses only complete, verifiable progression histories. */
 export default function ProgressionAbilityPanel() {
   const { sheet, acquireAbility } = useCharacterStore();
-    const [error, setError] = useState('');
+  const [error, setError] = useState('');
   const progression = sheet.abilityProgression;
   const level = sheet.classes.reduce((sum, c) => sum + c.level, 0);
   const validHistory = Boolean(progression && progression.levelHistory.length === level && !validateLevelHistory(progression.levelHistory).length && !progression.needsReconciliation);
   const slots = useMemo(() => validHistory && progression ? generateAbilitySlots(progression.levelHistory) : [], [validHistory, progression]);
   const openSlots = slots.filter(s => !progression?.acquisitions.some(a => a.slotId === s.id));
-  const enabledSourcebooks = useMemo(() => getEnabledSourcebooks(false), [atlasEnabled]);
+  const enabledSourcebooks = useMemo(() => getEnabledSourcebooks(), []);
   const selectAbility = (slotId: string, abilityId: string) => {
     try {
       acquireAbility(slotId, abilityId);
