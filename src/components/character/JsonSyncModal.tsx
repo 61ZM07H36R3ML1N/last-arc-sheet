@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { X, Copy, Check, Upload, AlertCircle, Box } from 'lucide-react';
 import { useCharacterStore } from '../../store/useCharacterStore';
 import { exportToFoundryActor, importFromFoundryActor } from '../../engine/foundryAdapter';
 import type { CharacterSheet } from '../../types';
+import { getPortrait, putPortrait } from '../../engine/portraitStorage';
 
 interface JsonSyncModalProps {
   isOpen: boolean;
@@ -15,21 +16,32 @@ export default function JsonSyncModal({ isOpen, onClose }: JsonSyncModalProps) {
   const [jsonText, setJsonText] = useState('');
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [portrait, setPortrait] = useState<string | null>(null);
+  const [portraitReady, setPortraitReady] = useState(false);
+  useEffect(() => {
+    if (!isOpen) return;
+    let active = true;
+    setPortraitReady(false);
+    getPortrait(sheet.id).then(value => { if (active) { setPortrait(value); setPortraitReady(true); } })
+      .catch(() => { if (active) { setError('Portrait storage unavailable; native backup may omit the portrait.'); setPortraitReady(false); } });
+    return () => { active = false; };
+  }, [isOpen, sheet.id]);
 
   if (!isOpen) return null;
 
   const currentExportString =
     syncMode === 'native'
-      ? JSON.stringify(sheet, null, 2)
+      ? JSON.stringify({ ...sheet, ...(portrait ? { portraitDataUrl: portrait } : {}) }, null, 2)
       : JSON.stringify(exportToFoundryActor(sheet), null, 2);
 
   const handleCopy = () => {
+    if (syncMode === 'native' && !portraitReady) { setError('Wait for portrait storage to load before exporting.'); return; }
     navigator.clipboard.writeText(currentExportString);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleImport = () => {
+  const handleImport = async () => {
     try {
       setError(null);
       const parsed = JSON.parse(jsonText);
@@ -38,7 +50,13 @@ export default function JsonSyncModal({ isOpen, onClose }: JsonSyncModalProps) {
         if (!parsed.name || !parsed.classes || !parsed.baseAttributes) {
           throw new Error('Invalid sheet format. Missing name, classes, or attributes.');
         }
-        importSheet(parsed as CharacterSheet);
+        if (parsed.portraitDataUrl !== undefined) {
+          if (typeof parsed.portraitDataUrl !== 'string') throw new Error('Invalid portrait backup.');
+          await putPortrait(parsed.id, parsed.portraitDataUrl);
+        }
+        const { portraitDataUrl: _portraitDataUrl, ...character } = parsed;
+        void _portraitDataUrl;
+        importSheet(character as CharacterSheet);
       } else {
         if (!parsed.name || !parsed.system) {
           throw new Error('Invalid Foundry VTT Actor JSON. Missing top-level "name" or "system" block.');

@@ -18,6 +18,7 @@ import { useCharacterStore, getMaxHeroPoints } from './store/useCharacterStore';
 import { getModifier, getTotalLevel, calculateDefensesWithBreak, rollExplodingDie } from './engine/formulas';
 import { ZODIAC_SIGNS } from './data/zodiac';
 import CharacterEditorModal from './components/character/CharacterEditorModal';
+import CharacterPortrait from './components/character/CharacterPortrait';
 import CharacterAdvancementControl from './components/character/CharacterAdvancementControl';
 import JsonSyncModal from './components/character/JsonSyncModal';
 import VersionModal from './components/shared/VersionModal';
@@ -154,7 +155,9 @@ export default function App() {
   return (
     <div className="min-h-screen bg-arc-bg text-slate-100 flex flex-col max-w-4xl mx-auto pb-24 border-x border-arc-border shadow-2xl">
       <header className="p-4 bg-arc-card border-b border-arc-border flex flex-wrap items-center justify-between gap-4 sticky top-0 z-30 shadow-md">
-        <div>
+        <div className="flex items-start gap-3">
+          <CharacterPortrait characterId={sheet.id} />
+          <div>
           <div className="flex items-center gap-2">
             <h1 className="text-xl font-bold tracking-wide text-arc-accent">{sheet.name}</h1>
             <button
@@ -197,6 +200,7 @@ export default function App() {
           <p className="text-xs text-slate-400 mt-0.5">
             {sheet.race} • {sheet.classes.map(c => `${c.name} ${c.level}`).join(' / ')}
           </p>
+        </div>
         </div>
         <div className="flex items-center gap-3">
           <div className="flex flex-col items-center bg-arc-bg px-2.5 py-1 rounded border border-arc-border">
