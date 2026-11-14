@@ -6,6 +6,7 @@ import type { ZodiacSign } from '../data/zodiac';
 import type { AbilityProgressionState } from '../types/abilities';
 
 import { CLASSES } from '../data';
+import { getEnabledSourcebooks } from '../data/sourcebooks';
 
 import {
   abilityRegistry,
@@ -40,7 +41,7 @@ const MAX_HERO_POINTS = 4;
 
 // Adjust these IDs to match the sourcebook registry.
 // Atlas content remains disabled until explicitly configured.
-const DEFAULT_ENABLED_SOURCEBOOKS = new Set(['core']);
+const DEFAULT_ENABLED_SOURCEBOOKS = getEnabledSourcebooks();
 
 // ============================================================
 // Helpers
@@ -138,6 +139,10 @@ function validateCharacterHistory(
   sheet: CharacterSheet,
   progression: AbilityProgressionState,
 ): void {
+  if (progression.needsReconciliation) {
+    throw new Error('Reconcile legacy ability history before selecting abilities.');
+  }
+
   const history = progression.levelHistory;
   const characterLevel = getCharacterLevel(sheet);
 
