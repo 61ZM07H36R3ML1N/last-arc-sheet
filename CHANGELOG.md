@@ -5,6 +5,38 @@ All notable changes to **Last Arc: Tactics Analogue — Character Companion** wi
 This project follows the [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) format and uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
+## [0.4.42] - 2026-11-14
+
+### Fixed
+
+- Corrected IndexedDB portrait persistence to wait for transaction completion before confirming writes and deletions.
+- Fixed portrait synchronization between mounted character views after uploading, replacing, or removing an image.
+- Fixed native character backup restoration to prevent stale portraits from remaining when imported character data does not include an image.
+- Added validation for character identifiers before restoring portrait data from native JSON backups.
+
+### Improved
+
+- Strengthened reliability of local-first portrait management.
+- Improved consistency between the character dashboard, character editor, and native JSON import workflow.
+- Preserved the application's existing offline-ready architecture and network functionality.
+
+### Verification
+
+- Previous portrait lifecycle verification completed successfully across nine functional checks.
+- Follow-up regression validation and CI status should be confirmed for this release commit before publication.
+
+### Notes
+
+- This release builds on the character portrait functionality introduced through PR #23.
+- Portrait storage remains local to the device using IndexedDB.
+- Native character JSON backups support embedded portrait data.
+- No remote portrait storage, cloud account requirement, or backend service was introduced.
+
+### Related Pull Requests
+
+- [#23 — Local-first character portraits](https://github.com/61ZM07H36R3ML1N/last-arc-sheet/pull/23)
+- [#24 — Portrait persistence and synchronization hardening](https://github.com/61ZM07H36R3ML1N/last-arc-sheet/pull/24)
+
 ## [0.4.16] - 2026-11-08
 Added
 
