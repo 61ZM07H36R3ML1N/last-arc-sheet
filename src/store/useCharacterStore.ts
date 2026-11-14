@@ -284,6 +284,8 @@ export function getDefaultCharacter(): CharacterSheet {
 
 export interface CharacterStore {
   sheet: CharacterSheet;
+  atlasEnabled: boolean;
+  setAtlasEnabled: (enabled: boolean) => void;
 
   // Combat resources
   updateHp: (delta: number) => void;
@@ -329,6 +331,8 @@ export const useCharacterStore = create<CharacterStore>()(
       // ------------------------------------------------------
 
       sheet: getDefaultCharacter(),
+      atlasEnabled: false,
+      setAtlasEnabled: (enabled) => set({ atlasEnabled: enabled }),
 
       // ------------------------------------------------------
       // HP Management
@@ -510,7 +514,7 @@ export const useCharacterStore = create<CharacterStore>()(
           //
           // Requirements that depend on unavailable
           // history must remain unresolved.
-          const context = getAbilityEligibilityContext(slot, progression.acquisitions);
+          const context = getAbilityEligibilityContext(slot, progression.acquisitions, state.atlasEnabled);
 
           // Validate and create the acquisition.
           // This function must not mutate existing state.
@@ -652,6 +656,7 @@ export const useCharacterStore = create<CharacterStore>()(
         return {
           ...currentState,
           ...persisted,
+          atlasEnabled: persisted.atlasEnabled === true,
           sheet: normalizeCharacter(
             persisted.sheet,
           ),
