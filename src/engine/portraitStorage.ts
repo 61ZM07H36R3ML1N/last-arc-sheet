@@ -23,14 +23,28 @@ async function transaction<T>(mode: IDBTransactionMode, action: (store: IDBObjec
   try {
     return await new Promise<T>((resolve, reject) => {
       const tx = db.transaction(STORE_NAME, mode);
-      const request = action(tx.objectStore(STORE_NAME));
-      request.onsuccess = () => resolve(request.result);
-      request.onerror = () => reject(request.error ?? new Error('Portrait storage failed.'));
-      tx.onerror = () => reject(tx.error ?? new Error('Portrait storage failed.'));
+      let result: T;
+      tx.oncomplete = () => resolve(result);
+      tx.onabort = () => reject(tx.error ?? new Error('Portrait transaction aborted.'));
+      tx.onerror = () => reject(tx.error ?? new Error('Portrait transaction failed.'));
+      try {
+        const request = action(tx.objectStore(STORE_NAME));
+        request.onsuccess = () => { result = request.result; };
+        request.onerror = () => reject(request.error ?? new Error('Portrait request failed.'));
+      } catch (error) {
+        reject(error);
+        tx.abort();
+      }
     });
   } finally {
     db.close();
   }
+}
+
+/** Notify other mounted portrait views after a committed local change. */
+export const PORTRAIT_UPDATED_EVENT = 'last-arc:portrait-updated';
+export function notifyPortraitUpdated(characterId: string): void {
+  window.dispatchEvent(new CustomEvent(PORTRAIT_UPDATED_EVENT, { detail: characterId }));
 }
 
 export async function getPortrait(characterId: string): Promise<string | null> {
