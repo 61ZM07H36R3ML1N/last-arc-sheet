@@ -22,6 +22,7 @@ const slotId = 'level-1-general-technick';
 
 describe('advancement ability acquisition', () => {
   beforeEach(() => {
+    useCharacterStore.getState().setAtlasEnabled(false);
     useCharacterStore.getState().importSheet(verifiedWarrior());
   });
 
@@ -59,6 +60,27 @@ describe('advancement ability acquisition', () => {
     expect(() => useCharacterStore.getState().acquireAbility(slotId, 'technick:cannoneer'))
       .toThrow(/sourcebook.*disabled/i);
     expect(useCharacterStore.getState().sheet).toBe(before);
+  });
+
+  it('permits an Atlas ability only after explicit opt-in', () => {
+    useCharacterStore.getState().setAtlasEnabled(true);
+    useCharacterStore.getState().acquireAbility(slotId, 'technick:cannoneer');
+    const sheet = useCharacterStore.getState().sheet;
+    expect(sheet.technicks).toContain('Cannoneer');
+    expect(sheet.abilityProgression?.acquisitions[0]).toEqual(
+      expect.objectContaining({
+        abilityId: 'technick:cannoneer',
+        sourcebookId: SOURCEBOOK_IDS.ATLAS_DTR,
+      }),
+    );
+  });
+
+  it('keeps Atlas disabled by default after opting back out', () => {
+    useCharacterStore.getState().setAtlasEnabled(true);
+    useCharacterStore.getState().setAtlasEnabled(false);
+    expect(useCharacterStore.getState().atlasEnabled).toBe(false);
+    expect(() => useCharacterStore.getState().acquireAbility(slotId, 'technick:cannoneer'))
+      .toThrow(/sourcebook.*disabled/i);
   });
 
   it('fails closed when historical attribute scores are missing', () => {
