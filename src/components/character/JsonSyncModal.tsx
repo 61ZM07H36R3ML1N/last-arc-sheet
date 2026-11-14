@@ -3,7 +3,7 @@ import { X, Copy, Check, Upload, AlertCircle, Box } from 'lucide-react';
 import { useCharacterStore } from '../../store/useCharacterStore';
 import { exportToFoundryActor, importFromFoundryActor } from '../../engine/foundryAdapter';
 import type { CharacterSheet } from '../../types';
-import { getPortrait, putPortrait } from '../../engine/portraitStorage';
+import { getPortrait, putPortrait, removePortrait, notifyPortraitUpdated } from '../../engine/portraitStorage';
 
 interface JsonSyncModalProps {
   isOpen: boolean;
@@ -50,10 +50,15 @@ export default function JsonSyncModal({ isOpen, onClose }: JsonSyncModalProps) {
         if (!parsed.name || !parsed.classes || !parsed.baseAttributes) {
           throw new Error('Invalid sheet format. Missing name, classes, or attributes.');
         }
+        if (typeof parsed.id !== 'string' || !parsed.id.trim()) throw new Error('Invalid character ID.');
         if (parsed.portraitDataUrl !== undefined) {
           if (typeof parsed.portraitDataUrl !== 'string') throw new Error('Invalid portrait backup.');
           await putPortrait(parsed.id, parsed.portraitDataUrl);
+        } else {
+          // An absent portrait means the imported backup has no portrait.
+          await removePortrait(parsed.id);
         }
+        notifyPortraitUpdated(parsed.id);
         const { portraitDataUrl: _portraitDataUrl, ...character } = parsed;
         void _portraitDataUrl;
         importSheet(character as CharacterSheet);
