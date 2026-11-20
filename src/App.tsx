@@ -1,12 +1,9 @@
 import { useState, useMemo, useCallback } from 'react';
 import { 
-  Heart, 
-  Sparkles, 
   Dice5, 
   RefreshCw, 
   Swords, 
   BookOpen, 
-  AlertOctagon, 
   Share2, 
   History,
   Info,
@@ -15,7 +12,12 @@ import {
   Menu,
   ScrollText,
   UserRound,
-  Settings
+  Settings,
+  Sword,
+  Wind,
+  ShieldCheck,
+  Eye,
+  MessageCircle
 } from 'lucide-react';
 import { useCharacterStore, getMaxHeroPoints } from './store/useCharacterStore';
 import { getModifier, getTotalLevel, calculateDefensesWithBreak, rollExplodingDie } from './engine/formulas';
@@ -26,6 +28,8 @@ import CharacterAdvancementControl from './components/character/CharacterAdvance
 import JsonSyncModal from './components/character/JsonSyncModal';
 import VersionModal from './components/shared/VersionModal';
 import GearManager from './components/equipment/GearManager';
+import ResourceBar from './components/combat/ResourceBar';
+import BreakGaugeTracker from './components/combat/BreakGaugeTracker';
 import SkillTable from './components/skills/SkillTable';
 import TalentsTab from './components/talents/TalentsTab';
 import CharacterHistoryTab from './components/character/CharacterHistoryTab';
@@ -133,14 +137,22 @@ export default function App() {
         return 'd12';
     }
   };
-  const breakSteps = [
-    { label: 'Normal', penalty: '0', color: 'bg-arc-break-normal' },
-    { label: 'Step 1', penalty: '-1', color: 'bg-arc-break-step1' },
-    { label: 'Step 2', penalty: '-2', color: 'bg-arc-break-step2' },
-    { label: 'Step 3', penalty: '-5', color: 'bg-arc-break-step3' },
-    { label: 'Step 4', penalty: '-10', color: 'bg-arc-break-step3' },
-    { label: 'Broken!', penalty: '—', color: 'bg-arc-break-broken' },
-] as const;
+  const attributeIcons = {
+    str: Sword,
+    agi: Wind,
+    vit: ShieldCheck,
+    int: BookOpen,
+    mnd: Eye,
+    chr: MessageCircle,
+  } as const;
+  const attributeLabels = {
+    str: 'Strength',
+    agi: 'Agility',
+    vit: 'Vitality',
+    int: 'Intelligence',
+    mnd: 'Mind',
+    chr: 'Charisma',
+  } as const;
   const currentZodiac = sheet.zodiacSign ? ZODIAC_SIGNS[sheet.zodiacSign] : null;
   // New visitors see creation first, not the internal sample character.
   // The persisted store restores returning players before this view renders.
@@ -236,86 +248,12 @@ export default function App() {
           </div>
         )}
         <div className={onDetailPage ? 'hidden' : 'space-y-5'}>
-        {/* RESOURCE BARS (HP / MP) */}
-        <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="bg-arc-card p-3.5 rounded-lg border border-arc-border shadow-sm">
-            <div className="flex justify-between items-center mb-1.5">
-              <span className="text-xs font-semibold text-rose-400 flex items-center gap-1.5">
-                <Heart size={14} className="fill-rose-500/20" /> Hit Points
-              </span>
-              <span className="text-sm font-mono font-bold">
-                {sheet.currentHp} <span className="text-xs text-slate-400">/ {maxHp}</span>
-              </span>
-            </div>
-            <div className="w-full h-3 bg-slate-900 rounded-full overflow-hidden border border-slate-700/50">
-              <div 
-                className="h-full bg-gradient-to-r from-rose-600 to-rose-400 transition-all duration-300"
-                style={{ width: `${Math.min(100, (sheet.currentHp / maxHp) * 100)}%` }}
-              />
-            </div>
-            <div className="flex justify-between items-center gap-1 mt-2.5">
-              <button onClick={() => updateHp(-10)} className="px-2 py-1 text-xs bg-arc-bg hover:bg-arc-cardHover border border-arc-border rounded">-10</button>
-              <button onClick={() => updateHp(-1)} className="px-2 py-1 text-xs bg-arc-bg hover:bg-arc-cardHover border border-arc-border rounded">-1</button>
-              <button onClick={() => updateHp(1)} className="px-2 py-1 text-xs bg-arc-bg hover:bg-arc-cardHover border border-arc-border rounded text-emerald-400">+1</button>
-              <button onClick={() => updateHp(10)} className="px-2 py-1 text-xs bg-arc-bg hover:bg-arc-cardHover border border-arc-border rounded text-emerald-400">+10</button>
-            </div>
-          </div>
-          <div className="bg-arc-card p-3.5 rounded-lg border border-arc-border shadow-sm">
-            <div className="flex justify-between items-center mb-1.5">
-              <span className="text-xs font-semibold text-cyan-400 flex items-center gap-1.5">
-                <Sparkles size={14} className="fill-cyan-500/20" /> Mana Points
-              </span>
-              <span className="text-sm font-mono font-bold">
-                {sheet.currentMp} <span className="text-xs text-slate-400">/ {maxMp}</span>
-              </span>
-            </div>
-            <div className="w-full h-3 bg-slate-900 rounded-full overflow-hidden border border-slate-700/50">
-              <div 
-                className="h-full bg-gradient-to-r from-cyan-600 to-cyan-400 transition-all duration-300"
-                style={{ width: `${maxMp > 0 ? Math.min(100, (sheet.currentMp / maxMp) * 100) : 0}%` }}
-              />
-            </div>
-            <div className="flex justify-between items-center gap-1 mt-2.5">
-              <button onClick={() => updateMp(-5)} className="px-2 py-1 text-xs bg-arc-bg hover:bg-arc-cardHover border border-arc-border rounded">-5</button>
-              <button onClick={() => updateMp(-1)} className="px-2 py-1 text-xs bg-arc-bg hover:bg-arc-cardHover border border-arc-border rounded">-1</button>
-              <button onClick={() => updateMp(1)} className="px-2 py-1 text-xs bg-arc-bg hover:bg-arc-cardHover border border-arc-border rounded text-cyan-400">+1</button>
-              <button onClick={() => updateMp(5)} className="px-2 py-1 text-xs bg-arc-bg hover:bg-arc-cardHover border border-arc-border rounded text-cyan-400">+5</button>
-            </div>
-          </div>
+        {/* Shared resource and segmented Break Gauge components */}
+        <section className="grid grid-cols-1 gap-3 xl:grid-cols-2">
+          <ResourceBar kind="hp" current={sheet.currentHp} max={maxHp} onChange={updateHp} />
+          <ResourceBar kind="mp" current={sheet.currentMp} max={maxMp} onChange={updateMp} />
         </section>
-        {/* BREAK GAUGE */}
-        <section className="bg-arc-card p-3.5 rounded-lg border border-arc-border">
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-xs font-bold text-slate-300 flex items-center gap-1.5 uppercase tracking-wide">
-              <AlertOctagon size={14} className="text-amber-400" /> Break Gauge
-            </span>
-            <span className="text-xs font-semibold px-2 py-0.5 rounded bg-arc-bg border border-arc-border text-slate-300">
-              Status: <span className="text-arc-accent"> {breakSteps[sheet.breakStep]?.label ?? 'Unknown'}</span>
-            </span>
-          </div>
-          <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5">
-  {breakSteps.map((step, idx) => {
-    const isActive = sheet.breakStep === idx;
-    return (
-      <button
-        key={idx}
-        type="button"
-        onClick={() => setBreakStep(idx)}
-        className={`py-2 px-1 text-[11px] font-medium rounded border transition-all text-center flex flex-col items-center justify-center ${
-          isActive
-            ? `${step.color} text-white font-bold border-white/40 shadow-lg scale-[1.02]`
-            : 'bg-arc-bg text-slate-400 border-arc-border hover:bg-arc-cardHover'
-        }`}
-      >
-        <span>{step.penalty}</span>
-        <span className="text-[9px] opacity-80">
-          {step.label}
-        </span>
-      </button>
-    );
-  })}
-</div>
-        </section>
+        <BreakGaugeTracker step={sheet.breakStep} onChange={setBreakStep} />
         {/* DEFENSES & ATTRIBUTES */}
         <section className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
           <div className="bg-arc-card p-2.5 rounded-lg border border-arc-border text-center">
@@ -344,12 +282,16 @@ export default function App() {
           {(Object.keys(sheet.baseAttributes) as AttributeKey[]).map((attr) => {
             const val = sheet.baseAttributes[attr];
             const mod = getModifier(val);
+            const AttributeIcon = attributeIcons[attr];
             return (
-              <div 
-                key={attr} 
+              <div
+                key={attr}
                 className="bg-arc-card p-2 rounded-lg border border-arc-border text-center hover:border-arc-accent transition-colors"
+                aria-label={`${attributeLabels[attr]} ${val}, modifier ${mod >= 0 ? '+' : ''}${mod}`}
               >
-                <div className="text-[10px] uppercase font-bold text-slate-400">{attr}</div>
+                <div className="flex items-center justify-center gap-1 text-[11px] uppercase font-bold text-slate-200">
+                  <AttributeIcon size={14} aria-hidden="true" />{attr}
+                </div>
                 <div className="text-lg font-bold text-slate-100">{val}</div>
                 <div className={`text-xs font-semibold ${mod >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
                   {mod >= 0 ? `+${mod}` : mod}
@@ -358,7 +300,22 @@ export default function App() {
             );
           })}
         </section>
-        {/* DICE TRAY */}
+        </div>
+        {/* DETAILS TABS */}
+        <section className="space-y-3">
+          <div className="hidden lg:flex flex-wrap border-b border-arc-border gap-3 text-sm font-semibold">
+            {navigation.filter(item => item.id !== 'sheet').map(({id, label}) => (
+              <button type="button" key={id} onClick={() => navigateTo(id)} className={`pb-2 px-2 border-b-2 ${activeView === id ? 'border-arc-accent text-arc-accent' : 'border-transparent text-slate-300'}`}>{label}</button>
+            ))}
+          </div>
+          {activeView === 'combat' && (
+            <div className="space-y-4">
+              <section className="grid grid-cols-1 gap-3 xl:grid-cols-2">
+                <ResourceBar kind="hp" current={sheet.currentHp} max={maxHp} onChange={updateHp} />
+                <ResourceBar kind="mp" current={sheet.currentMp} max={maxMp} onChange={updateMp} />
+              </section>
+              <BreakGaugeTracker step={sheet.breakStep} onChange={setBreakStep} />
+              {/* DICE TRAY */}
         <section className="bg-arc-card p-3 rounded-lg border border-arc-border">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-bold text-slate-300 flex items-center gap-1.5 uppercase">
@@ -401,15 +358,9 @@ export default function App() {
           </div>
         )}
       </section>
-        </div>
-        {/* DETAILS TABS */}
-        <section className="space-y-3">
-          <div className="hidden lg:flex flex-wrap border-b border-arc-border gap-3 text-sm font-semibold">
-            {navigation.filter(item => item.id !== 'sheet').map(({id, label}) => (
-              <button type="button" key={id} onClick={() => navigateTo(id)} className={`pb-2 px-2 border-b-2 ${activeView === id ? 'border-arc-accent text-arc-accent' : 'border-transparent text-slate-300'}`}>{label}</button>
-            ))}
-          </div>
-          {activeView === 'combat' && <GearManager onRoll={handleRoll} onCombatResult={handleCombatResult} />}
+              <GearManager onRoll={handleRoll} onCombatResult={handleCombatResult} />
+            </div>
+          )}
           {activeView === 'skills' && <SkillTable onRoll={handleRoll} />}
           {activeView === 'talents' && <TalentsTab />}
           {activeView === 'history' && <CharacterHistoryTab />}
