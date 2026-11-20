@@ -275,7 +275,22 @@ export default function App() {
             );
           })}
         </section>
-        {/* DICE TRAY */}
+        </div>
+        {/* DETAILS TABS */}
+        <section className="space-y-3">
+          <div className="hidden lg:flex flex-wrap border-b border-arc-border gap-3 text-sm font-semibold">
+            {navigation.filter(item => item.id !== 'sheet').map(({id, label}) => (
+              <button type="button" key={id} onClick={() => navigateTo(id)} className={`pb-2 px-2 border-b-2 ${activeView === id ? 'border-arc-accent text-arc-accent' : 'border-transparent text-slate-300'}`}>{label}</button>
+            ))}
+          </div>
+          {activeView === 'combat' && (
+            <div className="space-y-4">
+              <section className="grid grid-cols-1 gap-3 xl:grid-cols-2">
+                <ResourceBar kind="hp" current={sheet.currentHp} max={maxHp} onChange={updateHp} />
+                <ResourceBar kind="mp" current={sheet.currentMp} max={maxMp} onChange={updateMp} />
+              </section>
+              <BreakGaugeTracker step={sheet.breakStep} onChange={setBreakStep} />
+              {/* DICE TRAY */}
         <section className="bg-arc-card p-3 rounded-lg border border-arc-border">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-bold text-slate-300 flex items-center gap-1.5 uppercase">
@@ -318,15 +333,9 @@ export default function App() {
           </div>
         )}
       </section>
-        </div>
-        {/* DETAILS TABS */}
-        <section className="space-y-3">
-          <div className="hidden lg:flex flex-wrap border-b border-arc-border gap-3 text-sm font-semibold">
-            {navigation.filter(item => item.id !== 'sheet').map(({id, label}) => (
-              <button type="button" key={id} onClick={() => navigateTo(id)} className={`pb-2 px-2 border-b-2 ${activeView === id ? 'border-arc-accent text-arc-accent' : 'border-transparent text-slate-300'}`}>{label}</button>
-            ))}
-          </div>
-          {activeView === 'combat' && <GearManager onRoll={handleRoll} onCombatResult={handleCombatResult} />}
+              <GearManager onRoll={handleRoll} onCombatResult={handleCombatResult} />
+            </div>
+          )}
           {activeView === 'skills' && <SkillTable onRoll={handleRoll} />}
           {activeView === 'talents' && <TalentsTab />}
           {activeView === 'history' && <CharacterHistoryTab />}
