@@ -2,17 +2,20 @@ import { useState, useMemo, useCallback } from 'react';
 import { 
   Heart, 
   Sparkles, 
-  Zap, 
   Dice5, 
   RefreshCw, 
   Swords, 
   BookOpen, 
   AlertOctagon, 
-  UserCheck, 
   Share2, 
-  BookMarked, 
   History,
-  Info 
+  Info,
+  LayoutDashboard,
+  ChevronUp,
+  Menu,
+  ScrollText,
+  UserRound,
+  Settings
 } from 'lucide-react';
 import { useCharacterStore, getMaxHeroPoints } from './store/useCharacterStore';
 import { getModifier, getTotalLevel, calculateDefensesWithBreak, rollExplodingDie } from './engine/formulas';
@@ -48,7 +51,8 @@ export default function App() {
     useHeroPoint, 
     resetHeroPoints 
   } = useCharacterStore();
-  const [activeTab, setActiveTab] = useState<'combat' | 'skills' | 'talents' | 'history' | 'notes'>('combat');
+  const [activeView, setActiveView] = useState<'sheet' | 'combat' | 'skills' | 'talents' | 'history' | 'notes'>('sheet');
+  const [moreOpen, setMoreOpen] = useState(false);
   const [isEditorOpen, setIsEditorOpen] = useState<boolean>(false);
   const [isSyncOpen, setIsSyncOpen] = useState<boolean>(false);
   const [isVersionOpen, setIsVersionOpen] = useState<boolean>(false);
@@ -152,85 +156,86 @@ export default function App() {
     );
   }
 
+  const navigation = [
+    { id: 'sheet', label: 'Sheet', icon: LayoutDashboard },
+    { id: 'combat', label: 'Combat', icon: Swords },
+    { id: 'skills', label: 'Skills', icon: BookOpen },
+    { id: 'talents', label: 'Progress', icon: ChevronUp },
+    { id: 'history', label: 'History', icon: History },
+    { id: 'notes', label: 'Notes', icon: ScrollText },
+  ] as const;
+  const navigateTo = (id: typeof activeView) => {
+    setActiveView(id);
+    setMoreOpen(false);
+  };
+  const onDetailPage = activeView !== 'sheet';
+
   return (
-    <div className="min-h-screen bg-arc-bg text-slate-100 flex flex-col max-w-4xl mx-auto pb-24 border-x border-arc-border shadow-2xl">
-      <header className="p-4 bg-arc-card border-b border-arc-border flex flex-wrap items-center justify-between gap-4 sticky top-0 z-30 shadow-md">
-        <div className="flex items-start gap-3">
-          <CharacterPortrait characterId={sheet.id} />
-          <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-xl font-bold tracking-wide text-arc-accent">{sheet.name}</h1>
-            <button
-              onClick={() => setIsEditorOpen(true)}
-              className="p-1 rounded bg-arc-bg hover:bg-arc-cardHover border border-arc-border text-arc-accent hover:border-arc-accent transition-all"
-              title="Edit Character"
-            >
-              <UserCheck size={14} />
-            </button>
+    <div className="min-h-screen bg-arc-bg text-slate-100 flex flex-col w-full max-w-screen-2xl mx-auto pb-24 lg:pb-0 lg:border-x border-arc-border shadow-2xl">
+      <div className="hidden lg:flex items-center justify-between border-b border-arc-border bg-arc-card/80 px-6 py-3">
+        <div className="font-semibold tracking-widest text-arc-accent">LAST ARC <span className="text-xs text-arc-gold">CHARACTER COMPANION</span></div>
+        <button type="button" onClick={() => setIsVersionOpen(true)} className="text-xs text-slate-300 hover:text-white flex items-center gap-2"><Info size={14} /> Version {__APP_VERSION__}</button>
+      </div>
+      <div className="lg:grid lg:grid-cols-[210px_minmax(0,1fr)] lg:flex-1">
+      <nav aria-label="Desktop navigation" className="hidden lg:flex lg:flex-col gap-2 border-r border-arc-border bg-arc-card/60 p-4">
+        {navigation.map(({ id, label, icon: Icon }) => (
+          <button key={id} type="button" onClick={() => navigateTo(id)} aria-current={activeView === id ? 'page' : undefined}
+            className={`flex min-h-11 items-center gap-3 rounded-lg px-4 text-sm font-semibold transition-colors ${activeView === id ? 'bg-cyan-950/80 text-white border border-cyan-400/70' : 'text-slate-300 hover:bg-arc-cardHover border border-transparent'}`}>
+            <Icon size={19} aria-hidden="true" />{label}
+          </button>
+        ))}
+        <div className="mt-auto border-t border-arc-border pt-4 text-xs text-slate-400">Accessible layout · Mobile & Desktop</div>
+      </nav>
+      <div className="min-w-0 flex flex-col">
+      <header className="p-3 sm:p-4 bg-arc-card border-b border-arc-border shadow-md">
+        <div className="flex items-start gap-3 sm:gap-4">
+          <div className="shrink-0 [&_.w-28]:!w-20 [&_.h-36]:!h-24 sm:[&_.w-28]:!w-28 sm:[&_.h-36]:!h-36">
+            <CharacterPortrait characterId={sheet.id} />
+          </div>
+          <div className="min-w-0 flex-1">
+            <h1 className="break-words text-xl sm:text-2xl font-bold tracking-wide text-arc-accent">{sheet.name}</h1>
+            <p className="mt-1 text-xs sm:text-sm text-slate-300 break-words">
+              {sheet.race} · {sheet.classes.map(c => `${c.name} ${c.level}`).join(' / ')}
+            </p>
+            <div className="mt-2 flex flex-wrap items-center gap-2">
+              <span className="text-xs px-2 py-1 rounded bg-amber-500/20 text-amber-200 border border-amber-500/50">{sheet.ethos}</span>
+              {currentZodiac && (
+                <span className="text-xs px-2 py-1 rounded bg-indigo-500/20 text-indigo-200 border border-indigo-400/50" title={`Zodiac: ${currentZodiac.sign} (${currentZodiac.domain})`}>
+                  {currentZodiac.symbol} {currentZodiac.sign}
+                </span>
+              )}
+              <button type="button" onClick={() => setIsVersionOpen(true)} className="lg:hidden text-[11px] px-2 py-1 rounded border border-arc-border text-slate-300" title="Version & Release Notes">v{__APP_VERSION__}</button>
+            </div>
+          </div>
+        </div>
+        <div className="grid grid-cols-3 gap-2 mt-3 sm:max-w-lg">
+          <button type="button" onClick={() => setIsEditorOpen(true)} className="min-h-11 rounded-lg border border-cyan-500/60 bg-arc-bg text-cyan-100 text-xs sm:text-sm font-semibold flex flex-col sm:flex-row gap-1 items-center justify-center px-2 hover:bg-arc-cardHover"><UserRound size={17} />Character</button>
+          <div className="min-w-0 [&>button]:!w-full [&>button]:!h-full [&>button]:!min-h-11 [&>button]:!text-xs [&>button]:!font-semibold">
             <CharacterAdvancementControl />
-            <button
-              onClick={() => setIsSyncOpen(true)}
-              className="p-1 rounded bg-arc-bg hover:bg-arc-cardHover border border-arc-border text-slate-400 hover:text-white transition-all ml-0.5"
-              title="Backup / Sync Character"
-            >
-              <Share2 size={14} />
-            </button>
-            <button
-              onClick={() => setIsVersionOpen(true)}
-              className="text-[10px] px-1.5 py-0.5 rounded bg-arc-border hover:bg-arc-cardHover text-slate-300 font-mono flex items-center gap-1"
-              title="Version & Release Notes"
-            >
-              <Info size={11} /> {__APP_VERSION__}
-            </button>
-            {/* Ethos Badge */}
-            <span className="text-xs px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
-              {sheet.ethos}
-            </span>
-            {/* Zodiac Badge */}
-            {currentZodiac && (
-              <span 
-                className="text-xs px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 flex items-center gap-1 font-medium cursor-help"
-                title={`Zodiac: ${currentZodiac.sign} (${currentZodiac.domain})\n• Compatible (+Benefic): ${currentZodiac.compatible.join(', ')}\n• Incompatible (+Malefic): ${currentZodiac.incompatible.join(', ')}`}
-              >
-                <span>{currentZodiac.symbol}</span>
-                <span>{currentZodiac.sign}</span>
-              </span>
-            )}
           </div>
-          <p className="text-xs text-slate-400 mt-0.5">
-            {sheet.race} • {sheet.classes.map(c => `${c.name} ${c.level}`).join(' / ')}
-          </p>
+          <button type="button" onClick={() => setIsSyncOpen(true)} className="min-h-11 rounded-lg border border-cyan-500/60 bg-arc-bg text-cyan-100 text-xs sm:text-sm font-semibold flex flex-col sm:flex-row gap-1 items-center justify-center px-2 hover:bg-arc-cardHover"><Share2 size={17} />Share</button>
         </div>
-        </div>
-        <div className="flex items-center gap-3">
-          <div className="flex flex-col items-center bg-arc-bg px-2.5 py-1 rounded border border-arc-border">
-            <span className="text-[10px] text-slate-400 uppercase tracking-wider">Init Die</span>
-            <span className="text-sm font-semibold text-emerald-400">{getInitDie(primaryClass)}</span>
+        <div className="mt-3 grid grid-cols-2 gap-2 sm:max-w-lg">
+          <div className="rounded-lg border border-arc-border bg-arc-bg px-3 py-2 flex items-center justify-center gap-3">
+            <Dice5 size={18} className="text-cyan-300" aria-hidden="true" />
+            <div><div className="text-[11px] text-slate-300 uppercase">Init Die</div><div className="font-bold text-emerald-300">{getInitDie(primaryClass)}</div></div>
           </div>
-          <div className="flex flex-col items-center bg-arc-bg px-2.5 py-1 rounded border border-arc-border">
-            <div className="flex items-center justify-between w-full gap-2">
-              <span className="text-[10px] text-slate-400 uppercase tracking-wider">Hero Pts</span>
-              <button onClick={resetHeroPoints} title="Reset Hero Points">
-                <RefreshCw size={10} className="text-slate-400 hover:text-arc-accent" />
-              </button>
-            </div>
-            <div className="flex gap-1 mt-1">
-              {[...Array(getMaxHeroPoints(totalLevel))].map((_, i) => (
-                <button
-                  key={i}
-                  onClick={useHeroPoint}
-                  className={`w-3.5 h-3.5 rounded-full border transition-all ${
-                    i < sheet.heroPoints
-                      ? 'bg-arc-gold border-amber-300 shadow-[0_0_8px_rgba(251,191,36,0.6)]'
-                      : 'bg-arc-border border-slate-600'
-                  }`}
-                />
-              ))}
-            </div>
+          <div className="rounded-lg border border-arc-border bg-arc-bg px-2 py-2 flex flex-col items-center justify-center">
+            <div className="flex items-center gap-2"><span className="text-[11px] text-slate-300 uppercase">Hero Pts</span><button type="button" onClick={resetHeroPoints} title="Reset Hero Points" aria-label="Reset Hero Points"><RefreshCw size={13} /></button></div>
+            <div className="mt-1 flex gap-2">{[...Array(getMaxHeroPoints(totalLevel))].map((_,i) => (
+              <button type="button" key={i} onClick={useHeroPoint} aria-label={`Use hero point ${i + 1}`} className={`w-5 h-5 rounded-full border border-amber-400 ${i < sheet.heroPoints ? 'bg-arc-gold' : 'bg-slate-700'}`} />
+            ))}</div>
           </div>
         </div>
       </header>
-      <main className="p-4 space-y-5">
+      <main className="p-3 sm:p-5 space-y-5 min-w-0 flex-1">
+        {onDetailPage && (
+          <div className="rounded-lg border border-arc-border bg-arc-card p-3">
+            <h2 className="text-xl font-bold text-cyan-200">{navigation.find(item => item.id === activeView)?.label}</h2>
+            <p className="text-sm text-slate-300">Your character's existing tools and information, gathered in one place.</p>
+          </div>
+        )}
+        <div className={onDetailPage ? 'hidden' : 'space-y-5'}>
         {/* RESOURCE BARS (HP / MP) */}
         <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="bg-arc-card p-3.5 rounded-lg border border-arc-border shadow-sm">
@@ -396,67 +401,38 @@ export default function App() {
           </div>
         )}
       </section>
+        </div>
         {/* DETAILS TABS */}
         <section className="space-y-3">
-          <div className="flex flex-wrap border-b border-arc-border gap-x-4 gap-y-2 text-xs font-semibold">
-            <button
-              onClick={() => setActiveTab('combat')}
-              className={`pb-2 border-b-2 flex items-center gap-1.5 transition-all ${
-                activeTab === 'combat' 
-                  ? 'border-arc-accent text-arc-accent' 
-                  : 'border-transparent text-slate-400 hover:text-slate-200'
-              }`}
-            >
-              <Swords size={13} /> Attacks & Gear
-            </button>
-            <button
-              onClick={() => setActiveTab('skills')}
-              className={`pb-2 border-b-2 flex items-center gap-1.5 transition-all ${
-                activeTab === 'skills' 
-                  ? 'border-arc-accent text-arc-accent' 
-                  : 'border-transparent text-slate-400 hover:text-slate-200'
-              }`}
-            >
-              <BookOpen size={13} /> Skills
-            </button>
-            <button
-              onClick={() => setActiveTab('talents')}
-              className={`pb-2 border-b-2 flex items-center gap-1.5 transition-all ${
-                activeTab === 'talents' 
-                  ? 'border-arc-accent text-arc-accent' 
-                  : 'border-transparent text-slate-400 hover:text-slate-200'
-              }`}
-            >
-              <Zap size={13} /> Talents & Technicks
-            </button>
-            <button
-              onClick={() => setActiveTab('history')}
-              className={`pb-2 border-b-2 flex items-center gap-1.5 transition-all ${
-                activeTab === 'history'
-                  ? 'border-arc-accent text-arc-accent'
-                  : 'border-transparent text-slate-400 hover:text-slate-200'
-              }`}
-            >
-              <History size={13} /> Character History
-            </button>
-            <button
-              onClick={() => setActiveTab('notes')}
-              className={`pb-2 border-b-2 flex items-center gap-1.5 transition-all ${
-                activeTab === 'notes' 
-                  ? 'border-arc-accent text-arc-accent' 
-                  : 'border-transparent text-slate-400 hover:text-slate-200'
-              }`}
-            >
-              <BookMarked size={13} /> Journal & Notes
-            </button>
+          <div className="hidden lg:flex flex-wrap border-b border-arc-border gap-3 text-sm font-semibold">
+            {navigation.filter(item => item.id !== 'sheet').map(({id, label}) => (
+              <button type="button" key={id} onClick={() => navigateTo(id)} className={`pb-2 px-2 border-b-2 ${activeView === id ? 'border-arc-accent text-arc-accent' : 'border-transparent text-slate-300'}`}>{label}</button>
+            ))}
           </div>
-          {activeTab === 'combat' && <GearManager onRoll={handleRoll} onCombatResult={handleCombatResult} />}
-          {activeTab === 'skills' && <SkillTable onRoll={handleRoll} />}
-          {activeTab === 'talents' && <TalentsTab />}
-          {activeTab === 'history' && <CharacterHistoryTab />}
-          {activeTab === 'notes' && <NotesTab />}
+          {activeView === 'combat' && <GearManager onRoll={handleRoll} onCombatResult={handleCombatResult} />}
+          {activeView === 'skills' && <SkillTable onRoll={handleRoll} />}
+          {activeView === 'talents' && <TalentsTab />}
+          {activeView === 'history' && <CharacterHistoryTab />}
+          {activeView === 'notes' && <NotesTab />}
         </section>
       </main>
+      </div>
+      </div>
+      <nav aria-label="Mobile navigation" className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-6 border-t border-cyan-500/50 bg-[#071322]/95 px-1 pb-[env(safe-area-inset-bottom)] shadow-[0_-6px_18px_rgba(0,0,0,.4)] backdrop-blur lg:hidden">
+        {navigation.slice(0,4).map(({id,label,icon:Icon}) => (
+          <button type="button" key={id} onClick={() => navigateTo(id)} aria-current={activeView === id ? 'page' : undefined} className={`min-h-16 flex flex-col items-center justify-center gap-1 text-[10px] font-medium ${activeView === id ? 'text-cyan-300' : 'text-slate-300'}`}>
+            <Icon size={20} aria-hidden="true" />{label}
+          </button>
+        ))}
+        <button type="button" onClick={() => navigateTo('history')} aria-current={activeView === 'history' ? 'page' : undefined} className={`min-h-16 flex flex-col items-center justify-center gap-1 text-[10px] ${activeView === 'history' ? 'text-cyan-300' : 'text-slate-300'}`}><History size={20} />History</button>
+        <div className="relative flex">
+          <button type="button" onClick={() => setMoreOpen(!moreOpen)} aria-expanded={moreOpen} aria-label="More navigation options" className="w-full min-h-16 flex flex-col items-center justify-center gap-1 text-[10px] text-slate-300"><Menu size={20} />More</button>
+          {moreOpen && <div className="absolute bottom-full right-0 mb-2 min-w-36 rounded-lg border border-arc-border bg-arc-card p-2 shadow-xl">
+            <button type="button" className="flex min-h-11 w-full items-center gap-2 rounded px-3 text-sm text-slate-100 hover:bg-arc-cardHover" onClick={() => navigateTo('notes')}><ScrollText size={17} /> Notes</button>
+            <button type="button" className="flex min-h-11 w-full items-center gap-2 rounded px-3 text-sm text-slate-100 hover:bg-arc-cardHover" onClick={() => {setIsVersionOpen(true);setMoreOpen(false);}}><Settings size={17} /> About</button>
+          </div>}
+        </div>
+      </nav>
       <footer className="w-full mt-auto px-4 py-6 border-t border-arc-border bg-arc-card/50 text-center">
   <div className="flex flex-col items-center gap-3">
 

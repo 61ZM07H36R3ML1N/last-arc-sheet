@@ -30,7 +30,7 @@ export function CharacterAdvancementControl() {
   }
   aria-label="Advance Character"
   className="
-    p-1 rounded
+    flex items-center justify-center gap-1 rounded-lg px-2 py-2
     bg-arc-bg
     hover:bg-arc-cardHover
     border border-arc-border
@@ -41,7 +41,7 @@ export function CharacterAdvancementControl() {
     disabled:cursor-not-allowed
   "
 >
-  <ArrowUpCircle size={14} />
+  <ArrowUpCircle size={17} />\n  <span className="text-xs sm:text-sm">Level Up</span>
 </button>
 
       <CharacterAdvancementModal
