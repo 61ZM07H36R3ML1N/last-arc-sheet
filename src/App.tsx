@@ -12,7 +12,12 @@ import {
   Menu,
   ScrollText,
   UserRound,
-  Settings
+  Settings,
+  Sword,
+  Wind,
+  ShieldCheck,
+  Eye,
+  MessageCircle
 } from 'lucide-react';
 import { useCharacterStore, getMaxHeroPoints } from './store/useCharacterStore';
 import { getModifier, getTotalLevel, calculateDefensesWithBreak, rollExplodingDie } from './engine/formulas';
@@ -132,6 +137,22 @@ export default function App() {
         return 'd12';
     }
   };
+  const attributeIcons = {
+    str: Sword,
+    agi: Wind,
+    vit: ShieldCheck,
+    int: BookOpen,
+    mnd: Eye,
+    chr: MessageCircle,
+  } as const;
+  const attributeLabels = {
+    str: 'Strength',
+    agi: 'Agility',
+    vit: 'Vitality',
+    int: 'Intelligence',
+    mnd: 'Mind',
+    chr: 'Charisma',
+  } as const;
   const currentZodiac = sheet.zodiacSign ? ZODIAC_SIGNS[sheet.zodiacSign] : null;
   // New visitors see creation first, not the internal sample character.
   // The persisted store restores returning players before this view renders.
@@ -261,12 +282,16 @@ export default function App() {
           {(Object.keys(sheet.baseAttributes) as AttributeKey[]).map((attr) => {
             const val = sheet.baseAttributes[attr];
             const mod = getModifier(val);
+            const AttributeIcon = attributeIcons[attr];
             return (
-              <div 
-                key={attr} 
+              <div
+                key={attr}
                 className="bg-arc-card p-2 rounded-lg border border-arc-border text-center hover:border-arc-accent transition-colors"
+                aria-label={`${attributeLabels[attr]} ${val}, modifier ${mod >= 0 ? '+' : ''}${mod}`}
               >
-                <div className="text-[10px] uppercase font-bold text-slate-400">{attr}</div>
+                <div className="flex items-center justify-center gap-1 text-[11px] uppercase font-bold text-slate-200">
+                  <AttributeIcon size={14} aria-hidden="true" />{attr}
+                </div>
                 <div className="text-lg font-bold text-slate-100">{val}</div>
                 <div className={`text-xs font-semibold ${mod >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
                   {mod >= 0 ? `+${mod}` : mod}
