@@ -67,7 +67,7 @@ export default function CharacterPortrait({ characterId, editable = false }: Pro
   };
 
   return <div className="space-y-2">
-    <div className="w-28 h-36 overflow-hidden rounded-lg border border-arc-border bg-arc-bg flex items-center justify-center" aria-label="Character portrait">
+    <div className="w-28 h-36 overflow-hidden rounded-lg border border-cyan-500/70 bg-arc-bg flex items-center justify-center shadow-[0_0_0_1px_rgba(34,211,238,.12),0_0_18px_rgba(34,211,238,.08)]" aria-label="Character portrait">
       {portrait ? <img src={portrait} alt="Character portrait" className="w-full h-full object-cover" /> :
         <span className="text-xs text-slate-400 text-center px-2">No portrait</span>}
     </div>
