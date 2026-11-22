@@ -184,6 +184,16 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-arc-bg text-slate-100 flex flex-col w-full max-w-screen-2xl mx-auto pb-24 lg:pb-0 lg:border-x border-arc-border shadow-2xl">
+      <div className="lg:hidden px-3 pt-3 pb-2 text-center bg-[linear-gradient(180deg,#071827,#07111f)] border-b border-arc-border/70">
+        <div className="flex items-center justify-center gap-3 text-arc-accent" aria-hidden="true">
+          <span className="h-px w-9 bg-cyan-500/70" />
+          <span className="text-xs">✦</span>
+          <span className="h-px w-9 bg-cyan-500/70" />
+        </div>
+        <div className="font-serif text-[23px] leading-tight tracking-[0.17em] font-bold text-slate-50">LAST ARC</div>
+        <div className="text-[9px] uppercase tracking-[0.28em] text-slate-300">Tactics Analogue</div>
+        <div className="mt-1 text-[9px] uppercase tracking-[0.23em] text-arc-gold">Character Companion</div>
+      </div>
       <div className="hidden lg:flex items-center justify-between border-b border-arc-border bg-arc-card/80 px-6 py-3">
         <div className="font-semibold tracking-widest text-arc-accent">LAST ARC <span className="text-xs text-arc-gold">CHARACTER COMPANION</span></div>
         <button type="button" onClick={() => setIsVersionOpen(true)} className="text-xs text-slate-300 hover:text-white flex items-center gap-2"><Info size={14} /> Version {__APP_VERSION__}</button>
@@ -199,13 +209,13 @@ export default function App() {
         <div className="mt-auto border-t border-arc-border pt-4 text-xs text-slate-400">Accessible layout · Mobile & Desktop</div>
       </nav>
       <div className="min-w-0 flex flex-col">
-      <header className="p-3 sm:p-4 bg-arc-card border-b border-arc-border shadow-md">
+      <header className="p-3 sm:p-4 lg:p-5 bg-[linear-gradient(135deg,#10223a,#091523)] border-b border-arc-border shadow-md">
         <div className="flex items-start gap-3 sm:gap-4">
           <div className="shrink-0 [&_.w-28]:!w-20 [&_.h-36]:!h-24 sm:[&_.w-28]:!w-28 sm:[&_.h-36]:!h-36">
             <CharacterPortrait characterId={sheet.id} />
           </div>
           <div className="min-w-0 flex-1">
-            <h1 className="break-words text-xl sm:text-2xl font-bold tracking-wide text-arc-accent">{sheet.name}</h1>
+            <h1 className="break-words text-xl sm:text-2xl font-bold tracking-wide text-slate-50">{sheet.name}</h1>
             <p className="mt-1 text-xs sm:text-sm text-slate-300 break-words">
               {sheet.race} · {sheet.classes.map(c => `${c.name} ${c.level}`).join(' / ')}
             </p>
@@ -220,14 +230,14 @@ export default function App() {
             </div>
           </div>
         </div>
-        <div className="grid grid-cols-3 gap-2 mt-3 sm:max-w-lg">
-          <button type="button" onClick={() => setIsEditorOpen(true)} className="min-h-11 rounded-lg border border-cyan-500/60 bg-arc-bg text-cyan-100 text-xs sm:text-sm font-semibold flex flex-col sm:flex-row gap-1 items-center justify-center px-2 hover:bg-arc-cardHover"><UserRound size={17} />Character</button>
+        <div className="grid grid-cols-3 gap-2 mt-3 sm:max-w-lg lg:max-w-xl">
+          <button type="button" onClick={() => setIsEditorOpen(true)} className="min-h-12 rounded-lg border border-cyan-500/60 bg-[#07243a] text-cyan-100 text-xs sm:text-sm font-semibold flex flex-col sm:flex-row gap-1 items-center justify-center px-2 hover:bg-arc-cardHover shadow-[inset_0_0_14px_rgba(6,182,212,.1)]"><UserRound size={17} />Character</button>
           <div className="min-w-0 [&>button]:!w-full [&>button]:!h-full [&>button]:!min-h-11 [&>button]:!text-xs [&>button]:!font-semibold">
             <CharacterAdvancementControl />
           </div>
           <button type="button" onClick={() => setIsSyncOpen(true)} className="min-h-11 rounded-lg border border-cyan-500/60 bg-arc-bg text-cyan-100 text-xs sm:text-sm font-semibold flex flex-col sm:flex-row gap-1 items-center justify-center px-2 hover:bg-arc-cardHover"><Share2 size={17} />Share</button>
         </div>
-        <div className="mt-3 grid grid-cols-2 gap-2 sm:max-w-lg">
+        <div className="mt-3 grid grid-cols-2 gap-2 sm:max-w-lg lg:max-w-xl">
           <div className="rounded-lg border border-arc-border bg-arc-bg px-3 py-2 flex items-center justify-center gap-3">
             <Dice5 size={18} className="text-cyan-300" aria-hidden="true" />
             <div><div className="text-[11px] text-slate-300 uppercase">Init Die</div><div className="font-bold text-emerald-300">{getInitDie(primaryClass)}</div></div>
@@ -254,52 +264,52 @@ export default function App() {
           <ResourceBar kind="mp" current={sheet.currentMp} max={maxMp} onChange={updateMp} />
         </section>
         <BreakGaugeTracker step={sheet.breakStep} onChange={setBreakStep} />
-        {/* DEFENSES & ATTRIBUTES */}
-        <section className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-          <div className="bg-arc-card p-2.5 rounded-lg border border-arc-border text-center">
-            <span className="text-[10px] text-slate-400 uppercase font-semibold">Reflex</span>
-            <div className="text-xl font-bold text-arc-accent mt-0.5">{defenses.reflex}</div>
-            <span className="text-[9px] text-slate-500">10 + ½Lv + Agi + Cls</span>
-          </div>
-          <div className="bg-arc-card p-2.5 rounded-lg border border-arc-border text-center">
-            <span className="text-[10px] text-slate-400 uppercase font-semibold">Fortitude</span>
-            <div className="text-xl font-bold text-emerald-400 mt-0.5">{defenses.fortitude}</div>
-            <span className="text-[9px] text-slate-500">10 + ½Lv + Vit + Cls</span>
-          </div>
-          <div className="bg-arc-card p-2.5 rounded-lg border border-arc-border text-center">
-            <span className="text-[10px] text-slate-400 uppercase font-semibold">Will</span>
-            <div className="text-xl font-bold text-purple-400 mt-0.5">{defenses.will}</div>
-            <span className="text-[9px] text-slate-500">10 + ½Lv + Mnd + Cls</span>
-          </div>
-          <div className="bg-arc-card p-2.5 rounded-lg border border-arc-border text-center">
-            <span className="text-[10px] text-slate-400 uppercase font-semibold">Threshold</span>
-            <div className="text-xl font-bold text-amber-400 mt-0.5">{defenses.breakThreshold}</div>
-            <span className="text-[9px] text-slate-500">Max Hit Tolerance</span>
-          </div>
-        </section>
-        {/* ATTRIBUTES ROW */}
-        <section className="grid grid-cols-3 sm:grid-cols-6 gap-2">
-          {(Object.keys(sheet.baseAttributes) as AttributeKey[]).map((attr) => {
-            const val = sheet.baseAttributes[attr];
-            const mod = getModifier(val);
-            const AttributeIcon = attributeIcons[attr];
-            return (
-              <div
-                key={attr}
-                className="bg-arc-card p-2 rounded-lg border border-arc-border text-center hover:border-arc-accent transition-colors"
-                aria-label={`${attributeLabels[attr]} ${val}, modifier ${mod >= 0 ? '+' : ''}${mod}`}
-              >
-                <div className="flex items-center justify-center gap-1 text-[11px] uppercase font-bold text-slate-200">
-                  <AttributeIcon size={14} aria-hidden="true" />{attr}
+        {/* Readable overview cards; icons and labels remain legible without color. */}
+        <div className="grid grid-cols-1 gap-3 xl:grid-cols-2">
+          <section className="rounded-xl border border-arc-border bg-arc-card p-3.5 sm:p-4 shadow-lg" aria-labelledby="defenses-heading">
+            <h2 id="defenses-heading" className="mb-3 font-serif text-base font-semibold tracking-wide text-slate-100">Defenses</h2>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 xl:grid-cols-2">
+              {[
+                { label: 'Reflex', value: defenses.reflex, detail: 'AGI Defense', icon: Wind },
+                { label: 'Fortitude', value: defenses.fortitude, detail: 'VIT Defense', icon: ShieldCheck },
+                { label: 'Will', value: defenses.will, detail: 'MND Defense', icon: Eye },
+                { label: 'Threshold', value: defenses.breakThreshold, detail: 'Break tolerance', icon: ShieldCheck },
+              ].map(({ label, value, detail, icon: Icon }) => (
+                <div key={label} className="min-w-0 rounded-lg border border-arc-border/80 bg-[#0a1729] px-3 py-2.5">
+                  <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-200"><Icon size={14} aria-hidden="true" />{label}</div>
+                  <div className="mt-1 text-2xl font-bold tabular-nums text-white">{value}</div>
+                  <div className="mt-0.5 text-[11px] text-slate-300">{detail}</div>
                 </div>
-                <div className="text-lg font-bold text-slate-100">{val}</div>
-                <div className={`text-xs font-semibold ${mod >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
-                  {mod >= 0 ? `+${mod}` : mod}
-                </div>
-              </div>
-            );
-          })}
-        </section>
+              ))}
+            </div>
+          </section>
+          <section className="rounded-xl border border-arc-border bg-arc-card p-3.5 sm:p-4 shadow-lg" aria-labelledby="attributes-heading">
+            <h2 id="attributes-heading" className="mb-3 font-serif text-base font-semibold tracking-wide text-slate-100">Attributes</h2>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-2 2xl:grid-cols-3">
+              {(Object.keys(sheet.baseAttributes) as AttributeKey[]).map((attr) => {
+                const val = sheet.baseAttributes[attr];
+                const mod = getModifier(val);
+                const AttributeIcon = attributeIcons[attr];
+                return (
+                  <div key={attr} className="min-w-0 rounded-lg border border-arc-border/80 bg-[#0a1729] p-2.5"
+                    aria-label={`${attributeLabels[attr]} ${val}, modifier ${mod >= 0 ? '+' : ''}${mod}`}>
+                    <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-200">
+                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md border border-cyan-500/50 bg-cyan-950/50 text-cyan-200">
+                        <AttributeIcon size={15} aria-hidden="true" />
+                      </span>
+                      <span className="uppercase">{attr}</span>
+                    </div>
+                    <div className="mt-1 flex items-end justify-between gap-2">
+                      <span className="text-xl font-bold tabular-nums text-white">{val}</span>
+                      <span className="rounded border border-slate-500/60 px-1.5 py-0.5 text-xs font-semibold tabular-nums text-slate-100">{mod >= 0 ? `+${mod}` : mod}</span>
+                    </div>
+                    <div className="mt-1 text-[11px] text-slate-300">{attributeLabels[attr]}</div>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        </div>
         </div>
         {/* DETAILS TABS */}
         <section className="space-y-3">
